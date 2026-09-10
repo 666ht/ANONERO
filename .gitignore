@@ -19,3 +19,6 @@ local.properties
 .kotlin
 app/anon/release/*.json
 app/anon/stageNet/*.json
+# Signing keystores must never be committed
+*.jks
+*.keystore

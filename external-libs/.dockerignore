@@ -1,0 +1,8 @@
+# Build outputs. Never COPYed, so excluding them costs no layer cache -- it just keeps
+# ~800MB out of the context sent to the daemon on every build.
+arm64-v8a/
+armeabi-v7a/
+linux-x86_64/
+include/
+VERSION
+*.patch

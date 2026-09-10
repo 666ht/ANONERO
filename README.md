@@ -26,15 +26,31 @@ We are NOT responsible for lost or stolen funds.
 
 ### HOW TO BUILD
 
-1. Clone ANONERO repo: `git -c http.proxy=socks5h://127.0.0.1:9050 clone http://git.anonero5wmhraxqsvzq2ncgptq6gq45qoto6fnkfwughfl4gbt44swad.onion/ANONERO/ANONERO.git`
+Monero is a pinned submodule, so cloning recursively gets the exact commit this release
+builds against -- no manual linking, and no chance of building against the wrong tree.
 
-2. Clone Monero repo: `git -c http.proxy=socks5h://127.0.0.1:9050 clone http://git.anonero5wmhraxqsvzq2ncgptq6gq45qoto6fnkfwughfl4gbt44swad.onion/ANONERO/monero.git`
+1. Clone with submodules:
+```
+git -c http.proxy=socks5h://127.0.0.1:9050 clone --recurse-submodules \
+    http://git.anonero5wmhraxqsvzq2ncgptq6gq45qoto6fnkfwughfl4gbt44swad.onion/ANONERO/ANONERO.git
+```
 
-3. Link external libs: `ln -s ~/monero ~/ANONERO/external-libs/monero`
+2. Build the native libraries (`sudo` because it drives docker):
+```
+cd ANONERO/external-libs
+sudo make android     # arm64-v8a + armeabi-v7a, for the APK
+sudo make linux       # linux-x86_64, for the desktop build
+sudo make             # all three
+```
 
-4. Update submodules: `cd monero && git submodule update --init --force`
+Builds run in a container, so the only host requirements are docker (or
+`CONTAINER=podman`) and free disk. Parallelism defaults to `nproc`; override with
+`make NPROC=4`.
 
-5. Build external libs: `cd ~/ANONERO/external-libs && sudo make`
+If you cloned without `--recurse-submodules`:
+```
+git -c http.proxy=socks5h://127.0.0.1:9050 submodule update --init --recursive
+```
 
 Then, fire up Android Studio and build the APK.
 

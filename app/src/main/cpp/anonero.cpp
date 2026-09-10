@@ -15,6 +15,8 @@
  */
 
 #include <inttypes.h>
+#include <cstring>
+#include <mutex>
 #include "anonero.h"
 #include "wallet2_api.h"
 
@@ -25,13 +27,43 @@ extern "C"
 {
 #endif
 
-#include <android/log.h>
 #define LOG_TAG "WalletNDK"
+#ifdef __ANDROID__
+#include <android/log.h>
 #define LOGV(...) __android_log_print(ANDROID_LOG_VERBOSE, LOG_TAG,__VA_ARGS__)
 #define LOGD(...) __android_log_print(ANDROID_LOG_DEBUG  , LOG_TAG,__VA_ARGS__)
 #define LOGI(...) __android_log_print(ANDROID_LOG_INFO   , LOG_TAG,__VA_ARGS__)
 #define LOGW(...) __android_log_print(ANDROID_LOG_WARN   , LOG_TAG,__VA_ARGS__)
 #define LOGE(...) __android_log_print(ANDROID_LOG_ERROR  , LOG_TAG,__VA_ARGS__)
+#else
+// Desktop has no logcat; same five macros over stderr.
+#include <stdio.h>
+#define ANON_LOG(lvl, ...) do { \
+        fprintf(stderr, "%s/" LOG_TAG ": ", lvl); \
+        fprintf(stderr, __VA_ARGS__); \
+        fputc('\n', stderr); \
+    } while (0)
+#define LOGV(...) ANON_LOG("V", __VA_ARGS__)
+#define LOGD(...) ANON_LOG("D", __VA_ARGS__)
+#define LOGI(...) ANON_LOG("I", __VA_ARGS__)
+#define LOGW(...) ANON_LOG("W", __VA_ARGS__)
+#define LOGE(...) ANON_LOG("E", __VA_ARGS__)
+#endif
+
+// Android's jni.h declares AttachCurrentThread(JNIEnv**); the desktop JDK's takes void**.
+#ifdef __ANDROID__
+#define ANON_ATTACH_ARG(e) (e)
+#else
+#define ANON_ATTACH_ARG(e) reinterpret_cast<void **>(e)
+#endif
+
+// android.util.Pair is framework-only. extract_pair() just reads its first/second
+// Object fields, so the desktop source set supplies a class of the same shape.
+#ifdef __ANDROID__
+#define ANON_PAIR_CLASS "android/util/Pair"
+#else
+#define ANON_PAIR_CLASS "io/anonero/model/Pair"
+#endif
 
 static JavaVM *cachedJVM;
 static jclass class_ArrayList;
@@ -69,7 +101,7 @@ JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *jvm, void *reserved) {
     class_CoinsInfo = static_cast<jclass>(jenv->NewGlobalRef(
             jenv->FindClass("io/anonero/model/CoinsInfo")));
     class_Pair = static_cast<jclass>(jenv->NewGlobalRef(
-            jenv->FindClass("android/util/Pair")));
+            jenv->FindClass(ANON_PAIR_CLASS)));
     return JNI_VERSION_1_6;
 }
 #ifdef __cplusplus
@@ -79,7 +111,7 @@ JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *jvm, void *reserved) {
 int attachJVM(JNIEnv **jenv) {
     int envStat = cachedJVM->GetEnv((void **) jenv, JNI_VERSION_1_6);
     if (envStat == JNI_EDETACHED) {
-        if (cachedJVM->AttachCurrentThread(jenv, nullptr) != 0) {
+        if (cachedJVM->AttachCurrentThread(ANON_ATTACH_ARG(jenv), nullptr) != 0) {
             LOGE("Failed to attach");
             return JNI_ERR;
         }
