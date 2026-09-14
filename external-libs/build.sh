@@ -8,6 +8,12 @@
 
 set -euo pipefail
 
+# Reproducibility, if run outside the container (Containerfile sets these too).
+export SOURCE_DATE_EPOCH="${SOURCE_DATE_EPOCH:-1704067200}"
+export ZERO_AR_DATE=1
+export TZ=UTC
+export LC_ALL="${LC_ALL:-C.UTF-8}"
+
 # fetch is the one step that runs before a target is chosen.
 if [ "${1:-}" = fetch ]; then TARGET=${TARGET:-android64}; fi
 : "${TARGET:?set TARGET to one of: android64 android32 linux}"
@@ -88,7 +94,8 @@ android() { [ "$PLATFORM" = android ]; }
 HOSTF=(); if [ -n "$HOST" ]; then HOSTF=(--host="$HOST"); fi
 
 grab() {  # grab <url> <file> <sha256> -- download + verify only
-    cd "$SRC"; [ -f "$2" ] || curl -fL --retry 3 -o "$2" "$1"
+    cd "$SRC"
+    [ -f "$2" ] || curl -fL --http1.1 --retry 8 --retry-all-errors --retry-delay 3 -C - -o "$2" "$1"
     echo "$3  $2" | sha256sum -c
 }
 
@@ -97,7 +104,14 @@ get() {  # get <url> <file> <sha256> -- grab, then unpack into $WORK
 }
 
 pin() {  # pin <repo> <branch> <dir> <commit>
-    cd "$WORK"; [ -d "$3" ] || git clone "$1" -b "$2" "$3"
+    cd "$WORK"
+    if [ ! -d "$3" ]; then
+        # git has no --retry
+        i=1; until git clone "$1" -b "$2" "$3"; do
+            [ "$i" -ge 5 ] && { echo "clone of $1 failed after 5 tries" >&2; return 1; }
+            echo "clone retry $i for $1"; i=$((i+1)); sleep 3; rm -rf "$3"
+        done
+    fi
     cd "$3"; git reset --hard "$4"; test "$(git rev-parse HEAD)" = "$4"
 }
 
@@ -127,13 +141,14 @@ step_fetch() {
 
 step_toolchain() {
     cd /usr
-    curl -fL -O "https://github.com/Kitware/CMake/releases/download/v$CMAKE_VERSION/cmake-$CMAKE_VERSION-linux-x86_64.tar.gz"
+    curl -fL --http1.1 --retry 8 --retry-all-errors --retry-delay 3 -C - -O "https://github.com/Kitware/CMake/releases/download/v$CMAKE_VERSION/cmake-$CMAKE_VERSION-linux-x86_64.tar.gz"
     echo "$CMAKE_SHA256  cmake-$CMAKE_VERSION-linux-x86_64.tar.gz" | sha256sum -c
     tar -xzf "cmake-$CMAKE_VERSION-linux-x86_64.tar.gz" && rm -f "cmake-$CMAKE_VERSION-linux-x86_64.tar.gz"
     ln -sf "/usr/cmake-$CMAKE_VERSION-linux-x86_64/bin/"* /usr/local/bin/
     android || return 0
     cd /opt
-    curl -fL -O "https://dl.google.com/android/repository/android-ndk-$NDK_REVISION-linux.zip"
+    # NDK is 633MB; --http1.1 avoids HTTP/2 resets, --retry-all-errors + -C - ride out drops.
+    curl -fL --http1.1 --retry 8 --retry-all-errors --retry-delay 3 -C - -O "https://dl.google.com/android/repository/android-ndk-$NDK_REVISION-linux.zip"
     echo "$NDK_SHA1  android-ndk-$NDK_REVISION-linux.zip" | sha1sum -c
     unzip -q "android-ndk-$NDK_REVISION-linux.zip" && rm -f "android-ndk-$NDK_REVISION-linux.zip"
 }
@@ -163,7 +178,7 @@ dep_boost() {
     else
         ./b2 "${B2[@]}" install -j"$NPROC"
     fi
-    ar rcs "$PREFIX/lib/libboost_system.a"   # header-only now; monero still asks for it
+    ar rcsD "$PREFIX/lib/libboost_system.a"  # header-only now; monero still asks for it
 }
 
 dep_zlib() {

@@ -47,6 +47,9 @@ Builds run in a container, so the only host requirements are docker (or
 `CONTAINER=podman`) and free disk. Parallelism defaults to `nproc`; override with
 `make NPROC=4`.
 
+The native build is reproducible: from the pinned base image and SHA-pinned sources, a
+build of a given commit produces byte-identical `.a`/`.so` files.
+
 If you cloned without `--recurse-submodules`:
 ```
 git -c http.proxy=socks5h://127.0.0.1:9050 submodule update --init --recursive

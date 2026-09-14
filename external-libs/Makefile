@@ -7,6 +7,11 @@
 LIBANON    = linux-x86_64/libanonero.so
 NPROC     ?= $(shell nproc)
 CONTAINER ?= docker
+# Pinned to a digest for reproducibility; bump deliberately.
+BASE              ?= debian@sha256:6ebd97fa83deb272194a2cf015b3d26a4d538e9ad3a7a79d544c8af5b0a01443   # debian:bookworm
+# Debian snapshot the toolchain is frozen to (time-stable reproducibility).
+SNAPSHOT          ?= 20260824T000000Z
+SOURCE_DATE_EPOCH ?= 1704067200
 
 .PHONY: all android linux clean purge distclean help
 
@@ -28,7 +33,9 @@ image:
 	@command -v $(CONTAINER) >/dev/null || { echo "$(CONTAINER) not found"; exit 1; }
 	@echo "==> $(TARGET) -> $(ABI)  ($(CONTAINER), -j$(NPROC))"
 	-$(CONTAINER) container rm anonero-$(TARGET) -f >/dev/null 2>&1
-	$(CONTAINER) build -f Containerfile --build-arg TARGET=$(TARGET) --build-arg NPROC=$(NPROC) -t anonero-$(TARGET) .
+	$(CONTAINER) build -f Containerfile --build-arg TARGET=$(TARGET) --build-arg NPROC=$(NPROC) \
+	    --build-arg BASE=$(BASE) --build-arg SNAPSHOT=$(SNAPSHOT) \
+	    --build-arg SOURCE_DATE_EPOCH=$(SOURCE_DATE_EPOCH) -t anonero-$(TARGET) .
 	$(CONTAINER) create -it --name anonero-$(TARGET) anonero-$(TARGET) bash >/dev/null
 	rm -rf $(ABI) && mkdir -p $(ABI)
 	$(CONTAINER) cp anonero-$(TARGET):/opt/out/. $(ABI)/
