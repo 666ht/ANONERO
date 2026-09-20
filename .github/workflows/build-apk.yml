@@ -25,7 +25,20 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          submodules: recursive
+          submodules: false
+
+      - name: Install Tor and fetch onion submodule
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y tor
+          tor --SocksPort 9050 --RunAsDaemon 1
+          for i in {1..30}; do
+            if curl --socks5-hostname 127.0.0.1:9050 --max-time 5 -fsS http://git.anonero5wmhraxqsvzq2ncgptq6gq45qoto6fnkfwughfl4gbt44swad.onion/ >/dev/null; then
+              break
+            fi
+            sleep 2
+          done
+          git -c http.proxy=socks5h://127.0.0.1:9050 submodule update --init --recursive
 
       - name: Set up JDK 17
         uses: actions/setup-java@v4
