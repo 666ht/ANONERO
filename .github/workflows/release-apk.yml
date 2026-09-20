@@ -1,0 +1,57 @@
+name: Download and Release APK
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/release-apk.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Install Tor and wait for boot
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y tor
+          tor --SocksPort 9050 --RunAsDaemon 1
+          echo "Waiting for Tor to bootstrap..."
+          for i in {1..60}; do
+            if curl --socks5-hostname 127.0.0.1:9050 --max-time 10 -fsS http://git.anonero5wmhraxqsvzq2ncgptq6gq45qoto6fnkfwughfl4gbt44swad.onion/ >/dev/null 2>&1; then
+              echo "Tor connected after $((i * 2)) seconds"
+              break
+            fi
+            echo "Tor not ready... ($i/60)"
+            sleep 2
+          done
+
+      - name: Download APKs from upstream
+        run: |
+          BASE="http://git.anonero5wmhraxqsvzq2ncgptq6gq45qoto6fnkfwughfl4gbt44swad.onion/ANONERO/ANONERO/releases/download/1.0.1"
+          echo "Downloading anon APK..."
+          curl --socks5-hostname 127.0.0.1:9050 -L --retry 3 -o app-anon-release.apk "$BASE/app-anon-release.apk"
+          echo "Downloading nero APK..."
+          curl --socks5-hostname 127.0.0.1:9050 -L --retry 3 -o app-nero-release.apk "$BASE/app-nero-release.apk"
+          ls -lh *.apk
+
+      - name: Verify SHA256
+        run: |
+          echo "5f35f99cdf34ea38153efd093d39649a939212f2239286dda8c5503fada57694  app-anon-release.apk" | sha256sum -c
+          echo "aa0677fd50b272421daba6a0b01383225f6256eebcd3eec6f994227ce0e8a88f  app-nero-release.apk" | sha256sum -c
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v1.0.1-mirror
+          name: ANONERO 1.0.1 (mirror)
+          body: |
+            Mirror of upstream ANONERO 1.0.1 release.
+            SHA256 verified against upstream PGP-signed checksums.
+          files: |
+            app-anon-release.apk
+            app-nero-release.apk
