@@ -21,6 +21,7 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-24.04
+    timeout-minutes: 120
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -32,12 +33,16 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y tor
           tor --SocksPort 9050 --RunAsDaemon 1
-          for i in {1..30}; do
-            if curl --socks5-hostname 127.0.0.1:9050 --max-time 5 -fsS http://git.anonero5wmhraxqsvzq2ncgptq6gq45qoto6fnkfwughfl4gbt44swad.onion/ >/dev/null; then
+          echo "Waiting for Tor to bootstrap..."
+          for i in {1..60}; do
+            if curl --socks5-hostname 127.0.0.1:9050 --max-time 10 -fsS http://git.anonero5wmhraxqsvzq2ncgptq6gq45qoto6fnkfwughfl4gbt44swad.onion/ >/dev/null 2>&1; then
+              echo "Tor connected after $((i * 2)) seconds"
               break
             fi
+            echo "Tor not ready... ($i/60)"
             sleep 2
           done
+          echo "Fetching submodule via Tor..."
           git -c http.proxy=socks5h://127.0.0.1:9050 submodule update --init --recursive
 
       - name: Set up JDK 17
@@ -52,7 +57,7 @@ jobs:
           export ANDROID_HOME=/usr/local/lib/android/sdk
           export PATH="$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$PATH"
           yes | sdkmanager --licenses >/dev/null || true
-          sdkmanager "platform-tools" "platforms;android-35" "build-tools;35.0.0" "ndk;29.0.13599879"
+          sdkmanager "platform-tools" "platforms;android-35" "build-tools;36.0.0" "ndk;29.0.13599879"
 
       - name: Build native libraries
         run: make -C external-libs android NPROC=2
