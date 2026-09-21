@@ -146,7 +146,7 @@ class NodeSettingsViewModel(
     fun validate(rpcUrl: String, rpcUsername: String, rpcPassPhrase: String): Node? {
         uriValidationError.postValue(null)
         if( rpcUrl.isBlank()) {
-            uriValidationError.postValue("URL cannot be empty")
+            uriValidationError.postValue("网址不能为空")
             return null
         }
         try {
@@ -162,7 +162,7 @@ class NodeSettingsViewModel(
             }
             val validatedUrl = urlForParsing.toUri()
             if (validatedUrl.host == null) {
-                uriValidationError.postValue("Invalid Url")
+                uriValidationError.postValue("网址无效")
                 return null
             }
             val nodeJson = JSONObject()
@@ -351,7 +351,7 @@ fun NodeSettings(onBackPress: () -> Unit = {}) {
                             onClick = {
                                 showNodeDetails = true
                             }
-                        ) { Text("Add Node") }
+                        ) { Text("添加节点") }
                         IconButton(
                             colors = IconButtonDefaults.iconButtonColors(
                                 contentColor = Color.White
@@ -360,7 +360,7 @@ fun NodeSettings(onBackPress: () -> Unit = {}) {
                                 showMenu = !showMenu
                             }
                         ) {
-                            Icon(Icons.Default.MoreVert, contentDescription = "More")
+                            Icon(Icons.Default.MoreVert, contentDescription = "更多")
                             DropdownMenu(
                                 expanded = showMenu,
                                 containerColor = MaterialTheme.colorScheme.background,
@@ -375,14 +375,14 @@ fun NodeSettings(onBackPress: () -> Unit = {}) {
                                 onDismissRequest = { showMenu = false }
                             ) {
                                 DropdownMenuItem(
-                                    text = { Text("Resync BlockChain") },
+                                    text = { Text("重新同步区块链") },
                                     onClick = {
                                         showMenu = false
                                         val result = walletState.resyncBlockchain()
                                         if (result.isFailure) {
                                             scope.launch {
                                                 toastState.show(
-                                                    "Error : ${result.exceptionOrNull()?.message}",
+                                                    "错误：${result.exceptionOrNull()?.message}",
                                                     type = ToastType.Warning,
                                                     duration = 6.seconds
                                                 )
@@ -390,7 +390,7 @@ fun NodeSettings(onBackPress: () -> Unit = {}) {
                                         } else {
                                             scope.launch {
                                                 toastState.show(
-                                                    "Resync initiated… this may take a while.",
+                                                    "已开始重新同步，这可能需要一些时间。",
                                                     type = ToastType.Success,
                                                 )
                                             }
@@ -402,7 +402,7 @@ fun NodeSettings(onBackPress: () -> Unit = {}) {
 
                     },
                     title = {
-                        Text("Nodes")
+                        Text("节点")
                     },
                 )
                 WalletProgressIndicator()
@@ -547,7 +547,7 @@ fun NodeListItem(
                     onDismissRequest = { menu = false }
                 ) {
                     DropdownMenuItem(
-                        text = { Text(if (active) "Disconnect" else "Connect") },
+                        text = { Text(if (active) "断开连接" else "连接") },
                         onClick = {
                             if (active) onDisconnect(node) else onConnect(node)
                             menu = false
@@ -556,7 +556,7 @@ fun NodeListItem(
                     if (!active) {
                         HorizontalDivider()
                         DropdownMenuItem(
-                            text = { Text("Remove") },
+                            text = { Text("删除") },
                             onClick = {
                                 onRemove(node)
                                 menu = false
@@ -599,7 +599,7 @@ fun NodeForm(
             ListItem(
                 headlineContent = {
                     Text(
-                        text = "NODE",
+                        text = "节点",
                         color = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.padding(start = 4.dp)
                     )
@@ -629,7 +629,7 @@ fun NodeForm(
             ListItem(
                 headlineContent = {
                     Text(
-                        text = "Username",
+                        text = "用户名",
                         color = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.padding(start = 4.dp)
                     )
@@ -640,7 +640,7 @@ fun NodeForm(
                         shape = MaterialTheme.shapes.medium,
                         placeholder = {
                             Text(
-                                text = "(Optional)",
+                                text = "（可选）",
                                 color = labelColor
                             )
                         },
@@ -658,7 +658,7 @@ fun NodeForm(
             ListItem(
                 headlineContent = {
                     Text(
-                        text = "PASSWORD",
+                        text = "密码",
                         color = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.padding(start = 4.dp)
                     )
@@ -675,7 +675,7 @@ fun NodeForm(
                         ),
                         placeholder = {
                             Text(
-                                text = "(Optional)",
+                                text = "（可选）",
                                 color = labelColor
                             )
                         },
@@ -690,7 +690,7 @@ fun NodeForm(
             ) {
                 if (connectionError != null)
                     Text(
-                        "Error connecting to server :$connectionError",
+                        "连接服务器失败：$connectionError",
                         modifier = Modifier.padding(
                             vertical = 12.dp,
                             horizontal = 8.dp
