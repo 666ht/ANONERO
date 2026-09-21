@@ -21,29 +21,10 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-24.04
-    timeout-minutes: 120
+    timeout-minutes: 60
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        with:
-          submodules: false
-
-      - name: Install Tor and fetch onion submodule
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y tor
-          tor --SocksPort 9050 --RunAsDaemon 1
-          echo "Waiting for Tor to bootstrap..."
-          for i in {1..60}; do
-            if curl --socks5-hostname 127.0.0.1:9050 --max-time 10 -fsS http://git.anonero5wmhraxqsvzq2ncgptq6gq45qoto6fnkfwughfl4gbt44swad.onion/ >/dev/null 2>&1; then
-              echo "Tor connected after $((i * 2)) seconds"
-              break
-            fi
-            echo "Tor not ready... ($i/60)"
-            sleep 2
-          done
-          echo "Fetching submodule via Tor..."
-          git -c http.proxy=socks5h://127.0.0.1:9050 submodule update --init --recursive
 
       - name: Set up JDK 17
         uses: actions/setup-java@v4
@@ -59,8 +40,14 @@ jobs:
           yes | sdkmanager --licenses >/dev/null || true
           sdkmanager "platform-tools" "platforms;android-35" "build-tools;36.0.0" "ndk;29.0.13599879"
 
-      - name: Build native libraries
-        run: make -C external-libs android NPROC=2
+      - name: Fetch prebuilt native libs (libanonero.so)
+        run: |
+          mkdir -p app/src/main/jniLibs/arm64-v8a app/src/main/jniLibs/armeabi-v7a
+          curl -fsSL -o app/src/main/jniLibs/arm64-v8a/libanonero.so "https://aka.doubaocdn.com/s/hErzKMvUDt"
+          curl -fsSL -o app/src/main/jniLibs/armeabi-v7a/libanonero.so "https://aka.doubaocdn.com/s/zBKq2aIFqm"
+          echo "e927a11661baf4894aeb046b32df14000319922adf9dc196cd6187065482c076  app/src/main/jniLibs/arm64-v8a/libanonero.so" | sha256sum -c
+          echo "3bb1480ff630daf5007c2a4b684577c763767a53609a06da80dedbc7f17fc47d  app/src/main/jniLibs/armeabi-v7a/libanonero.so" | sha256sum -c
+          ls -lh app/src/main/jniLibs/*/
 
       - name: Make Gradle executable
         run: chmod +x ./gradlew

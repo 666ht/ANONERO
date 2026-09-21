@@ -62,12 +62,6 @@ android {
         buildConfig = true
     }
 
-    externalNativeBuild {
-        cmake {
-            path = file("CMakeLists.txt")
-        }
-    }
-
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
@@ -105,6 +99,7 @@ dependencies {
     implementation(libs.androidx.core.splashscreen)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.lifecycle.compose)
+    implementation(libs.androidx.runtime.ktx)
     implementation(libs.androidx.runtime.compose)
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.compose.runtime)
@@ -127,7 +122,8 @@ dependencies {
     implementation(libs.androidx.camera.core)
     implementation(libs.androidx.camera.camera2)
     implementation(libs.androidx.camera.lifecycle)
-    implementation(libs.androidx.camera.camera.view)
+    implementation(libs.androidx.camera.camera2)
+    implementation(libs.androidx.camera.view)
 
     implementation(platform(libs.koin.bom))
     implementation(libs.koin.core)
@@ -160,8 +156,5 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.ui.test.junit4)
-
-    debugImplementation(libs.androidx.ui.tooling)
-    debugImplementation(libs.androidx.ui.test.manifest)
-
+    androidTestImplementation(libs.androidx.ui.test.manifest)
 }
