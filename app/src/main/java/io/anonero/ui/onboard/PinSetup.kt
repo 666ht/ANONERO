@@ -231,7 +231,7 @@ fun PinSetup(
                                     imageVector =
                                         if (key == -2) AnonIcons.Backspace else Icons.TwoTone.Check,
                                     tint = Color.White,
-                                    contentDescription = "clear pin",
+                                    contentDescription = "清除 PIN",
                                     modifier = Modifier
                                         .size(28.dp)
                                 )
