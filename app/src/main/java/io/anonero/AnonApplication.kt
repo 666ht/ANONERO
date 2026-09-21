@@ -23,6 +23,7 @@ import timber.log.Timber.DebugTree
 const val FOREGROUND_CHANNEL = "anon_foreground"
 const val TX_CHANNEL = "anon_transactions"
 private const val TAG = "AnonApplication"
+private const val CRASH_DIALOG_SHOWN = "crash_dialog_shown"
 
 class AnonApplication : Application(), Thread.UncaughtExceptionHandler {
 
@@ -99,6 +100,10 @@ class AnonApplication : Application(), Thread.UncaughtExceptionHandler {
     }
 
     override fun uncaughtException(t: Thread, e: Throwable) {
+        getSharedPreferences(WALLET_PREFERENCES, MODE_PRIVATE)
+            .edit()
+            .putBoolean(CRASH_DIALOG_SHOWN, false)
+            .apply()
         val crashMessage = buildString {
             append("=== UNCAUGHT EXCEPTION ===\n")
             append("Thread: ${t.name}\n")
