@@ -53,13 +53,18 @@ jobs:
         run: chmod +x ./gradlew
 
       - name: Build ANON release APK
-        run: |
-          ./gradlew :app:assembleAnonRelease --stacktrace > build.log 2>&1 || true
+        run: ./gradlew :app:assembleAnonRelease --stacktrace > build.log 2>&1
 
       - name: Publish build log to repo (on failure)
         if: failure()
         run: |
-          tail -n 200 build.log > ci-latest-build.log || true
+          {
+            echo "=== gradle rc was nonzero ==="
+            echo "=== APK outputs found: ==="
+            find app/build/outputs -name "*.apk" -o -name "*.aab" 2>/dev/null || true
+            echo "=== gradle log tail ==="
+            tail -n 200 build.log
+          } > ci-latest-build.log
           B64=$(base64 -w0 ci-latest-build.log)
           HTTP=$(curl -s -o /tmp/resp.json -w "%{http_code}" -X PUT \
             -H "Authorization: token $GITHUB_TOKEN" \
@@ -68,12 +73,6 @@ jobs:
             -d "{\"message\":\"ci: latest build error log\",\"content\":\"$B64\"}")
           echo "upload http=$HTTP"
           cat /tmp/resp.json
-
-      - name: Re-run gradle to actually fail
-        if: failure()
-        run: |
-          echo "=== build failed; ci-latest-build.log committed ==="
-          exit 1
 
       - name: Upload APK
         if: success()
