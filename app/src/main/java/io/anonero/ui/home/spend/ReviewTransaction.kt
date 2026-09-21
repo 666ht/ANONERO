@@ -136,7 +136,7 @@ class ReviewTransactionViewModel : ViewModel() {
                     )
                 )
             }else{
-                Timber.tag(TAG).e("Pending transaction has no txId")
+                Timber.tag(TAG).e("待处理交易没有交易 ID")
             }
         }
     }
@@ -156,13 +156,13 @@ class ReviewTransactionViewModel : ViewModel() {
             try {
                 val wallet = WalletManager.instance?.wallet
                 if (wallet == null) {
-                    throw Exception("Wallet is available")
+                    throw Exception("钱包可用")
                 }
                 if (!AnonConfig.viewOnly) {
                     pendingTransaction?.let {
                         val result = wallet.send(it)
                         if (!result) {
-                            throw Exception("Failed to send transaction")
+                            throw Exception("发送交易失败")
                         } else {
                             broadcastingTx.postValue(BroadcastState.SUCCESS)
                         }
@@ -171,18 +171,18 @@ class ReviewTransactionViewModel : ViewModel() {
                     if (signedTxFile.exists()) {
                         val error =
                             wallet.submitTransaction(signedTxFile.absolutePath)
-                        val success = error == "Transaction submitted!";
+                        val success = error == "交易已提交！";
                         if (success) {
                             broadcastingTx.postValue(BroadcastState.SUCCESS)
                             signedTxFile.delete()
-                            Timber.tag(TAG).d("Transaction broadcasted...")
+                            Timber.tag(TAG).d("交易已广播……")
                         } else {
                             broadcastingTx.postValue(BroadcastState.ERROR)
                             Timber.tag(TAG).e("broadcasting failed  ${error}")
                             throw Exception(error)
                         }
                     } else {
-                        throw Exception("Signed transaction file not found")
+                        throw Exception("未找到已签名交易文件")
                     }
                 wallet.startRefresh()
                 wallet.refreshHistory()
@@ -347,7 +347,7 @@ fun ReviewTransactionScreen(
                         Text(
                             stringResource(
                                 R.string.unable_to_broadcast_transaction,
-                                viewModel.broadCastError?.message ?: "Unknown Error"
+                                viewModel.broadCastError?.message ?: "未知错误"
                             ),
                             style = MaterialTheme.typography.bodyMedium.copy(
                                 color = DangerColor
@@ -368,11 +368,11 @@ fun ReviewTransactionScreen(
                     ) {
                         Icon(
                             Icons.Default.Check,
-                            contentDescription = "Check",
+                            contentDescription = "检查",
                             tint = SuccessColor,
                             modifier = Modifier.size(44.dp)
                         )
-                        Text("Success")
+                        Text("成功")
                     }
                 }
                 AnimatedVisibility(
@@ -511,7 +511,7 @@ fun ReviewTransactionScreen(
                                             signing = false
                                             qrScannerParam = SpendQRExchangeParam(
                                                 exportType = ExportType.SIGNED_TX,
-                                                title = "SIGNED TX",
+                                                title = "已签名交易",
                                                 ctaText = context.getString(R.string.finish)    ,
                                             )
                                         } else {
@@ -527,8 +527,8 @@ fun ReviewTransactionScreen(
                                     if (AnonConfig.viewOnly && !readyToBroadcast) {
                                         qrScannerParam = SpendQRExchangeParam(
                                             exportType = ExportType.UN_SIGNED_TX,
-                                            title = "UNSIGNED TX",
-                                            ctaText = "SCAN SIGNED TX",
+                                            title = "未签名交易",
+                                            ctaText = "扫描已签名交易",
                                         )
                                     } else {
                                         viewModel.broadCast()?.invokeOnCompletion { error ->
