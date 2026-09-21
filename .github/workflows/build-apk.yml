@@ -58,22 +58,29 @@ jobs:
       - name: Build ANON release APK
         run: ./gradlew --no-daemon :app:assembleAnonRelease --stacktrace
 
+      - name: Verify APK exists
+        if: success()
+        run: |
+          set -euxo pipefail
+          find app/build/outputs -type f -name '*.apk' -print
+          test -n "$(find app/build/outputs -type f -name '*.apk' -print -quit)"
+
       - name: Upload APK
         if: success()
         uses: actions/upload-artifact@v4
         with:
-          name: ANONERO-ANON-release
-          path: app/build/outputs/apk/**/*.apk
+          name: ANONERO-ANON-release-${{ github.run_number }}
+          path: app/build/outputs/**/*.apk
           if-no-files-found: error
-          retention-days: 7
+          retention-days: 30
 
       - name: Upload build outputs on failure
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: ANONERO-build-debug
+          name: ANONERO-build-debug-${{ github.run_number }}
           path: |
             build.log
             app/build/outputs/**
           if-no-files-found: ignore
-          retention-days: 3
+          retention-days: 7
