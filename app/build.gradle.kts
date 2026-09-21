@@ -67,7 +67,6 @@ android {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
             excludes += "META-INF/versions/9/OSGI-INF/MANIFEST.MF"
         }
-
     }
 
     flavorDimensions += "anon_mode"
@@ -87,19 +86,17 @@ android {
             buildConfigField("String", "FLAVOR", "\"nero\"")
             buildConfigField("boolean", "VIEW_ONLY", "true")
         }
-
     }
+
     buildToolsVersion = "36.0.0"
     ndkVersion = "29.0.13599879"
 }
 
 dependencies {
-
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.core.splashscreen)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.lifecycle.compose)
-    implementation(libs.androidx.runtime.ktx)
     implementation(libs.androidx.runtime.compose)
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.compose.runtime)
@@ -110,7 +107,6 @@ dependencies {
     implementation(libs.androidx.navigation.ui.ktx)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.datastore.preferences)
-
 
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.ui)
@@ -123,7 +119,7 @@ dependencies {
     implementation(libs.androidx.camera.camera2)
     implementation(libs.androidx.camera.lifecycle)
     implementation(libs.androidx.camera.camera2)
-    implementation(libs.androidx.camera.view)
+    implementation(libs.androidx.camera.camera.view)
 
     implementation(platform(libs.koin.bom))
     implementation(libs.koin.core)
