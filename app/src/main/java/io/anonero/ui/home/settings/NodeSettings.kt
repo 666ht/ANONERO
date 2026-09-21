@@ -90,6 +90,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.delay
 import org.json.JSONObject
 import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
@@ -212,14 +213,29 @@ class NodeSettingsViewModel(
                 )
 
                 editor.apply()
+
+                // Keep node connection order consistent with wallet startup:
+                // Tor SOCKS -> wallet proxy -> daemon -> wallet refresh.
                 torService.start()
+                var socks = torService.socks
+                var waited = 0
+                while (socks == null && waited < 30000) {
+                    delay(200)
+                    socks = torService.socks
+                    waited += 200
+                }
+                if (socks == null) {
+                    throw IllegalStateException("Tor SOCKS proxy did not start")
+                }
+
+                WalletManager.instance?.setProxy(socks.value)
+                WalletManager.instance?.wallet?.setProxy(socks.value)
+
                 walletHandler.updateDaemon(node)
-                walletState.setLoading(false)
                 walletState.update()
+
                 WalletManager.instance?.wallet?.init(0)
-                WalletManager.instance?.wallet?.setTrustedDaemon(
-                    true
-                )
+                WalletManager.instance?.wallet?.setTrustedDaemon(true)
                 WalletManager.instance?.wallet?.startRefresh()
             } catch (e: Exception) {
                 Timber.tag(TAG).e(e)
