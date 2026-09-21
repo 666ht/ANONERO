@@ -249,7 +249,7 @@ fun SetupNodeComposable(
                                 }
                                 val validatedUrl = urlForParsing.toUri()
                                 if (validatedUrl.host == null) {
-                                    error = "Invalid Url"
+                                    error = "无效的网址"
                                 }
                                 val nodeJson = JSONObject()
                                     .apply {
