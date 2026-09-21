@@ -201,7 +201,7 @@ fun OnboardingWelcome(
                     Row {
                         Icon(
                             Icons.Default.Settings,
-                            contentDescription = "Proxy",
+                            contentDescription = "代理",
                             tint = MaterialTheme.colorScheme.primary
                         )
                         Spacer(Modifier.width(4.dp))
