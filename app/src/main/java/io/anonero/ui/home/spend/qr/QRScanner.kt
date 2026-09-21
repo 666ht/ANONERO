@@ -84,7 +84,7 @@ class QRScannerVM : ViewModel() {
                 }
 
                 else -> {
-                    Timber.tag(TAG).d("Unknown UR type")
+                    Timber.tag(TAG).d("未知的 UR 类型")
                 }
             }
             destinationFile?.writeBytes(ur.toBytes())
@@ -92,7 +92,7 @@ class QRScannerVM : ViewModel() {
                 val wallet = WalletManager.instance?.wallet;
                 if (wallet == null) {
                     Timber.tag(TAG).e("wallet is null")
-                    return Result.failure(Exception("Wallet is null"))
+                    return Result.failure(Exception("钱包为空"))
                 }
                 val filePath = destinationFile.path;
                 when (AnonUrRegistryTypes.fromUrTag(ur)) {
@@ -103,10 +103,10 @@ class QRScannerVM : ViewModel() {
                             val status = wallet.importOutputs(filePath);
                             _loaderState.postValue(false);
                             if (status?.lowercase() == "imported") {
-                                Timber.tag(TAG).i("Imported outputs")
+                                Timber.tag(TAG).i("已导入输出")
                                 return Result.success(ImportEvents.IMPORT_OUTPUTS)
                             } else {
-                                return Result.failure(Exception("Failed to import outputs"))
+                                return Result.failure(Exception("导入输出失败"))
                             }
                         } catch (error: Exception) {
                             return Result.failure(error)
@@ -125,7 +125,7 @@ class QRScannerVM : ViewModel() {
                             if (status) {
                                 return Result.success(ImportEvents.IMPORT_KEY_IMAGES)
                             } else {
-                                return Result.failure(Exception("Failed to import key images"))
+                                return Result.failure(Exception("导入密钥图像失败"))
                             }
                         } finally {
                             _loaderState.postValue(false);
@@ -142,8 +142,8 @@ class QRScannerVM : ViewModel() {
                             if (unsignedTransaction.status == UnsignedTransaction.Status.Status_Ok) {
                                 return Result.success(ImportEvents.IMPORT_UNSIGNED_TX)
                             } else {
-                                Timber.tag(TAG).e("Failed to import unsigned transaction")
-                                return Result.failure(Exception("Failed to import unsigned transaction"))
+                                Timber.tag(TAG).e("导入未签名交易失败")
+                                return Result.failure(Exception("导入未签名交易失败"))
                             }
                         } finally {
                             _loaderState.postValue(false);
@@ -157,13 +157,13 @@ class QRScannerVM : ViewModel() {
                     }
 
                     null -> {
-                        Timber.tag(TAG).e("Unknown UR type")
-                        return Result.failure(Exception("Unknown UR type"))
+                        Timber.tag(TAG).e("未知的 UR 类型")
+                        return Result.failure(Exception("未知的 UR 类型"))
                     }
                 }
             }
         }
-        return Result.failure(Exception("Unknown UR type"))
+        return Result.failure(Exception("未知的 UR 类型"))
     }
 
 
