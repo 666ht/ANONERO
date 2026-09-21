@@ -89,7 +89,7 @@ fun RestorePreview(
 ) {
 
     var passPhrase by remember { mutableStateOf<String>("") }
-    var loadingMessage by remember { mutableStateOf<String>("Loading...") }
+    var loadingMessage by remember { mutableStateOf<String>("正在加载...") }
     var errorMessage by remember { mutableStateOf<String>("") }
     var backupPayload by remember { mutableStateOf<BackupPayload?>(null) }
     var passphraseDialog by remember { mutableStateOf(true) }
@@ -104,17 +104,17 @@ fun RestorePreview(
             try {
                 loading = true
                 passphraseDialog = false
-                loadingMessage = "Extracting backup..."
+                loadingMessage = "正在提取备份..."
                 backupPayload = BackupHelper.extractBackUp(backUpPath, passPhrase)
                 loading = false
             } catch (e: NetworkMismatchException) {
-                errorMessage = "Invalid network"
+                errorMessage = "网络无效"
                 loading = false
                 scope.launch {
                     errorShake.shake(view)
                 }
             } catch (e: Exception) {
-                errorMessage = "Unable to extract backup."
+                errorMessage = "无法提取备份。"
                 loading = false
                 scope.launch {
                     errorShake.shake(view)
@@ -266,7 +266,7 @@ fun RestorePreview(
                             horizontal = 16.dp,
                         ),
                 ) {
-                    Text("View Logs")
+                    Text("查看日志")
                 }
             }
         }
@@ -339,7 +339,7 @@ fun RestorePreview(
                                     )
                                 )
                                 ListWidget(
-                                    title = "Seed",
+                                    title = "助记词",
                                     subtitle = "${wallet.seed}",
                                     modifier = Modifier.padding(
                                         bottom = 8.dp
@@ -353,7 +353,7 @@ fun RestorePreview(
                                         )
                                     )
                                     ListWidget(
-                                        title = "Primary Address",
+                                        title = "主地址",
                                         subtitle = "${wallet.primaryAddress}",
                                         modifier = Modifier.padding(
                                             bottom = 8.dp
@@ -376,7 +376,7 @@ fun RestorePreview(
                                     )
                                 )
                                 ListWidget(
-                                    title = "Restore Height",
+                                    title = "恢复高度",
                                     subtitle = "${wallet.restoreHeight}",
                                     modifier = Modifier.weight(1f)
                                 )
@@ -461,7 +461,7 @@ fun RestorePreview(
                                 scope.launch(Dispatchers.IO) {
                                     try {
                                         loading = true
-                                        loadingMessage = "Restoring wallet..."
+                                        loadingMessage = "正在恢复钱包..."
                                         val success =
                                             BackupHelper.restoreBackUp(backupPayload!!, passPhrase)
                                         if (success) {
@@ -482,7 +482,7 @@ fun RestorePreview(
 
                             },
                         ){
-                            Text("Restore Wallet")
+                            Text("恢复钱包")
                         }
                     }
                 }
