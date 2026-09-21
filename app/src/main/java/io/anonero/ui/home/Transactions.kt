@@ -188,7 +188,7 @@ fun TransactionScreen(
                 )
             },
             text = {
-                Text("Do you want to broadcast transaction?")
+                Text("是否广播此交易？")
             },
             onDismissRequest = {
                 scanFailure = null
@@ -208,7 +208,7 @@ fun TransactionScreen(
                     )
                 ) {
                     Text(
-                        "Cancel",
+                        "取消",
                         style = MaterialTheme.typography.bodyMedium.copy(
                             color = MaterialTheme.colorScheme.onSecondary.copy(
                                 alpha = 0.8f
@@ -292,7 +292,7 @@ fun TransactionScreen(
                     )
                 ) {
                     Text(
-                        "Cancel",
+                        "取消",
                         style = MaterialTheme.typography.bodyMedium.copy(
                             color = MaterialTheme.colorScheme.onSecondary.copy(
                                 alpha = 0.8f
@@ -359,7 +359,7 @@ fun TransactionScreen(
                         qrScannerParam = SpendQRExchangeParam(
                             exportType = ExportType.IMAGE,
                             title = "KEY IMAGES",
-                            ctaText = "SCAN UNSIGNED TX",
+                            ctaText = "扫描未签名交易",
                         )
                     }
 
@@ -436,7 +436,7 @@ fun TransactionScreen(
                     )
                 ) {
                     Text(
-                        "Ok",
+                        "确定",
                         style = MaterialTheme.typography.bodyMedium.copy(
                             color = MaterialTheme.colorScheme.onSecondary.copy(
                                 alpha = 0.8f
@@ -509,7 +509,7 @@ fun TransactionScreen(
                             showScanner = true
                         }
                     ) {
-                        Icon(AnonIcons.Scan, contentDescription = "Scan")
+                        Icon(AnonIcons.Scan, contentDescription = "扫描")
                     }
                     IconButton(
                         onClick = {
