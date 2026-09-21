@@ -70,8 +70,17 @@ class AnonApplication : Application(), Thread.UncaughtExceptionHandler {
     }
 
     private fun initConfigs() {
-        //initialize wallet manager
-        WalletManager.instance?.init()
+        //initialize wallet manager with crash protection
+        try {
+            WalletManager.instance?.init()
+            if (!WalletManager.nativeLibLoaded) {
+                Timber.tag(TAG).w("Native library libanonero.so failed to load - wallet features will be unavailable")
+            }
+        } catch (e: Exception) {
+            Timber.tag(TAG).e(e, "Failed to initialize WalletManager")
+        } catch (e: UnsatisfiedLinkError) {
+            Timber.tag(TAG).e(e, "Native library load error during WalletManager init")
+        }
         initNotificationChannels()
     }
 
