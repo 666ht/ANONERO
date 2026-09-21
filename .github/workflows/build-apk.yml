@@ -58,12 +58,16 @@ jobs:
 
       - name: Build ANON release APK
         run: |
-          set -o pipefail
-          ./gradlew :app:assembleAnonRelease --stacktrace 2>&1 | tee build.log
-          rc=${PIPESTATUS[0]}
+          ./gradlew :app:assembleAnonRelease --stacktrace > build.log 2>&1
+          rc=$?
+          {
+            echo "## Gradle build rc=$rc"
+            echo '```'
+            tail -n 120 build.log
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
           if [ "$rc" -ne 0 ]; then
-            echo "::error::Gradle build failed (rc=$rc). Surfacing error lines:"
-            grep -nE "^e: |error:|FAILURE:|What went wrong|> Task .* FAILED|Execution failed|Caused by|Could not|Unresolved reference|No matching" build.log | tail -n 40 | sed 's/^/::error::/'
+            echo "::error::Gradle build failed rc=$rc; see Step summary below"
             exit "$rc"
           fi
 
