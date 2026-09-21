@@ -61,7 +61,7 @@ import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
 
-private const val TAG = "Logs"
+private const val TAG = "日志"
 
 class LogViewModel(private val logRepository: LogRepository) : ViewModel() {
     val logLines: StateFlow<List<AnonLog>> = logRepository
@@ -147,7 +147,7 @@ fun LogViewer(
         topBar = {
             TopAppBar(
                 title = {
-                    Text("Logs")
+                    Text("日志")
                 },
                 navigationIcon = {
                     IconButton(
@@ -185,21 +185,21 @@ fun LogViewer(
                                         context.startActivity(
                                             Intent.createChooser(
                                                 shareIntent,
-                                                "Share Encrypted Backup File"
+                                                "分享加密备份文件"
                                             )
                                         )
                                     }
                                 }
                         }
                     ) {
-                        Icon(AnonIcons.Share_log, contentDescription = "Share Logs")
+                        Icon(AnonIcons.Share_log, contentDescription = "分享日志")
                     }
                     IconButton(
                         onClick = {
                             viewModel.clearLogs()
                         }
                     ) {
-                        Icon(AnonIcons.Clear_all, contentDescription = "Clear Logs")
+                        Icon(AnonIcons.Clear_all, contentDescription = "清除日志")
                     }
                 },
                 scrollBehavior = scrollBehavior
@@ -288,7 +288,7 @@ private fun LogViewerPrev() {
             topBar = {
                 TopAppBar(
                     title = {
-                        Text("Logs")
+                        Text("日志")
                     },
                 )
             }
