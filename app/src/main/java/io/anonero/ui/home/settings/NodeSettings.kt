@@ -162,7 +162,7 @@ class NodeSettingsViewModel(
             }
             val validatedUrl = urlForParsing.toUri()
             if (validatedUrl.host == null) {
-                uriValidationError.postValue("Invalid Url")
+                uriValidationError.postValue("无效的网址")
                 return null
             }
             val nodeJson = JSONObject()
@@ -351,7 +351,7 @@ fun NodeSettings(onBackPress: () -> Unit = {}) {
                             onClick = {
                                 showNodeDetails = true
                             }
-                        ) { Text("Add Node") }
+                        ) { Text("添加节点") }
                         IconButton(
                             colors = IconButtonDefaults.iconButtonColors(
                                 contentColor = Color.White
@@ -547,7 +547,7 @@ fun NodeListItem(
                     onDismissRequest = { menu = false }
                 ) {
                     DropdownMenuItem(
-                        text = { Text(if (active) "Disconnect" else "Connect") },
+                        text = { Text(if (active) "断开连接" else "连接") },
                         onClick = {
                             if (active) onDisconnect(node) else onConnect(node)
                             menu = false
@@ -556,7 +556,7 @@ fun NodeListItem(
                     if (!active) {
                         HorizontalDivider()
                         DropdownMenuItem(
-                            text = { Text("Remove") },
+                            text = { Text("删除") },
                             onClick = {
                                 onRemove(node)
                                 menu = false
@@ -599,7 +599,7 @@ fun NodeForm(
             ListItem(
                 headlineContent = {
                     Text(
-                        text = "NODE",
+                        text = "节点",
                         color = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.padding(start = 4.dp)
                     )
@@ -658,7 +658,7 @@ fun NodeForm(
             ListItem(
                 headlineContent = {
                     Text(
-                        text = "PASSWORD",
+                        text = "密码",
                         color = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.padding(start = 4.dp)
                     )
@@ -690,7 +690,7 @@ fun NodeForm(
             ) {
                 if (connectionError != null)
                     Text(
-                        "Error connecting to server :$connectionError",
+                        "连接服务器失败：$connectionError",
                         modifier = Modifier.padding(
                             vertical = 12.dp,
                             horizontal = 8.dp
