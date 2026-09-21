@@ -2,6 +2,9 @@ package io.anonero.ui
 
 import AnonNeroTheme
 import android.Manifest
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
@@ -81,6 +84,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             var walletExist by remember { mutableStateOf(AnonConfig.isWalletFileExist()) }
             var useTor by remember { mutableStateOf(true) }
+            var previousCrash by remember { mutableStateOf<String?>(null) }
             val onboardViewModel = koinViewModel<OnboardViewModel>()
             val context = LocalContext.current
             val scope = rememberCoroutineScope()
@@ -89,8 +93,29 @@ class MainActivity : ComponentActivity() {
                 scope.launch(Dispatchers.IO) {
                     walletExist = AnonConfig.getDefaultWalletFile(context).exists()
                     useTor = anonPrefs.getBoolean(WALLET_USE_TOR, true)
+                    val logFile = AnonConfig.getLogFile(context)
+                    if (logFile.exists()) {
+                        val text = logFile.readText()
+                        val marker = "=== UNCAUGHT EXCEPTION ==="
+                        if (text.contains(marker)) previousCrash = text.substringAfterLast(marker).let { marker + it }
+                    }
                     isAppReady = true
                 }
+            }
+            if (previousCrash != null) {
+                AlertDialog(
+                    onDismissRequest = { previousCrash = null },
+                    title = { Text("检测到上次闪退") },
+                    text = { Text(previousCrash!!, maxLines = 18) },
+                    confirmButton = {
+                        TextButton(onClick = {
+                            val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+                            clipboard.setPrimaryClip(ClipData.newPlainText("崩溃日志", previousCrash!!))
+                            previousCrash = null
+                        }) { Text("复制日志") }
+                    },
+                    dismissButton = { TextButton(onClick = { previousCrash = null }) { Text("关闭") } }
+                )
             }
             TorSplash(enableTor = useTor) {
                 AnonNeroTheme {
