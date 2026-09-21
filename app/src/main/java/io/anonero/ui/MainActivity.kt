@@ -11,6 +11,7 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.os.Process
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
@@ -86,8 +87,9 @@ class MainActivity : ComponentActivity() {
             navigationBarStyle = SystemBarStyle.dark(scrimColor),
         )
         setContent {
-            var walletExist by remember { mutableStateOf(AnonConfig.isWalletFileExist()) }
+            var walletExist by remember { mutableStateOf(false) }
             var useTor by remember { mutableStateOf(true) }
+            var nativeLibOk by remember { mutableStateOf(true) }
             var previousCrash by remember { mutableStateOf<String?>(null) }
             val onboardViewModel = koinViewModel<OnboardViewModel>()
             val context = LocalContext.current
@@ -95,7 +97,16 @@ class MainActivity : ComponentActivity() {
 
             LaunchedEffect(key1 = true) {
                 scope.launch(Dispatchers.IO) {
-                    walletExist = AnonConfig.getDefaultWalletFile(context).exists()
+                    nativeLibOk = WalletManager.nativeLibLoaded
+                    if (!nativeLibOk) {
+                        Log.e(TAG, "Native library libanonero.so is NOT loaded - wallet features disabled")
+                    }
+                    try {
+                        walletExist = AnonConfig.getDefaultWalletFile(context).exists()
+                    } catch (e: Exception) {
+                        walletExist = false
+                        Timber.tag(TAG).e(e, "Failed to check wallet file existence")
+                    }
                     useTor = anonPrefs.getBoolean(WALLET_USE_TOR, true)
                     val logFile = AnonConfig.getLogFile(context)
                     if (logFile.exists() && !anonPrefs.getBoolean(CRASH_DIALOG_SHOWN, false)) {
@@ -122,6 +133,14 @@ class MainActivity : ComponentActivity() {
                         }) { Text("复制日志") }
                     },
                     dismissButton = { TextButton(onClick = { previousCrash = null }) { Text("关闭") } }
+                )
+            }
+            if (!nativeLibOk) {
+                AlertDialog(
+                    onDismissRequest = { },
+                    title = { Text("原生库加载失败") },
+                    text = { Text("libanonero.so 加载失败，钱包功能将不可用。请重新安装正确的 APK。\n\n你仍可查看设置、日志等界面。") },
+                    confirmButton = { TextButton(onClick = { nativeLibOk = true }) { Text("知道了") } }
                 )
             }
             TorSplash(enableTor = useTor) {
@@ -210,16 +229,26 @@ class MainActivity : ComponentActivity() {
 
     override fun onDestroy() {
         scope.launch(Dispatchers.IO) {
-            WalletManager.instance?.wallet?.let {
-                it.store()
-                it.close()
+            try {
+                WalletManager.instance?.wallet?.let {
+                    it.store()
+                    it.close()
+                }
+            } catch (e: UnsatisfiedLinkError) {
+                Timber.tag(TAG).e(e, "Native library error during wallet cleanup")
+            } catch (e: Exception) {
+                Timber.tag(TAG).e(e, "Failed to cleanup wallet")
             }
         }.invokeOnCompletion {
             if (it != null) {
                 Timber.tag(TAG).e(it)
             }
         }
-        torService.dispose()
+        try {
+            torService.dispose()
+        } catch (e: Exception) {
+            Timber.tag(TAG).e(e, "Failed to dispose tor service")
+        }
         scope.cancel()
         super.onDestroy()
         Process.killProcess(Process.myPid())
