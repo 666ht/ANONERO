@@ -11,6 +11,10 @@ import io.anonero.services.TorService
 import io.anonero.store.LogRepository
 import io.anonero.store.NodesRepository
 import io.anonero.ui.util.AnonLogTree
+import io.anonero.store.AnonLog
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runBlocking
+import java.util.Date
 import io.anonero.util.WALLET_PREFERENCES
 import org.koin.android.ext.android.get
 import org.koin.android.ext.koin.androidContext
@@ -99,7 +103,27 @@ class AnonApplication : Application(), Thread.UncaughtExceptionHandler {
     }
 
     override fun uncaughtException(t: Thread, e: Throwable) {
-        Timber.tag(TAG).e(e)
+        val crashMessage = buildString {
+            append("=== UNCAUGHT EXCEPTION ===\\n")
+            append("Thread: ${t.name}\\n")
+            append("Build: ${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})\\n")
+            append("Flavor: ${BuildConfig.FLAVOR}\\n")
+            append("SDK: ${android.os.Build.VERSION.SDK_INT}\\n")
+            append("Device: ${android.os.Build.MANUFACTURER} ${android.os.Build.MODEL}\\n\\n")
+            append(e.stackTraceToString())
+        }
+        try {
+            val file = AnonConfig.getLogFile(applicationContext)
+            file.parentFile?.mkdirs()
+            file.appendText("\\n${"-".repeat(100)}\\n$crashMessage\\n")
+        } catch (_: Exception) {}
+        try {
+            runBlocking(Dispatchers.IO) {
+                get<LogRepository>().addItem(
+                    AnonLog(Date().time, "CRASH", crashMessage, android.util.Log.ASSERT)
+                )
+            }
+        } catch (_: Exception) {}
         defaultHandler?.uncaughtException(t, e)
     }
 
