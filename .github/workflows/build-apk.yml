@@ -42,9 +42,13 @@ jobs:
 
       - name: Fetch prebuilt native libs (libanonero.so)
         run: |
+          set -euxo pipefail
           mkdir -p app/src/main/jniLibs/arm64-v8a app/src/main/jniLibs/armeabi-v7a
-          curl -fsSL -o app/src/main/jniLibs/arm64-v8a/libanonero.so "https://aka.doubaocdn.com/s/hErzKMvUDt"
-          curl -fsSL -o app/src/main/jniLibs/armeabi-v7a/libanonero.so "https://aka.doubaocdn.com/s/zBKq2aIFqm"
+          curl -fSL -w "arm64 http=%{http_code} bytes=%{size_download}\n" \
+            -o app/src/main/jniLibs/arm64-v8a/libanonero.so "https://aka.doubaocdn.com/s/hErzKMvUDt"
+          curl -fSL -w "armv7 http=%{http_code} bytes=%{size_download}\n" \
+            -o app/src/main/jniLibs/armeabi-v7a/libanonero.so "https://aka.doubaocdn.com/s/zBKq2aIFqm"
+          file app/src/main/jniLibs/arm64-v8a/libanonero.so app/src/main/jniLibs/armeabi-v7a/libanonero.so
           echo "e927a11661baf4894aeb046b32df14000319922adf9dc196cd6187065482c076  app/src/main/jniLibs/arm64-v8a/libanonero.so" | sha256sum -c
           echo "3bb1480ff630daf5007c2a4b684577c763767a53609a06da80dedbc7f17fc47d  app/src/main/jniLibs/armeabi-v7a/libanonero.so" | sha256sum -c
           ls -lh app/src/main/jniLibs/*/
@@ -53,7 +57,15 @@ jobs:
         run: chmod +x ./gradlew
 
       - name: Build ANON release APK
-        run: ./gradlew :app:assembleAnonRelease --stacktrace
+        run: |
+          set -o pipefail
+          ./gradlew :app:assembleAnonRelease --stacktrace 2>&1 | tee build.log
+          rc=${PIPESTATUS[0]}
+          if [ "$rc" -ne 0 ]; then
+            echo "::error::Gradle build failed (rc=$rc). Surfacing error lines:"
+            grep -nE "^e: |error:|FAILURE:|What went wrong|> Task .* FAILED|Execution failed|Caused by|Could not|Unresolved reference|No matching" build.log | tail -n 40 | sed 's/^/::error::/'
+            exit "$rc"
+          fi
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
