@@ -102,11 +102,11 @@ class SecureWipeViewModel(
         return viewModelScope.launch(Dispatchers.IO) {
             (activity as MainActivity).stopNotificationService()
             _wipeProgress.postValue(.3f)
-            _wipeProgressMessage.postValue("Wiping Wallet")
+            _wipeProgressMessage.postValue("正在擦除钱包")
             anonWalletHandler.wipe(passPhrase)
             delay(1000)
             _wipeProgress.postValue(.5f)
-            _wipeProgressMessage.postValue("Wallet Cleared")
+            _wipeProgressMessage.postValue("钱包已清除")
             delay(1200)
             _wipeProgress.postValue(.6f)
             _wipeProgressMessage.postValue("Clearing Preferences")
@@ -116,15 +116,15 @@ class SecureWipeViewModel(
             _wipeProgressMessage.postValue("Clearing Nodes")
             nodesRepository.clearAll()
             delay(1200)
-            _wipeProgressMessage.postValue("Clearing Logs")
+            _wipeProgressMessage.postValue("正在清除日志")
             delay(1000)
             logRepository.clear()
             AnonConfig.disposeState()
             _wipeProgress.postValue(.8f)
-            _wipeProgressMessage.postValue("Logs Cleared")
+            _wipeProgressMessage.postValue("日志已清除")
             delay(1200)
             _wipeProgress.postValue(1f)
-            _wipeProgressMessage.postValue("Wallet wiped successfully")
+            _wipeProgressMessage.postValue("钱包已安全擦除")
         }
     }
 
