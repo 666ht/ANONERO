@@ -62,6 +62,7 @@ import timber.log.Timber
 
 
 private const val TAG = "MainActivity"
+private const val CRASH_DIALOG_SHOWN = "crash_dialog_shown"
 
 class MainActivity : ComponentActivity() {
 
@@ -94,10 +95,13 @@ class MainActivity : ComponentActivity() {
                     walletExist = AnonConfig.getDefaultWalletFile(context).exists()
                     useTor = anonPrefs.getBoolean(WALLET_USE_TOR, true)
                     val logFile = AnonConfig.getLogFile(context)
-                    if (logFile.exists()) {
+                    if (logFile.exists() && !anonPrefs.getBoolean(CRASH_DIALOG_SHOWN, false)) {
                         val text = logFile.readText()
                         val marker = "=== UNCAUGHT EXCEPTION ==="
-                        if (text.contains(marker)) previousCrash = text.substringAfterLast(marker).let { marker + it }
+                        if (text.contains(marker)) {
+                            previousCrash = text.substringAfterLast(marker).let { marker + it }
+                            anonPrefs.edit().putBoolean(CRASH_DIALOG_SHOWN, true).apply()
+                        }
                     }
                     isAppReady = true
                 }
