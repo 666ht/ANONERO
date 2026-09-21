@@ -99,6 +99,32 @@ class AnonApplication : Application(), Thread.UncaughtExceptionHandler {
     }
 
     override fun uncaughtException(t: Thread, e: Throwable) {
+        val crashMessage = buildString {
+            append("=== UNCAUGHT EXCEPTION ===\n")
+            append("Thread: ${t.name}\n")
+            append("Build: ${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})\n")
+            append("Flavor: ${BuildConfig.FLAVOR}\n")
+            append("SDK: ${android.os.Build.VERSION.SDK_INT}\n")
+            append("Device: ${android.os.Build.MANUFACTURER} ${android.os.Build.MODEL}\n\n")
+            append(e.stackTraceToString())
+        }
+        try {
+            val file = AnonConfig.getLogFile(applicationContext)
+            file.parentFile?.mkdirs()
+            file.appendText("\n${"-".repeat(100)}\n$crashMessage\n")
+        } catch (_: Exception) {}
+        try {
+            kotlinx.coroutines.runBlocking(kotlinx.coroutines.Dispatchers.IO) {
+                get<LogRepository>().addItem(
+                    io.anonero.store.AnonLog(
+                        System.currentTimeMillis(),
+                        "CRASH",
+                        crashMessage,
+                        android.util.Log.ASSERT
+                    )
+                )
+            }
+        } catch (_: Exception) {}
         Timber.tag(TAG).e(e)
         defaultHandler?.uncaughtException(t, e)
     }
