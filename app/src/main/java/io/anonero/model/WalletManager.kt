@@ -15,6 +15,7 @@
  */
 package io.anonero.model
 
+import android.util.Log
 import io.anonero.AnonConfig
 import io.anonero.model.node.Node
 import timber.log.Timber
@@ -161,7 +162,8 @@ class WalletManager {
     }
 
     private external fun createWalletFromKeysJ(
-        path: String, password: String,
+        path: String,
+        password: String,
         language: String,
         networkType: Int,
         restoreHeight: Long,
@@ -285,6 +287,10 @@ class WalletManager {
         var LOGLEVEL_TRACE = 3
         var LOGLEVEL_MAX = 4
 
+        @Volatile
+        var nativeLibLoaded: Boolean = false
+            private set
+
         // no need to keep a reference to the REAL WalletManager (we get it every tvTime we need it)
         @get:Synchronized
         var instance: WalletManager? = null
@@ -297,7 +303,17 @@ class WalletManager {
             private set
 
         init {
-            System.loadLibrary("anonero")
+            try {
+                System.loadLibrary("anonero")
+                nativeLibLoaded = true
+                Log.i(TAG, "libanonero.so loaded successfully")
+            } catch (e: UnsatisfiedLinkError) {
+                nativeLibLoaded = false
+                Log.e(TAG, "Failed to load libanonero.so: ${e.message}")
+            } catch (e: Exception) {
+                nativeLibLoaded = false
+                Log.e(TAG, "Unexpected error loading libanonero.so: ${e.message}")
+            }
         }
 
         fun addressPrefix(networkType: NetworkType): String {
