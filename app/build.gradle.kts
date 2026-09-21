@@ -84,6 +84,12 @@ android {
     }
 
     ndkVersion = "29.0.13599879"
+
+    packaging {
+        resources {
+            excludes += "META-INF/versions/9/OSGI-INF/MANIFEST.MF"
+        }
+    }
 }
 
 dependencies {
