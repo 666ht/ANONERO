@@ -160,7 +160,7 @@ fun SubAddressLabelDialog(label: String, onSave: (String) -> Unit, onCancel: () 
                     } else {
                         onSave(labelString.text)
                     }
-                }) { Text("更新") }
+                }) { Text("Update") }
         },
         dismissButton = {
             Button(

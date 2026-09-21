@@ -172,7 +172,7 @@ fun RestoreWallet(
                 )
                 Spacer(Modifier.height(16.dp))
                 Text(
-                    text = "导入 POLYSEED 助记词",
+                    text = "IMPORT POLYSEED MNEMONIC",
                     style = MaterialTheme.typography.headlineSmall,
                     fontWeight = FontWeight.Bold
                 )
@@ -186,7 +186,7 @@ fun RestoreWallet(
                 ListItem(
                     headlineContent = {
                         Text(
-                            text = "输入助记词",
+                            text = "ENTER SEED",
                             color = MaterialTheme.colorScheme.primary,
                             modifier = Modifier.padding(start = 4.dp)
                         )
@@ -202,7 +202,7 @@ fun RestoreWallet(
                             isError = invalidSeed,
                             supportingText = {
                                 if (invalidSeed) {
-                                    Text("助记词无效", color = MaterialTheme.colorScheme.error)
+                                    Text("Invalid seed", color = MaterialTheme.colorScheme.error)
                                 }
                             },
                             maxLines = 5,
@@ -345,7 +345,7 @@ fun CustomAutocompleteTextField(
                 IconButton(onClick = {
                     query.takeIf { it.isNotEmpty() }?.let { onSuggestionSelected("") }
                 }) {
-                    Icon(Icons.Default.Clear, contentDescription = "清除")
+                    Icon(Icons.Default.Clear, contentDescription = "Clear")
                 }
             },
             keyboardOptions = KeyboardOptions.Default.copy(

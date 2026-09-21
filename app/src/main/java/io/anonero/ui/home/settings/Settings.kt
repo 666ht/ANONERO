@@ -132,7 +132,7 @@ fun SettingsPage(
                            )
                        }
                    }catch (e: Exception) {
-                       toastState.show("修改 PIN 码失败，请查看日志了解详情",
+                       toastState.show("Error changing PIN. Check logs for more details",
                            type = ToastType.Error
                        )
                        Timber.tag(TAG).e(e)

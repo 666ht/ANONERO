@@ -105,7 +105,7 @@ fun RestoreFromKeys(
                 ) {
                     Icon(
                         Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = "返回",
+                        contentDescription = "Back",
                         tint = Color.White
                     )
                 }

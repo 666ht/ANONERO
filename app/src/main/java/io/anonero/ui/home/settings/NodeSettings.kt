@@ -90,7 +90,6 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import kotlinx.coroutines.delay
 import org.json.JSONObject
 import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
@@ -163,7 +162,7 @@ class NodeSettingsViewModel(
             }
             val validatedUrl = urlForParsing.toUri()
             if (validatedUrl.host == null) {
-                uriValidationError.postValue("无效的网址")
+                uriValidationError.postValue("Invalid Url")
                 return null
             }
             val nodeJson = JSONObject()
@@ -213,29 +212,14 @@ class NodeSettingsViewModel(
                 )
 
                 editor.apply()
-
-                // Keep node connection order consistent with wallet startup:
-                // Tor SOCKS -> wallet proxy -> daemon -> wallet refresh.
                 torService.start()
-                var socks = torService.socks
-                var waited = 0
-                while (socks == null && waited < 30000) {
-                    delay(200)
-                    socks = torService.socks
-                    waited += 200
-                }
-                if (socks == null) {
-                    throw IllegalStateException("Tor SOCKS proxy did not start")
-                }
-
-                WalletManager.instance?.setProxy(socks.value)
-                WalletManager.instance?.wallet?.setProxy(socks.value)
-
                 walletHandler.updateDaemon(node)
+                walletState.setLoading(false)
                 walletState.update()
-
                 WalletManager.instance?.wallet?.init(0)
-                WalletManager.instance?.wallet?.setTrustedDaemon(true)
+                WalletManager.instance?.wallet?.setTrustedDaemon(
+                    true
+                )
                 WalletManager.instance?.wallet?.startRefresh()
             } catch (e: Exception) {
                 Timber.tag(TAG).e(e)
@@ -367,7 +351,7 @@ fun NodeSettings(onBackPress: () -> Unit = {}) {
                             onClick = {
                                 showNodeDetails = true
                             }
-                        ) { Text("添加节点") }
+                        ) { Text("Add Node") }
                         IconButton(
                             colors = IconButtonDefaults.iconButtonColors(
                                 contentColor = Color.White
@@ -563,7 +547,7 @@ fun NodeListItem(
                     onDismissRequest = { menu = false }
                 ) {
                     DropdownMenuItem(
-                        text = { Text(if (active) "断开连接" else "连接") },
+                        text = { Text(if (active) "Disconnect" else "Connect") },
                         onClick = {
                             if (active) onDisconnect(node) else onConnect(node)
                             menu = false
@@ -572,7 +556,7 @@ fun NodeListItem(
                     if (!active) {
                         HorizontalDivider()
                         DropdownMenuItem(
-                            text = { Text("删除") },
+                            text = { Text("Remove") },
                             onClick = {
                                 onRemove(node)
                                 menu = false
@@ -615,7 +599,7 @@ fun NodeForm(
             ListItem(
                 headlineContent = {
                     Text(
-                        text = "节点",
+                        text = "NODE",
                         color = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.padding(start = 4.dp)
                     )
@@ -674,7 +658,7 @@ fun NodeForm(
             ListItem(
                 headlineContent = {
                     Text(
-                        text = "密码",
+                        text = "PASSWORD",
                         color = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.padding(start = 4.dp)
                     )
@@ -706,7 +690,7 @@ fun NodeForm(
             ) {
                 if (connectionError != null)
                     Text(
-                        "连接服务器失败：$connectionError",
+                        "Error connecting to server :$connectionError",
                         modifier = Modifier.padding(
                             vertical = 12.dp,
                             horizontal = 8.dp

@@ -32,9 +32,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalClipboardManager
-import androidx.compose.material.icons.filled.ContentCopy
-import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -146,12 +143,11 @@ fun LogViewer(
     val listState = rememberLazyListState()
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
     val context = LocalContext.current
-    val clipboardManager = LocalClipboardManager.current
     Scaffold(
         topBar = {
             TopAppBar(
                 title = {
-                    Text("日志")
+                    Text("Logs")
                 },
                 navigationIcon = {
                     IconButton(
@@ -189,35 +185,21 @@ fun LogViewer(
                                         context.startActivity(
                                             Intent.createChooser(
                                                 shareIntent,
-                                                "分享加密备份文件"
+                                                "Share Encrypted Backup File"
                                             )
                                         )
                                     }
                                 }
                         }
                     ) {
-                        Icon(AnonIcons.Share_log, contentDescription = "分享日志")
-                    }
-                    IconButton(
-                        onClick = {
-                            val text = logLines.joinToString("\\n") {
-                                val instant = Instant.ofEpochMilli(it.date)
-                                val dateTime = LocalDateTime.ofInstant(instant, ZoneId.systemDefault())
-                                val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
-                                "$dateTime | ${it.tag} | ${it.message}"
-                            }
-                            clipboardManager.setText(AnnotatedString(text))
-                            Timber.tag(TAG).i("Logs copied to clipboard")
-                        }
-                    ) {
-                        Icon(Icons.Filled.ContentCopy, contentDescription = "复制日志")
+                        Icon(AnonIcons.Share_log, contentDescription = "Share Logs")
                     }
                     IconButton(
                         onClick = {
                             viewModel.clearLogs()
                         }
                     ) {
-                        Icon(AnonIcons.Clear_all, contentDescription = "清除日志")
+                        Icon(AnonIcons.Clear_all, contentDescription = "Clear Logs")
                     }
                 },
                 scrollBehavior = scrollBehavior
@@ -306,7 +288,7 @@ private fun LogViewerPrev() {
             topBar = {
                 TopAppBar(
                     title = {
-                        Text("日志")
+                        Text("Logs")
                     },
                 )
             }

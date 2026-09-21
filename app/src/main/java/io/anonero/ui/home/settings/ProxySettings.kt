@@ -146,11 +146,11 @@ class ProxySettingsViewModel(
         return viewModelScope.launch(Dispatchers.IO) {
             try {
                 if (!isNumericAddress(proxy)) {
-                    addressValidationError.postValue("无效的代理地址")
+                    addressValidationError.postValue("Invalid proxy address")
                     return@launch
                 }
                 if (port > 65535) {
-                    addressValidationError.postValue("无效的端口")
+                    addressValidationError.postValue("Invalid port")
                     return@launch
                 }
                 anonWalletHandler.setProxy(proxy = proxy, port = port)
@@ -401,7 +401,7 @@ fun ProxySettings(onBackPress: () -> Unit = {}) {
                                 scope.launch(Dispatchers.Main) {
                                     Toast.makeText(
                                         AnonConfig.context,
-                                        AnonConfig.context?.getString(R.string.proxy_updated) ?: "代理已更新",
+                                        AnonConfig.context?.getString(R.string.proxy_updated) ?: "Proxy updated",
                                         Toast.LENGTH_SHORT
                                     ).show()
                                 }

@@ -18,21 +18,12 @@ import androidx.compose.animation.ExitTransition
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.TextButton
-import androidx.compose.material3.Text
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
@@ -89,7 +80,6 @@ class MainActivity : ComponentActivity() {
         )
         setContent {
             var walletExist by remember { mutableStateOf(AnonConfig.isWalletFileExist()) }
-            var crashLog by remember { mutableStateOf<String?>(null) }
             var useTor by remember { mutableStateOf(true) }
             val onboardViewModel = koinViewModel<OnboardViewModel>()
             val context = LocalContext.current
@@ -98,36 +88,9 @@ class MainActivity : ComponentActivity() {
             LaunchedEffect(key1 = true) {
                 scope.launch(Dispatchers.IO) {
                     walletExist = AnonConfig.getDefaultWalletFile(context).exists()
-                    val logFile = AnonConfig.getLogFile(context)
-                    if (logFile.exists()) {
-                        val text = logFile.readText()
-                        val marker = "=== UNCAUGHT EXCEPTION ==="
-                        val index = text.lastIndexOf(marker)
-                        if (index >= 0) crashLog = text.substring(index)
-                    }
                     useTor = anonPrefs.getBoolean(WALLET_USE_TOR, true)
                     isAppReady = true
                 }
-            }
-            val clipboardManager = LocalClipboardManager.current
-            crashLog?.let { log ->
-                AlertDialog(
-                    onDismissRequest = { crashLog = null },
-                    title = { Text("上次闪退日志") },
-                    text = {
-                        Column(Modifier.verticalScroll(rememberScrollState())) {
-                            Text(log)
-                        }
-                    },
-                    confirmButton = {
-                        TextButton(onClick = {
-                            clipboardManager.setText(AnnotatedString(log))
-                        }) { Text("复制") }
-                    },
-                    dismissButton = {
-                        TextButton(onClick = { crashLog = null }) { Text("关闭") }
-                    }
-                )
             }
             TorSplash(enableTor = useTor) {
                 AnonNeroTheme {
