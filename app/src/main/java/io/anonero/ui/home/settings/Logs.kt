@@ -151,7 +151,7 @@ fun LogViewer(
         topBar = {
             TopAppBar(
                 title = {
-                    Text("Logs")
+                    Text("日志")
                 },
                 navigationIcon = {
                     IconButton(
@@ -189,14 +189,14 @@ fun LogViewer(
                                         context.startActivity(
                                             Intent.createChooser(
                                                 shareIntent,
-                                                "Share Encrypted Backup File"
+                                                "分享加密备份文件"
                                             )
                                         )
                                     }
                                 }
                         }
                     ) {
-                        Icon(AnonIcons.Share_log, contentDescription = "Share Logs")
+                        Icon(AnonIcons.Share_log, contentDescription = "分享日志")
                     }
                     IconButton(
                         onClick = {
@@ -210,14 +210,14 @@ fun LogViewer(
                             Timber.tag(TAG).i("Logs copied to clipboard")
                         }
                     ) {
-                        Icon(Icons.Filled.ContentCopy, contentDescription = "Copy Logs")
+                        Icon(Icons.Filled.ContentCopy, contentDescription = "复制日志")
                     }
                     IconButton(
                         onClick = {
                             viewModel.clearLogs()
                         }
                     ) {
-                        Icon(AnonIcons.Clear_all, contentDescription = "Clear Logs")
+                        Icon(AnonIcons.Clear_all, contentDescription = "清除日志")
                     }
                 },
                 scrollBehavior = scrollBehavior
@@ -306,7 +306,7 @@ private fun LogViewerPrev() {
             topBar = {
                 TopAppBar(
                     title = {
-                        Text("Logs")
+                        Text("日志")
                     },
                 )
             }
