@@ -116,7 +116,7 @@ fun SettingsPage(
                 onNext = {
                    try {
                        WalletManager.instance?.wallet?.setPassword(it)
-                       toastState.show("PIN changed successfully",
+                       toastState.show("PIN 已修改成功",
                            type = ToastType.Success,
                        )
                        prefs.edit(commit = true) {
@@ -132,7 +132,7 @@ fun SettingsPage(
                            )
                        }
                    }catch (e: Exception) {
-                       toastState.show("Error changing PIN. Check logs for more details",
+                       toastState.show("修改 PIN 失败，请查看日志了解详情",
                            type = ToastType.Error
                        )
                        Timber.tag(TAG).e(e)
