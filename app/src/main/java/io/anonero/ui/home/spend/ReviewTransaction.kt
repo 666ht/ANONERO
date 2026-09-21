@@ -162,7 +162,7 @@ class ReviewTransactionViewModel : ViewModel() {
                     pendingTransaction?.let {
                         val result = wallet.send(it)
                         if (!result) {
-                            throw Exception("Failed to send transaction")
+                            throw Exception("发送交易失败")
                         } else {
                             broadcastingTx.postValue(BroadcastState.SUCCESS)
                         }
@@ -171,7 +171,7 @@ class ReviewTransactionViewModel : ViewModel() {
                     if (signedTxFile.exists()) {
                         val error =
                             wallet.submitTransaction(signedTxFile.absolutePath)
-                        val success = error == "Transaction submitted!";
+                        val success = error == "交易已提交！";
                         if (success) {
                             broadcastingTx.postValue(BroadcastState.SUCCESS)
                             signedTxFile.delete()
@@ -182,7 +182,7 @@ class ReviewTransactionViewModel : ViewModel() {
                             throw Exception(error)
                         }
                     } else {
-                        throw Exception("Signed transaction file not found")
+                        throw Exception("未找到已签名交易文件")
                     }
                 wallet.startRefresh()
                 wallet.refreshHistory()
@@ -347,7 +347,7 @@ fun ReviewTransactionScreen(
                         Text(
                             stringResource(
                                 R.string.unable_to_broadcast_transaction,
-                                viewModel.broadCastError?.message ?: "Unknown Error"
+                                viewModel.broadCastError?.message ?: "未知错误"
                             ),
                             style = MaterialTheme.typography.bodyMedium.copy(
                                 color = DangerColor
@@ -372,7 +372,7 @@ fun ReviewTransactionScreen(
                             tint = SuccessColor,
                             modifier = Modifier.size(44.dp)
                         )
-                        Text("Success")
+                        Text("成功")
                     }
                 }
                 AnimatedVisibility(
@@ -528,7 +528,7 @@ fun ReviewTransactionScreen(
                                         qrScannerParam = SpendQRExchangeParam(
                                             exportType = ExportType.UN_SIGNED_TX,
                                             title = "UNSIGNED TX",
-                                            ctaText = "SCAN SIGNED TX",
+                                            ctaText = "扫描已签名交易",
                                         )
                                     } else {
                                         viewModel.broadCast()?.invokeOnCompletion { error ->
