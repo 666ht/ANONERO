@@ -94,7 +94,7 @@ import org.koin.java.KoinJavaComponent.inject
 import timber.log.Timber
 import java.io.File
 
-private const val TAG = "Send"
+private const val TAG = "发送"
 
 
 enum class SpendType {
@@ -122,7 +122,7 @@ class SendViewModel : ViewModel() {
                 _txComposeError.postValue(null)
                 if (spendType.value == SpendType.SWEEP && _coinsSelected.value.isNullOrEmpty()) {
                     if(wallet?.fullStatus?.connectionStatus != Wallet.ConnectionStatus.ConnectionStatus_Connected) {
-                        throw Exception("Wallet not connected to node. please check network")
+                        throw Exception("钱包未连接到节点，请检查网络")
                     }
                     val pendingTx = wallet.createSweepTransaction(
                         dstAddr = addressField,
@@ -141,7 +141,7 @@ class SendViewModel : ViewModel() {
                     pendingTx
                 } else {
                     if(wallet?.fullStatus?.connectionStatus != Wallet.ConnectionStatus.ConnectionStatus_Connected) {
-                        throw Exception("Wallet not connected to node. please check network")
+                        throw Exception("钱包未连接到节点，请检查网络")
                     }
                     val pendingTx = wallet.createTransaction(
                         dst_addr = addressField,
@@ -206,7 +206,7 @@ class SendViewModel : ViewModel() {
                     }
 
                     else -> {
-                        Timber.tag(TAG).e("Unknown UR type")
+                        Timber.tag(TAG).e("未知的 UR 类型")
                     }
                 }
                 destinationFile?.writeBytes(ur.toBytes())
@@ -347,7 +347,7 @@ fun SendScreen(
                     }
                     navigateToReview.invoke(ReviewTransactionRoute(addressField))
                 } else {
-                    Timber.tag(TAG).i("prepare: Pending tx is null")
+                    Timber.tag(TAG).i("准备失败：待处理交易为空")
                     //show error
                 }
             } catch (e: Exception) {
