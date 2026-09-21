@@ -188,7 +188,7 @@ fun TransactionScreen(
                 )
             },
             text = {
-                Text("Do you want to broadcast transaction?")
+                Text("是否广播此交易？")
             },
             onDismissRequest = {
                 scanFailure = null
@@ -208,7 +208,7 @@ fun TransactionScreen(
                     )
                 ) {
                     Text(
-                        "Cancel",
+                        "取消",
                         style = MaterialTheme.typography.bodyMedium.copy(
                             color = MaterialTheme.colorScheme.onSecondary.copy(
                                 alpha = 0.8f
@@ -243,7 +243,7 @@ fun TransactionScreen(
                                 broadcastSignedTxPath = null
                             }
                         }
-                    }) { Text("Yes") }
+                    }) { Text("是") }
             },
         )
     }
@@ -292,7 +292,7 @@ fun TransactionScreen(
                     )
                 ) {
                     Text(
-                        "Cancel",
+                        "取消",
                         style = MaterialTheme.typography.bodyMedium.copy(
                             color = MaterialTheme.colorScheme.onSecondary.copy(
                                 alpha = 0.8f
@@ -313,7 +313,7 @@ fun TransactionScreen(
                     ),
                     onClick = {
                         activity?.finishAffinity()
-                    }) { Text("Exit") }
+                    }) { Text("退出") }
             },
         )
     }
@@ -358,8 +358,8 @@ fun TransactionScreen(
                         showScanner = false
                         qrScannerParam = SpendQRExchangeParam(
                             exportType = ExportType.IMAGE,
-                            title = "KEY IMAGES",
-                            ctaText = "SCAN UNSIGNED TX",
+                            title = "密钥图像",
+                            ctaText = "扫描未签名交易",
                         )
                     }
 
@@ -369,7 +369,7 @@ fun TransactionScreen(
 
                     ImportEvents.IMPORT_KEY_IMAGES -> {
                         toastState.show(
-                            "Key images imported",
+                            "密钥图像已导入",
                             type = ToastType.Success,
                             duration = 4.seconds
                         )
@@ -509,7 +509,7 @@ fun TransactionScreen(
                             showScanner = true
                         }
                     ) {
-                        Icon(AnonIcons.Scan, contentDescription = "Scan")
+                        Icon(AnonIcons.Scan, contentDescription = "扫描")
                     }
                     IconButton(
                         onClick = {
@@ -519,7 +519,7 @@ fun TransactionScreen(
                         val torIconColor = if (useTor && torConnected == false) Color.Red else Color.White
                         Icon(
                             painterResource(R.drawable.ic_tor),
-                            contentDescription = "Tor Status",
+                            contentDescription = "Tor 状态",
                             tint = torIconColor
                         )
                     }
@@ -552,7 +552,7 @@ fun TransactionScreen(
                             showMenu = !showMenu
                         }
                     ) {
-                        Icon(Icons.Default.MoreVert, contentDescription = "More")
+                        Icon(Icons.Default.MoreVert, contentDescription = "更多")
                         DropdownMenu(
                             expanded = showMenu,
                             containerColor = MaterialTheme.colorScheme.background,
