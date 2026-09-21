@@ -24,12 +24,13 @@ jobs:
 
       - name: Set up Android SDK
         uses: android-actions/setup-android@v3
-
-      - name: Set up Android NDK
-        uses: android-actions/setup-android@v3
+        with:
+          packages: "platform-tools"
 
       - name: Install Android packages
-        run: sdkmanager "platforms;android-35" "build-tools;35.0.0" "ndk;29.0.13599879"
+        run: |
+          yes | sdkmanager --licenses >/dev/null || true
+          sdkmanager "platforms;android-35" "build-tools;35.0.0" "ndk;29.0.13599879"
 
       - name: Fetch verified native libraries
         run: |
