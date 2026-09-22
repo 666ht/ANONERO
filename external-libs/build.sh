@@ -125,6 +125,12 @@ step_monero() {
     echo "MISSING $WORK/polyseed/include/polyseed.h" >&2
     exit 1
   fi
+  # wallet2.cpp includes polyseed as "polyseed/include/polyseed.h".
+  # Expose the already-built dependency under the Monero source tree.
+  rm -rf "$MONERO/polyseed"
+  mkdir -p "$MONERO/polyseed"
+  cp -a "$WORK/polyseed/include" "$MONERO/polyseed/"
+  test -s "$MONERO/polyseed/include/polyseed.h"
   cd "$MONERO"
   if android; then
     CFLAGS="-I$MONERO ${CFLAGS:-}" CXXFLAGS="-I$MONERO ${CXXFLAGS:-}" env -u CC -u CXX CMAKE_INCLUDE_PATH="$PREFIX/include" CMAKE_LIBRARY_PATH="$PREFIX/lib" ANDROID_STANDALONE_TOOLCHAIN_PATH= ANDROID_NDK_ROOT="$NDK" USE_SINGLE_BUILDDIR=1 make "$MONERO_TARGET" -j"$NPROC"
