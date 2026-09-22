@@ -22,22 +22,20 @@ jobs:
           fetch-depth: 1
 
       - name: Set up JDK 17
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: "17"
 
-      - name: Set up Android SDK
-        uses: android-actions/setup-android@v3
-
       - name: Install Android SDK packages
         run: |
-          sdkmanager "platform-tools" "platforms;android-35" "build-tools;36.0.0" "cmake;3.31.12"
+          yes | sdkmanager --licenses >/dev/null || true
+          sdkmanager "platform-tools" "platforms;android-35" "build-tools;36.0.0" "cmake;3.31.12" "ndk;29.0.13599879"
 
       - name: Pull official Monero v0.18.5.0
         run: |
           rm -rf external-libs/monero
-          git clone --depth 1 --branch v0.18.5.0 --recurse-submodules             https://github.com/monero-project/monero.git external-libs/monero
+          git clone --depth 1 --branch v0.18.5.0 --recurse-submodules https://github.com/monero-project/monero.git external-libs/monero
           git -C external-libs/monero describe --tags --always
 
       - name: Build native Android libraries
