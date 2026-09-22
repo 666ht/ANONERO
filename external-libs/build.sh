@@ -121,17 +121,13 @@ step_monero() {
   # wallet2.cpp from the ANONERO source includes polyseed with the legacy
   # source-tree path "polyseed/include/polyseed.h". Keep the author's
   # polyseed build, but expose its headers at the path expected by wallet2.cpp.
-  if [ -d "$WORK/polyseed/include" ]; then
-    rm -rf "$MONERO/polyseed"
-    mkdir -p "$MONERO/polyseed"
-    cp -a "$WORK/polyseed/include" "$MONERO/polyseed/"
-  else
-    echo "MISSING $WORK/polyseed/include" >&2
+  if [ ! -s "$WORK/polyseed/include/polyseed.h" ]; then
+    echo "MISSING $WORK/polyseed/include/polyseed.h" >&2
     exit 1
   fi
   cd "$MONERO"
   if android; then
-    env -u CC -u CXX CMAKE_INCLUDE_PATH="$PREFIX/include" CMAKE_LIBRARY_PATH="$PREFIX/lib" ANDROID_STANDALONE_TOOLCHAIN_PATH= ANDROID_NDK_ROOT="$NDK" USE_SINGLE_BUILDDIR=1 make "$MONERO_TARGET" -j"$NPROC"
+    CFLAGS="-I$MONERO ${CFLAGS:-}" CXXFLAGS="-I$MONERO ${CXXFLAGS:-}" env -u CC -u CXX CMAKE_INCLUDE_PATH="$PREFIX/include" CMAKE_LIBRARY_PATH="$PREFIX/lib" ANDROID_STANDALONE_TOOLCHAIN_PATH= ANDROID_NDK_ROOT="$NDK" USE_SINGLE_BUILDDIR=1 make "$MONERO_TARGET" -j"$NPROC"
     cmake --build "$MONERO/build/release" --target wallet_api polyseed_wrapper -- -j"$NPROC"
   else
     mkdir -p build/release && cd build/release
