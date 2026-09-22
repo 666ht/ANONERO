@@ -22,18 +22,17 @@ jobs:
           fetch-depth: 1
           submodules: false
 
-      - name: Prepare Monero v0.18.5.0
+      - name: Prepare Monero source
         run: |
           set -euxo pipefail
           rm -rf external-libs/monero
-          git clone --depth 1 --branch v0.18.5.0 https://github.com/monero-project/monero.git external-libs/monero
+          git clone --depth 1 https://github.com/monero-project/monero.git external-libs/monero
           test -s external-libs/monero/src/wallet/wallet2.cpp
           cd external-libs/monero
           git rev-parse HEAD
-          git describe --tags --always
           cd ../..
 
-      - name: Apply uploaded wallet2.cpp patch
+      - name: Use uploaded wallet2.cpp directly
         run: |
           set -euxo pipefail
           test -s "wallet2(1).txt"
