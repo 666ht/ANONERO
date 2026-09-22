@@ -168,13 +168,20 @@ PY
   if android; then
     python3 - "$MONERO/Makefile" <<'PY'
 from pathlib import Path
+import re
 import sys
 p = Path(sys.argv[1])
 s = p.read_text()
-old = s
-s = ''.join(line for line in s.splitlines(True) if 'release/translations' not in line)
-if s == old:
-    raise SystemExit("failed to remove Android translation sub-build")
+for target in ("release-static-android-armv7", "release-static-android-armv8"):
+    pat = re.compile(rf"({re.escape(target)}:\n)(.*?)(?=\nrelease-static-|\nfuzz:)", re.S)
+    m = pat.search(s)
+    if not m:
+        raise SystemExit(f"missing {target} target")
+    body = m.group(2)
+    body = "\n".join(line for line in body.split("\n") if "release/translations" not in line)
+    body = "\n".join(line for line in body.split("\n") if line.strip())
+    body = "\t" + "\n\t".join(["mkdir -p $(builddir)/release"] + [line.lstrip("\t") for line in body.split("\n")]) + "\n"
+    s = s[:m.start(2)] + body + s[m.end(2):]
 p.write_text(s)
 PY
   fi
