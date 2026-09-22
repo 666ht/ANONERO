@@ -75,6 +75,26 @@ jobs:
           cmp -s "wallet2(1).txt" external-libs/monero/src/wallet/wallet2.cpp
           sha256sum "wallet2(1).txt" external-libs/monero/src/wallet/wallet2.cpp
 
+          # wallet2(1).txt contains three additional wallet2 methods that are
+          # not declared by stock v0.18.5.0 wallet2.h. Keep v0.18.5.0 as the
+          # base, but declare the methods implemented by the supplied source.
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path("external-libs/monero/src/wallet/wallet2.h")
+          s = p.read_text()
+          decls = """    bool get_polyseed(epee::wipeable_string& polyseed, epee::wipeable_string& passphrase);
+    uint64_t view_only_balance(uint32_t index_major, const std::vector<crypto::key_image>& selected_inputs);
+    uint64_t get_blockchain_height_by_timestamp(uint64_t timestamp_target);
+"""
+          marker = "  class wallet2\n  {"
+          if marker not in s:
+              raise SystemExit("wallet2.h class marker not found")
+          if "view_only_balance(uint32_t index_major" not in s:
+              s = s.replace(marker, marker + "\n  public:\n" + decls, 1)
+          p.write_text(s)
+          PY
+          grep -n -E "get_polyseed|view_only_balance|get_blockchain_height_by_timestamp" external-libs/monero/src/wallet/wallet2.h
+
       - name: Set up JDK 17
         uses: actions/setup-java@v5
         with:
