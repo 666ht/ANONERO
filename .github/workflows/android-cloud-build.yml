@@ -28,14 +28,17 @@ jobs:
           rm -rf external-libs/monero
           git clone --depth 1 --branch v0.18.5.0 https://github.com/monero-project/monero.git external-libs/monero
           test -s external-libs/monero/src/wallet/wallet2.cpp
-          grep -n '0\.18\.5\.0' external-libs/monero/src/version.cpp
+          cd external-libs/monero
+          git rev-parse HEAD
+          git describe --tags --always
+          cd ../..
 
-      - name: Apply uploaded wallet2.cpp
+      - name: Apply uploaded wallet2.cpp patch
         run: |
           set -euxo pipefail
           test -s "wallet2(1).txt"
           cp "wallet2(1).txt" external-libs/monero/src/wallet/wallet2.cpp
-          test -s external-libs/monero/src/wallet/wallet2.cpp
+          cmp -s "wallet2(1).txt" external-libs/monero/src/wallet/wallet2.cpp
 
       - name: Set up JDK 17
         uses: actions/setup-java@v5
@@ -54,7 +57,7 @@ jobs:
           yes | "$SDKMANAGER" --licenses >/dev/null || true
           "$SDKMANAGER" "platform-tools" "platforms;android-35" "build-tools;36.0.0" "cmake;3.31.5" "ndk;29.0.13599879"
 
-      - name: Build native Android libraries from uploaded submodule
+      - name: Build native Android libraries
         working-directory: external-libs
         run: |
           set -euxo pipefail
@@ -66,8 +69,11 @@ jobs:
           ./gradlew :app:assembleAnonDebug --stacktrace --no-daemon
 
       - name: Upload APK
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: anonero-XMR中文-debug
-          path: app/build/outputs/apk/**/*.apk
-          if-no-files-found: error
+          path: |
+            app/build/outputs/apk/**/*.apk
+            external-libs/*.log
+          if-no-files-found: ignore
