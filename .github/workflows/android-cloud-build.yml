@@ -43,6 +43,18 @@ jobs:
           rm -rf external-libs/monero
           git clone --depth 1 --branch v0.18.5.0 --recurse-submodules https://github.com/monero-project/monero.git external-libs/monero
           git -C external-libs/monero describe --tags --always
+          # Restore the Polyseed integration required by ANONERO's wallet2 snapshot.
+          # This is the original Monero/Polyseed integration patch used by the ANONERO-derived wallet2.
+          curl -fL --retry 5 --retry-all-errors \
+            https://raw.githubusercontent.com/MrCyjaneK/monero_c/7352f1cdd5e59f09f7b2431df124a53e834a2ba5/patches/monero/0007-polyseed.patch \
+            -o /tmp/0007-polyseed.patch
+          cd external-libs/monero
+          git apply --3way --exclude=src/wallet/wallet2.cpp /tmp/0007-polyseed.patch
+          git clone --depth 1 https://github.com/tevador/polyseed.git external/polyseed
+          git -C external/polyseed checkout 50aa33733ac4b5f795230e8c1ef8569abaf8c5c4
+          git clone --depth 1 https://github.com/JuliaStrings/utf8proc.git external/utf8proc
+          git -C external/utf8proc checkout b3e0f28adaec943ac25e3e27514dd6037e7a022e
+          cd ../..
           # Use the ANONERO-modified wallet2 implementation on top of official Monero v0.18.5.0.
           # The file is a full wallet2.cpp source snapshot, not a patch.
           cp 'wallet2(1).txt' external-libs/monero/src/wallet/wallet2.cpp
