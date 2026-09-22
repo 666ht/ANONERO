@@ -78,7 +78,6 @@ jobs:
           # wallet2(1).txt contains three additional wallet2 methods that are
           # not declared by stock v0.18.5.0 wallet2.h. Keep v0.18.5.0 as the
           # base, but declare the methods implemented by the supplied source.
-          perl -0pi -e 's/(class wallet2\n\s*\{)/$1\n  public:\n    bool get_polyseed(epee::wipeable_string& polyseed, epee::wipeable_string& passphrase);\n    uint64_t view_only_balance(uint32_t index_major, const std::vector<crypto::key_image>& selected_inputs);\n    uint64_t get_blockchain_height_by_timestamp(uint64_t timestamp_target);/ if index($_, "view_only_balance(uint32_t index_major") < 0' external-libs/monero/src/wallet/wallet2.h
           grep -n -E "get_polyseed|view_only_balance|get_blockchain_height_by_timestamp" external-libs/monero/src/wallet/wallet2.h
 
       - name: Set up JDK 17
