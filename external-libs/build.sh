@@ -152,11 +152,9 @@ step_monero() {
   test -s "$MONERO/src/wallet/polyseed/include/polyseed.h"
   cd "$MONERO"
   if android; then
-    # The patched Monero tree adds polyseed to its submodule checks. The
-    # polyseed source is supplied by the author's build.sh, not as a gitlink.
-    # Pass MANUAL_SUBMODULES to CMake (the Monero Makefile does not forward
-    # a make variable with this name).
-    sed -i 's/cmake -D BUILD_TESTS=OFF -D ARCH=/cmake -D MANUAL_SUBMODULES=1 -D BUILD_TESTS=OFF -D ARCH=/' Makefile
+    # The Monero Makefile invokes CMake directly and does not forward MANUAL_SUBMODULES.
+    # Docker COPY removes nested .git metadata, so skip gitlink validation explicitly.
+    sed -i '/CMAKE_BUILD_TYPE=Release.*ANDROID=true/ s/cmake /cmake -D MANUAL_SUBMODULES=1 /' Makefile
     CFLAGS="-I$MONERO ${CFLAGS:-}" CXXFLAGS="-I$MONERO ${CXXFLAGS:-}" env -u CC -u CXX CMAKE_INCLUDE_PATH="$PREFIX/include" CMAKE_LIBRARY_PATH="$PREFIX/lib" ANDROID_STANDALONE_TOOLCHAIN_PATH= ANDROID_NDK_ROOT="$NDK" USE_SINGLE_BUILDDIR=1 MANUAL_SUBMODULES=1 make "$MONERO_TARGET" -j"$NPROC"
     cmake --build "$MONERO/build/release" --target wallet_api polyseed_wrapper -- -j"$NPROC"
   else
