@@ -150,10 +150,29 @@ step_monero() {
     -e '/check_submodule(external\/utf8proc)/d' \
     "$MONERO/CMakeLists.txt"
 
-  # Disable Monero's host-only translation ExternalProject for Android.
-  sed -i '/include(ExternalProject)/,/include_directories("${CMAKE_CURRENT_BINARY_DIR}\/translations")/c\include_directories("${CMAKE_CURRENT_BINARY_DIR}/translations")' "$MONERO/CMakeLists.txt"
+  # Disable Monero translation generation during the Android cross-build.
+  # v0.18.5.0 can import/build a host executable here and then try to execute
+  # an ARM ELF inside the x86_64 build container.
+  if android; then
+    python3 - "$MONERO/translations/CMakeLists.txt" <<'PY'
+from pathlib import Path
+import sys
+p = Path(sys.argv[1])
+s = p.read_text()
+marker = "project(translations)\n"
+guard = 'if(CMAKE_SYSTEM_NAME STREQUAL "Android")\n  return()\nendif()\n'
+if guard not in s:
+    if marker not in s:
+        raise SystemExit("translations project marker not found")
+    s = s.replace(marker, marker + "\n" + guard, 1)
+p.write_text(s)
+PY
+    # CMake configuration is disposable; ccache keeps successful compiler objects.
+    rm -rf "$MONERO/build"
+  fi
 
-  sed -i 's@CMAKE_ARGS -DLRELEASE_PATH=${LRELEASE_PATH}@CMAKE_ARGS -DLRELEASE_PATH=${LRELEASE_PATH} -DCMAKE_C_COMPILER=/usr/bin/cc -DCMAKE_CXX_COMPILER=/usr/bin/c++@' "$MONERO/CMakeLists.txt"
+  # Keep the translation include directory available to the rest of Monero.
+  # No generator target is needed by the Android wallet libraries.
 
   # wallet2.cpp includes polyseed as "polyseed/include/polyseed.h".
   # Expose the same header path from the Monero source tree.
