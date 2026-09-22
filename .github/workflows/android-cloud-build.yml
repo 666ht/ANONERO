@@ -62,7 +62,7 @@ jobs:
           git clone --filter=blob:none https://github.com/JuliaStrings/utf8proc.git external/utf8proc
           git -C external/utf8proc checkout 3de4596fbe28956855df2ecb3c11c0bbc3535838
           cd ../..
-   - name: Build native Android libraries
+      - name: Build native Android libraries
         working-directory: external-libs
         run: |
           make android NPROC=4
