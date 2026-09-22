@@ -152,11 +152,41 @@ step_monero() {
   test -s "$MONERO/src/wallet/polyseed/include/polyseed.h"
   cd "$MONERO"
   if android; then
-    # The Monero Makefile invokes CMake directly and does not forward MANUAL_SUBMODULES.
-    # Docker COPY removes nested .git metadata, so skip gitlink validation explicitly.
-    sed -i '/CMAKE_BUILD_TYPE=Release.*ANDROID=true/ s/cmake /cmake -D MANUAL_SUBMODULES=1 /' Makefile
-    CFLAGS="-I$MONERO ${CFLAGS:-}" CXXFLAGS="-I$MONERO ${CXXFLAGS:-}" env -u CC -u CXX CMAKE_INCLUDE_PATH="$PREFIX/include" CMAKE_LIBRARY_PATH="$PREFIX/lib" ANDROID_STANDALONE_TOOLCHAIN_PATH= ANDROID_NDK_ROOT="$NDK" USE_SINGLE_BUILDDIR=1 MANUAL_SUBMODULES=1 make "$MONERO_TARGET" -j"$NPROC"
-    cmake --build "$MONERO/build/release" --target wallet_api polyseed_wrapper -- -j"$NPROC"
+    # Keep the author's Android target, but invoke the same CMake configuration
+    # explicitly so CI does not depend on the Makefile's legacy standalone-
+    # toolchain variables or on nested .git metadata removed by Docker COPY.
+    rm -rf build/release
+    mkdir -p build/release
+    if [ "$MONERO_TARGET" = release-static-android-armv8 ]; then
+      MONERO_ARCH=armv8-a
+      MONERO_BUILD_64=ON
+      MONERO_ABI=arm64-v8a
+      MONERO_ARM_MODE=OFF
+    else
+      MONERO_ARCH=armv7-a
+      MONERO_BUILD_64=OFF
+      MONERO_ABI=armeabi-v7a
+      MONERO_ARM_MODE=ON
+    fi
+    cmake -S . -B build/release \
+      -D BUILD_TESTS=OFF \
+      -D ARCH="$MONERO_ARCH" \
+      -D STATIC=ON \
+      -D BUILD_64="$MONERO_BUILD_64" \
+      -D CMAKE_BUILD_TYPE=Release \
+      -D MANUAL_SUBMODULES=1 \
+      -D CMAKE_SYSTEM_NAME=Android \
+      -D CMAKE_ANDROID_NDK="$NDK" \
+      -D CMAKE_SYSTEM_VERSION="$API" \
+      -D CMAKE_ANDROID_ARCH_ABI="$MONERO_ABI" \
+      -D CMAKE_ANDROID_ARM_MODE="$MONERO_ARM_MODE" \
+      -D BUILD_TAG="$MONERO_TARGET" \
+      -D CMAKE_PREFIX_PATH="$PREFIX" \
+      -D BOOST_ROOT="$PREFIX" \
+      -D BOOST_IGNORE_SYSTEM_PATHS=ON \
+      -D OPENSSL_ROOT_DIR="$PREFIX" \
+      -D CMAKE_POSITION_INDEPENDENT_CODE=ON
+    cmake --build build/release --target wallet_api polyseed_wrapper -- -j"$NPROC"
   else
     mkdir -p build/release && cd build/release
     cmake -D CMAKE_BUILD_TYPE=Release -D STATIC=OFF -D ARCH="$MONERO_ARCH" -D BUILD_64=ON -D BUILD_TESTS=OFF -D BUILD_GUI_DEPS=1 -D USE_DEVICE_TREZOR=OFF -D STACK_TRACE=OFF -D CMAKE_POSITION_INDEPENDENT_CODE=ON -D BUILD_TAG="linux-x64" -D CMAKE_PREFIX_PATH="$PREFIX" -D BOOST_ROOT="$PREFIX" -D BOOST_IGNORE_SYSTEM_PATHS=ON -D OPENSSL_ROOT_DIR="$PREFIX" ../..
