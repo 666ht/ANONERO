@@ -165,8 +165,10 @@ step_monero() {
       make "$MONERO_TARGET" -j"$NPROC"
     # The Android release target does not necessarily build the wallet API
     # static archive. Build it explicitly because the JNI layer links against it.
-    cmake --build "$MONERO/build/release" --target wallet_api -j"$NPROC"
-    test -s "$MONERO/build/release/src/wallet/api/libwallet_api.a"
+    # wallet_api is marked EXCLUDE_FROM_ALL upstream; build it explicitly and
+    # verify the archive in the configured archive output directory.
+    cmake --build "$MONERO/build/release" --target wallet_api --parallel "$NPROC"
+    test -s "$MONERO/build/release/lib/libwallet_api.a"
   else
     mkdir -p build/release && cd build/release
     cmake -D CMAKE_BUILD_TYPE=Release -D STATIC=OFF -D ARCH="$MONERO_ARCH" -D BUILD_64=ON -D BUILD_TESTS=OFF -D BUILD_GUI_DEPS=1 -D USE_DEVICE_TREZOR=OFF -D STACK_TRACE=OFF -D CMAKE_POSITION_INDEPENDENT_CODE=ON -D BUILD_TAG="linux-x64" -D CMAKE_PREFIX_PATH="$PREFIX" -D BOOST_ROOT="$PREFIX" -D BOOST_IGNORE_SYSTEM_PATHS=ON -D OPENSSL_ROOT_DIR="$PREFIX" ../..
