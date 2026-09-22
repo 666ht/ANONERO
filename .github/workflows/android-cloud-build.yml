@@ -35,11 +35,6 @@ jobs:
           curl -fL --retry 5 --retry-all-errors -o /tmp/0008-coin-control.patch https://raw.githubusercontent.com/MrCyjaneK/monero_c/7352f1cdd5e59f09f7b2431df124a53e834a2ba5/patches/monero/0008-coin-control.patch
 
           cd external-libs/monero
-
-          # The upstream patches contain changes to the onion author's submodules
-          # and wallet2.cpp. Those are deliberately excluded because:
-          # 1) dependencies are built by the author's build.sh flow, and
-          # 2) wallet2.cpp is replaced below by wallet2(1).txt.
           filter_patch() {
             src="$1"
             dst="$2"
@@ -55,10 +50,6 @@ jobs:
 
           filter_patch /tmp/0007-polyseed.patch /tmp/0007-polyseed.filtered.patch
           filter_patch /tmp/0008-coin-control.patch /tmp/0008-coin-control.filtered.patch
-
-          # GNU patch supports fuzzed context matching, which is needed because
-          # the companion patches target a nearby Monero tree rather than the
-          # exact v0.18.5.0 checkout.
           patch --batch --forward --fuzz=5 -p1 < /tmp/0007-polyseed.filtered.patch
           patch --batch --forward --fuzz=5 -p1 < /tmp/0008-coin-control.filtered.patch
 
@@ -75,8 +66,9 @@ jobs:
           cmp -s "wallet2(1).txt" external-libs/monero/src/wallet/wallet2.cpp
           sha256sum "wallet2(1).txt" external-libs/monero/src/wallet/wallet2.cpp
 
-          # wallet2(1).txt is paired with the declarations supplied by the upstream
-          # polyseed/coin-control patches; do not redeclare them here.
+          # The companion patches may already declare some methods. Add only
+          # declarations that are genuinely missing, avoiding duplicate members.
+          python3 -c 'from pathlib import Path; p=Path("external-libs/monero/src/wallet/wallet2.h"); s=p.read_text(); decls=["    bool get_polyseed(epee::wipeable_string& polyseed, epee::wipeable_string& passphrase) const;","    uint64_t view_only_balance(uint32_t index_major, const std::vector<crypto::key_image>& selected_inputs);","    uint64_t get_blockchain_height_by_timestamp(uint64_t timestamp_target);"]; missing=[d for d in decls if d.split("(")[0].split()[-1]+"(" not in s]; marker="  class wallet2\n  {"; raise SystemExit("wallet2 class marker not found") if marker not in s and missing else None; s=s.replace(marker,marker+"\n  public:\n"+"\n".join(missing),1) if missing else s; p.write_text(s); print("wallet2.h added missing declarations:",len(missing))'
           grep -n -E "get_polyseed|view_only_balance|get_blockchain_height_by_timestamp" external-libs/monero/src/wallet/wallet2.h
 
       - name: Set up JDK 17
