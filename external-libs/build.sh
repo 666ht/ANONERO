@@ -134,7 +134,7 @@ step_fetch() {
     grab "https://github.com/madler/zlib/releases/download/v$ZLIB_VERSION/zlib-$ZLIB_VERSION.tar.gz" "zlib-$ZLIB_VERSION.tar.gz" "$ZLIB_SHA256"
     grab "https://github.com/openssl/openssl/releases/download/openssl-$OPENSSL_VERSION/openssl-$OPENSSL_VERSION.tar.gz" "openssl-$OPENSSL_VERSION.tar.gz" "$OPENSSL_SHA256"
     grab "https://download.libsodium.org/libsodium/releases/libsodium-$SODIUM_VERSION.tar.gz" "libsodium-$SODIUM_VERSION.tar.gz" "$SODIUM_SHA256"
-    grab "https://github.com/libexpat/libexpat/releases/download/$EXPAT_TAG/expat-$EXPAT_VERSION.tar.gz" "expat-$EXPAT_VERSION.tar.gz" "$EXPAT_SHA256"
+    grab "https://downloads.sourceforge.net/project/expat.mirror/$EXPAT_TAG/expat-$EXPAT_VERSION.tar.gz" "expat-$EXPAT_VERSION.tar.gz" "$EXPAT_SHA256"
     grab "https://www.nlnetlabs.nl/downloads/unbound/unbound-$UNBOUND_VERSION.tar.gz" "unbound-$UNBOUND_VERSION.tar.gz" "$UNBOUND_SHA256"
     echo "fetched $(ls "$SRC" | wc -l) sources"
 }
