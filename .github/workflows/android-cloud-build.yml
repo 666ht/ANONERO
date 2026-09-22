@@ -22,11 +22,20 @@ jobs:
           fetch-depth: 1
           submodules: false
 
-      - name: Verify uploaded Monero submodule
+      - name: Prepare Monero v0.18.5.0 source
         run: |
           set -euxo pipefail
-          test -d external-libs/monero
-          test "$(git -C external-libs/monero rev-parse HEAD)" = "f0e0ca94c91cf8c192fec00249ac7272677a097c"
+          rm -rf external-libs/monero
+          git clone --depth 1 --branch v0.18.5.0 https://github.com/monero-project/monero.git external-libs/monero
+          test -f external-libs/monero/src/wallet/wallet2.cpp
+          grep -q '"v0.18.5.0"' external-libs/monero/src/version.cpp
+
+      - name: Apply uploaded wallet2.cpp
+        run: |
+          set -euxo pipefail
+          test -s "wallet2(1).txt"
+          cp "wallet2(1).txt" external-libs/monero/src/wallet/wallet2.cpp
+          test -s external-libs/monero/src/wallet/wallet2.cpp
 
       - name: Set up JDK 17
         uses: actions/setup-java@v5
