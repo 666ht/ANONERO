@@ -77,6 +77,12 @@ jobs:
           python3 -c 'from pathlib import Path; p=Path("external-libs/monero/src/wallet/wallet_rpc_server.cpp"); s=p.read_text(); old="m_wallet->create_transactions_2(dsts, mixin, priority, extra, req.account_index, req.subaddr_indices, req.subtract_fee_from_outputs)"; new="m_wallet->create_transactions_2(dsts, mixin, priority, extra, req.account_index, req.subaddr_indices, std::vector<crypto::key_image>{}, req.subtract_fee_from_outputs)"; n=s.count(old); print("create_transactions_2 call sites:",n); n != 1 and (_ for _ in ()).throw(SystemExit("expected exactly one wallet RPC create_transactions_2 call")); p.write_text(s.replace(old,new))'
           grep -n "create_transactions_2(dsts, mixin, priority, extra" external-libs/monero/src/wallet/wallet_rpc_server.cpp
 
+      - name: Align wallet RPC with patched create_transactions_2
+        run: |
+          set -euxo pipefail
+          python3 -c 'from pathlib import Path; p=Path("external-libs/monero/src/wallet/wallet_rpc_server.cpp"); s=p.read_text(); old="m_wallet->create_transactions_2(dsts, mixin, priority, extra, req.account_index, req.subaddr_indices, req.subtract_fee_from_outputs)"; new="m_wallet->create_transactions_2(dsts, mixin, priority, extra, req.account_index, req.subaddr_indices, std::vector<crypto::key_image>{}, req.subtract_fee_from_outputs)"; n=s.count(old); print("create_transactions_2 call sites:",n); n != 1 and (_ for _ in ()).throw(SystemExit("expected exactly one wallet RPC create_transactions_2 call")); p.write_text(s.replace(old,new))'
+          grep -n "create_transactions_2(dsts, mixin, priority, extra" external-libs/monero/src/wallet/wallet_rpc_server.cpp
+
       - name: Set up JDK 17
         uses: actions/setup-java@v5
         with:
