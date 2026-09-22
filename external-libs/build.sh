@@ -159,17 +159,16 @@ top = Path(sys.argv[1])
 trans = Path(sys.argv[2])
 s = top.read_text()
 start = s.find("ExternalProject_Add(generate_translations_header")
-if start < 0:
-    raise SystemExit("generate_translations_header ExternalProject block not found")
-end_marker = 'include_directories("${CMAKE_CURRENT_BINARY_DIR}/translations")'
-end = s.find(end_marker, start)
-if end < 0:
-    raise SystemExit("translation include_directories marker not found")
-end += len(end_marker)
-line_start = s.rfind("\n", 0, start) + 1
-s2 = s[:line_start] + 'add_custom_target(generate_translations_header)\n' + s[end:]
-s2 = s2.replace('include(ExternalProject)\n', '', 1)
-top.write_text(s2)
+if start >= 0:
+    end_marker = 'include_directories("${CMAKE_CURRENT_BINARY_DIR}/translations")'
+    end = s.find(end_marker, start)
+    if end < 0:
+        raise SystemExit("translation include_directories marker not found")
+    end += len(end_marker)
+    line_start = s.rfind("\n", 0, start) + 1
+    s2 = s[:line_start] + 'add_custom_target(generate_translations_header)\n' + s[end:]
+    s2 = s2.replace('include(ExternalProject)\n', '', 1)
+    top.write_text(s2)
 PY
   fi
 
