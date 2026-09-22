@@ -156,14 +156,13 @@ step_monero() {
   ln -s "$MONERO/polyseed" "$MONERO/src/wallet/polyseed"
   cd "$MONERO"
   if android; then
-    # Keep the author's Android build flow. The CI source tree is copied
-    # without .git metadata, so explicitly disable Monero's submodule check.
+    # Keep the author's Android build command exactly. The CI-only
+    # submodule handling above is completed before entering this step.
     CFLAGS="-I$MONERO ${CFLAGS:-}" CXXFLAGS="-I$MONERO ${CXXFLAGS:-}" \
       env -u CC -u CXX CMAKE_INCLUDE_PATH="$PREFIX/include" \
       CMAKE_LIBRARY_PATH="$PREFIX/lib" ANDROID_STANDALONE_TOOLCHAIN_PATH= \
-      ANDROID_NDK_ROOT="$NDK" USE_SINGLE_BUILDDIR=1 MANUAL_SUBMODULES=1 \
+      ANDROID_NDK_ROOT="$NDK" USE_SINGLE_BUILDDIR=1 \
       make "$MONERO_TARGET" -j"$NPROC"
-    cmake --build "$MONERO/build/release" --target wallet_api polyseed_wrapper -- -j"$NPROC"
   else
     mkdir -p build/release && cd build/release
     cmake -D CMAKE_BUILD_TYPE=Release -D STATIC=OFF -D ARCH="$MONERO_ARCH" -D BUILD_64=ON -D BUILD_TESTS=OFF -D BUILD_GUI_DEPS=1 -D USE_DEVICE_TREZOR=OFF -D STACK_TRACE=OFF -D CMAKE_POSITION_INDEPENDENT_CODE=ON -D BUILD_TAG="linux-x64" -D CMAKE_PREFIX_PATH="$PREFIX" -D BOOST_ROOT="$PREFIX" -D BOOST_IGNORE_SYSTEM_PATHS=ON -D OPENSSL_ROOT_DIR="$PREFIX" ../..
