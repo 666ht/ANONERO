@@ -218,6 +218,10 @@ PY
   rm -rf "$MONERO/src/wallet/polyseed"
   ln -s "$MONERO/polyseed" "$MONERO/src/wallet/polyseed"
   cd "$MONERO"
+  # The Monero source is bind-mounted from the GitHub runner with a different
+  # owner. Git commands used by the Android release target must trust the tree.
+  git config --global --add safe.directory /src
+  git config --global --add safe.directory "$MONERO"
   if android; then
     # Keep the author's Android build command exactly. The CI-only
     # submodule handling above is completed before entering this step.
