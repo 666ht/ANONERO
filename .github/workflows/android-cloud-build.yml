@@ -162,8 +162,19 @@ jobs:
       - name: Verify native Android libraries
         run: |
           set -euxo pipefail
-          test -s external-libs/arm64-v8a/libmonero.so
-          test -s external-libs/armeabi-v7a/libmonero.so
+          # Android links the native layer from static archives into libanonero.so.
+          # The native builder intentionally does not produce a standalone libmonero.so.
+          for abi in arm64-v8a armeabi-v7a; do
+            test -s "external-libs/$abi/monero/libwallet_api.a"
+            test -s "external-libs/$abi/monero/libwallet.a"
+            test -s "external-libs/$abi/monero/libcryptonote_core.a"
+            test -s "external-libs/$abi/monero/librandomx.a"
+            test -s "external-libs/$abi/libboost_system.a"
+            test -s "external-libs/$abi/libssl.a"
+            test -s "external-libs/$abi/libcrypto.a"
+            test -s "external-libs/$abi/libsodium.a"
+            test -s "external-libs/$abi/libunbound.a"
+          done
           test -s external-libs/include/wallet2_api.h
 
       - name: Cache Gradle
