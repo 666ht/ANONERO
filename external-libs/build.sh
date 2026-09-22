@@ -150,29 +150,49 @@ step_monero() {
     -e '/check_submodule(external\/utf8proc)/d' \
     "$MONERO/CMakeLists.txt"
 
-  # Disable Monero translation generation during the Android cross-build.
-  # v0.18.5.0 can import/build a host executable here and then try to execute
-  # an ARM ELF inside the x86_64 build container.
+  # Monero v0.18.5.0 wires translations through ExternalProject_Add and may
+  # import the Android-built generator as an executable. Remove that entire
+  # host-only project from the copied CMakeLists before configuring Android.
   if android; then
-    python3 - "$MONERO/translations/CMakeLists.txt" <<'PY'
+    python3 - "$MONERO/CMakeLists.txt" "$MONERO/translations/CMakeLists.txt" <<'PY'
 from pathlib import Path
+import re
+import shutil
 import sys
-p = Path(sys.argv[1])
-s = p.read_text()
+
+top = Path(sys.argv[1])
+trans = Path(sys.argv[2])
+
+s = top.read_text()
+pattern = re.compile(
+    r'\n?\s*include\(ExternalProject\)\s*'
+    r'\n\s*ExternalProject_Add\(generate_translations_header.*?'
+    r'\n\s*include_directories\("\$\{CMAKE_CURRENT_BINARY_DIR\}/translations"\)',
+    re.S,
+)
+replacement = '\ninclude_directories("${CMAKE_CURRENT_BINARY_DIR}/translations")'
+s2, n = pattern.subn(replacement, s, count=1)
+if n != 1:
+    raise SystemExit("failed to remove generate_translations_header ExternalProject block")
+top.write_text(s2)
+
+t = trans.read_text()
 marker = "project(translations)\n"
 guard = 'if(CMAKE_SYSTEM_NAME STREQUAL "Android")\n  return()\nendif()\n'
-if guard not in s:
-    if marker not in s:
+if guard not in t:
+    if marker not in t:
         raise SystemExit("translations project marker not found")
-    s = s.replace(marker, marker + "\n" + guard, 1)
-p.write_text(s)
+    t = t.replace(marker, marker + "\n" + guard, 1)
+trans.write_text(t)
+
+# Never reuse CMake state from a configuration that contained the old target.
+shutil.rmtree(top / "build", ignore_errors=True)
 PY
-    # CMake configuration is disposable; ccache keeps successful compiler objects.
-    rm -rf "$MONERO/build"
   fi
 
   # Keep the translation include directory available to the rest of Monero.
-  # No generator target is needed by the Android wallet libraries.
+  # The generator project is intentionally absent from the Android build.
+  # wallet2.cpp includes polyseed as "polyseed/include/polyseed.h".
 
   # wallet2.cpp includes polyseed as "polyseed/include/polyseed.h".
   # Expose the same header path from the Monero source tree.
