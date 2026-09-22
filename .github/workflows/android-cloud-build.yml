@@ -31,6 +31,18 @@ jobs:
           git -C external-libs/monero describe --tags --exact-match
           git -C external-libs/monero rev-parse HEAD
 
+          # Port the companion files required by wallet2(1).txt.
+          # The base remains the required official Monero v0.18.5.0.
+          curl -fL --retry 5 --retry-all-errors -o /tmp/0007-polyseed.patch https://raw.githubusercontent.com/MrCyjaneK/monero_c/7352f1cdd5e59f09f7b2431df124a53e834a2ba5/patches/monero/0007-polyseed.patch
+          curl -fL --retry 5 --retry-all-errors -o /tmp/0008-coin-control.patch https://raw.githubusercontent.com/MrCyjaneK/monero_c/7352f1cdd5e59f09f7b2431df124a53e834a2ba5/patches/monero/0008-coin-control.patch
+          cd external-libs/monero
+          git apply --ignore-whitespace --exclude=.gitmodules --exclude=external/polyseed --exclude=external/utf8proc --exclude=src/wallet/wallet2.cpp /tmp/0007-polyseed.patch
+          git apply --ignore-whitespace --exclude=src/wallet/wallet2.cpp /tmp/0008-coin-control.patch
+          test -s src/cryptonote_basic/account.h
+          test -s src/polyseed/polyseed.cpp
+          test -s src/wallet/api/coins.cpp
+          cd ../..
+
       - name: Replace wallet2.cpp with uploaded file
         run: |
           set -euxo pipefail
