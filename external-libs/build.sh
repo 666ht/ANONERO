@@ -169,6 +169,9 @@ if start >= 0:
     s2 = s[:line_start] + 'add_custom_target(generate_translations_header)\n' + s[end:]
     s2 = s2.replace('include(ExternalProject)\n', '', 1)
     top.write_text(s2)
+else:
+    if 'add_custom_target(generate_translations_header)' not in s:
+        raise SystemExit("translation target missing after previous setup")
 PY
   fi
 
@@ -234,7 +237,7 @@ EOF
         -D USE_DEVICE_TREZOR=OFF \
         -D STACK_TRACE=OFF \
         -D BUILD_TAG="android-$ABI" \
-        -D ANDROID_ABI="arm64-v8a" \
+        -D ANDROID_ABI="$ABI" \
         -D ANDROID_PLATFORM="android-$API"
     cmake --build "$MONERO/build/release" --target wallet_api --parallel "$NPROC"
     test -s "$MONERO/build/release/lib/libwallet_api.a"
