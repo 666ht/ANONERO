@@ -125,13 +125,26 @@ step_monero() {
     echo "MISSING $WORK/polyseed/include/polyseed.h" >&2
     exit 1
   fi
+  # The polyseed patch adds external/polyseed and external/utf8proc as
+  # submodules. We build those dependencies from pinned sources above, then
+  # materialize their source trees here because the CI checkout starts from
+  # stock Monero v0.18.5.0 and intentionally does not carry those gitlinks.
+  rm -rf "$MONERO/external/polyseed" "$MONERO/external/utf8proc"
+  mkdir -p "$MONERO/external"
+  cp -a "$WORK/polyseed" "$MONERO/external/polyseed"
+  cp -a "$WORK/utf8proc" "$MONERO/external/utf8proc"
+  test -s "$MONERO/external/polyseed/include/polyseed.h"
+  test -s "$MONERO/external/utf8proc/utf8proc.h"
+
+  # The polyseed patch adds these two entries to Monero's submodule check.
+  # They are materialized above rather than represented as gitlinks, so disable
+  # that source-tree consistency check for this CI-built source tree.
+  if grep -q 'check_submodule(external/polyseed)' "$MONERO/CMakeLists.txt"; then
+    sed -i '/check_submodule(external\/polyseed)/d; /check_submodule(external\/utf8proc)/d' "$MONERO/CMakeLists.txt"
+  fi
+
   # wallet2.cpp includes polyseed as "polyseed/include/polyseed.h".
-  # Expose the already-built dependency under the Monero source tree.
-  rm -rf "$MONERO/polyseed"
-  mkdir -p "$MONERO/polyseed"
-  cp -a "$WORK/polyseed/include" "$MONERO/polyseed/"
-  test -s "$MONERO/polyseed/include/polyseed.h"
-  # wallet2.cpp uses a source-relative include:
+  # Expose the same header path from the Monero source tree.
   # "polyseed/include/polyseed.h". Make that path resolve regardless of
   # CMake's Android include-path handling.
   rm -rf "$MONERO/src/wallet/polyseed"
