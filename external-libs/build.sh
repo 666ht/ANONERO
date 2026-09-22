@@ -35,8 +35,8 @@ POLYSEED_COMMIT=b7c35bb3c6b91e481ecb04fc235eaff69c507fa1
 UTF8PROC_COMMIT=1cb28a66ca79a0845e99433fd1056257456cef8b
 
 case "$TARGET" in
-android64) PLATFORM=android; ABI=arm64-v8a; API=21; CLANG=aarch64-linux-android21; HOST=aarch64-linux-android; OPENSSL_TARGET=android-arm64; MONERO_TARGET=release-static-android-armv8 ;;
-android32) PLATFORM=android; ABI=armeabi-v7a; API=21; CLANG=armv7a-linux-androideabi21; HOST=arm-linux-androideabi; OPENSSL_TARGET=android-arm; MONERO_TARGET=release-static-android-armv7 ;;
+android64) PLATFORM=android; ABI=arm64-v8a; API=21; CLANG=aarch64-linux-android21; HOST=aarch64-linux-android; OPENSSL_TARGET=android-arm64; MONERO_ARCH=armv8-a; MONERO_TARGET=release-static-android-armv8 ;;
+android32) PLATFORM=android; ABI=armeabi-v7a; API=21; CLANG=armv7a-linux-androideabi21; HOST=arm-linux-androideabi; OPENSSL_TARGET=android-arm; MONERO_ARCH=armv7-a; MONERO_TARGET=release-static-android-armv7 ;;
 linux) PLATFORM=linux; ABI=linux-x86_64; HOST=; OPENSSL_TARGET=linux-x86_64; MONERO_ARCH=x86-64 ;;
 *) echo "unknown TARGET '$TARGET' (android64 android32 linux)" >&2; exit 1 ;;
 esac
@@ -204,13 +204,13 @@ PY
         -D CMAKE_TOOLCHAIN_FILE="$NDK/build/cmake/android.toolchain.cmake" \
         -D CMAKE_BUILD_TYPE=Release \
         -D BUILD_TESTS=OFF \
-        -D ARCH="armv8-a" \
+        -D ARCH="$MONERO_ARCH" \
         -D STATIC=ON \
         -D BUILD_64=ON \
         -D BUILD_GUI_DEPS=1 \
         -D USE_DEVICE_TREZOR=OFF \
         -D STACK_TRACE=OFF \
-        -D BUILD_TAG="android-armv8" \
+        -D BUILD_TAG="android-$ABI" \
         -D ANDROID_ABI="arm64-v8a" \
         -D ANDROID_PLATFORM="android-$API"
     cmake --build "$MONERO/build/release" --target wallet_api --parallel "$NPROC"
