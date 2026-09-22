@@ -131,7 +131,9 @@ jobs:
             external-libs/armeabi-v7a
             external-libs/include
             external-libs/VERSION
-          key: anonero-native-android-v1-${{ runner.os }}-${{ hashFiles('.github/workflows/android-cloud-build.yml', 'external-libs/Makefile', 'external-libs/Containerfile', 'external-libs/build.sh', 'app/CMakeLists.txt', 'app/src/main/cpp/**', 'wallet2(1).txt') }}
+          key: anonero-native-android-v2-${{ runner.os }}-monero-0.18.5.0-${{ hashFiles('external-libs/Makefile', 'external-libs/Containerfile', 'external-libs/build.sh', 'app/CMakeLists.txt', 'app/src/main/cpp/**', 'wallet2(1).txt') }}
+          restore-keys: |
+            anonero-native-android-v2-${{ runner.os }}-monero-0.18.5.0-
 
       - name: Restore native compiler cache
         id: ccache-restore
