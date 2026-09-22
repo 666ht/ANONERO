@@ -133,8 +133,9 @@ jobs:
             external-libs/VERSION
           key: anonero-native-android-v1-${{ runner.os }}-${{ hashFiles('.github/workflows/android-cloud-build.yml', 'external-libs/Makefile', 'external-libs/Containerfile', 'external-libs/build.sh', 'app/CMakeLists.txt', 'app/src/main/cpp/**', 'wallet2(1).txt') }}
 
-      - name: Cache native compiler objects
-        uses: actions/cache@v4
+      - name: Restore native compiler cache
+        id: ccache-restore
+        uses: actions/cache/restore@v4
         with:
           path: external-libs/.ccache
           key: anonero-ccache-v1-${{ runner.os }}-${{ hashFiles('external-libs/build.sh', 'external-libs/Containerfile', 'app/CMakeLists.txt', 'app/src/main/cpp/**', 'wallet2(1).txt') }}
@@ -147,6 +148,13 @@ jobs:
         run: |
           set -euxo pipefail
           make android NPROC=4
+
+      - name: Save native compiler cache even if build fails
+        if: always() && steps.ccache-restore.outputs.cache-primary-key != ''
+        uses: actions/cache/save@v4
+        with:
+          path: external-libs/.ccache
+          key: ${{ steps.ccache-restore.outputs.cache-primary-key }}
 
       - name: Verify native Android libraries
         run: |
