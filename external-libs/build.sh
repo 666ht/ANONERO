@@ -83,9 +83,9 @@ step_fetch() {
   grab "https://github.com/boostorg/boost/releases/download/boost-$BOOST_VERSION/boost-$BOOST_VERSION-b2-nodocs.tar.gz" "boost-$BOOST_VERSION.tar.gz" "$BOOST_SHA256"
   grab "http://ftp.gnu.org/pub/gnu/libiconv/libiconv-$ICONV_VERSION.tar.gz" "libiconv-$ICONV_VERSION.tar.gz" "$ICONV_SHA256"
   grab "https://github.com/madler/zlib/releases/download/v$ZLIB_VERSION/zlib-$ZLIB_VERSION.tar.gz" "zlib-$ZLIB_VERSION.tar.gz" "$ZLIB_SHA256"
-  grab "https://www.openssl.org/source/old/3.6/openssl-$OPENSSL_VERSION.tar.gz" "openssl-$OPENSSL_VERSION.tar.gz" "$OPENSSL_SHA256"
+  grab "http://www.openssl.org/source/openssl-$OPENSSL_VERSION.tar.gz" "openssl-$OPENSSL_VERSION.tar.gz" "$OPENSSL_SHA256"
   grab "https://download.libsodium.org/libsodium/releases/libsodium-$SODIUM_VERSION.tar.gz" "libsodium-$SODIUM_VERSION.tar.gz" "$SODIUM_SHA256"
-  grab "https://github.com/libexpat/libexpat/releases/download/$EXPAT_TAG/expat-$EXPAT_VERSION.tar.gz" "expat-$EXPAT_VERSION.tar.gz" "$EXPAT_SHA256"
+  grab "https://downloads.sourceforge.net/project/expat.mirror/$EXPAT_TAG/expat-$EXPAT_VERSION.tar.gz" "expat-$EXPAT_VERSION.tar.gz" "$EXPAT_SHA256"
   grab "https://www.nlnetlabs.nl/downloads/unbound/unbound-$UNBOUND_VERSION.tar.gz" "unbound-$UNBOUND_VERSION.tar.gz" "$UNBOUND_SHA256"
   echo "fetched $(ls "$SRC" | wc -l) sources"
 }
