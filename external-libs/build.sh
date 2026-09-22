@@ -59,7 +59,18 @@ grab() {
   [ -f "$2" ] || curl -fL --http1.1 --retry 8 --retry-all-errors --retry-delay 3 -C - -o "$2" "$1"
   echo "$3  $2" | sha256sum -c
 }
-get() {\n  grab "$@"\n  cd "$WORK"\n  case "$2" in\n    *.tar.gz|*.tgz|*.tar.xz|*.tar.bz2)\n      tar -xf "$SRC/$2" -C "$WORK"\n      ;;\n    *.zip)\n      unzip -q "$SRC/$2" -d "$WORK"\n      ;;\n  esac\n}
+get() {
+  grab "$@"
+  cd "$WORK"
+  case "$2" in
+    *.tar.gz|*.tgz|*.tar.xz|*.tar.bz2)
+      tar -xf "$SRC/$2" -C "$WORK"
+      ;;
+    *.zip)
+      unzip -q "$SRC/$2" -d "$WORK"
+      ;;
+  esac
+}
 pin() {
   cd "$WORK"
   if [ ! -d "$3" ]; then
