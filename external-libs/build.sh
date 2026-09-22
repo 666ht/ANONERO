@@ -59,7 +59,7 @@ grab() {
   [ -f "$2" ] || curl -fL --http1.1 --retry 8 --retry-all-errors --retry-delay 3 -C - -o "$2" "$1"
   echo "$3  $2" | sha256sum -c
 }
-get() { grab "$@"; cd "$WORK"; tar -xf "$SRC/$2"; }
+get() { grab "$@"; cd "$WORK"; }
 pin() {
   cd "$WORK"
   if [ ! -d "$3" ]; then
@@ -120,27 +120,15 @@ dep_utf8proc() { cc; pin https://github.com/JuliaStrings/utf8proc v2.8.0 utf8pro
 
 step_monero() {
   cc
-  # wallet2.cpp from the ANONERO source includes polyseed with the legacy
-  # source-tree path "polyseed/include/polyseed.h". Keep the author's
-  # polyseed build, but expose its headers at the path expected by wallet2.cpp.
   if [ ! -s "$WORK/polyseed/include/polyseed.h" ]; then
     echo "MISSING $WORK/polyseed/include/polyseed.h" >&2
     exit 1
   fi
-  # The polyseed patch adds external/polyseed and external/utf8proc as
-  # submodules. We build those dependencies from pinned sources above, then
-  # materialize their source trees here because the CI checkout starts from
-  # stock Monero v0.18.5.0 and intentionally does not carry those gitlinks.
   rm -rf "$MONERO/external/polyseed" "$MONERO/external/utf8proc"
   mkdir -p "$MONERO/external"
   cp -a "$WORK/polyseed" "$MONERO/external/polyseed"
   cp -a "$WORK/utf8proc" "$MONERO/external/utf8proc"
 
-  # Docker copies the Monero source without its superproject .git metadata.
-  # The upstream CMake submodule consistency checks therefore cannot validate
-  # the copied tree. All required submodules were already materialized during
-  # the recursive clone in the CI preparation step, so disable those checks
-  # for this copied build tree.
   sed -i \
     -e '/check_submodule(external\/rapidjson)/d' \
     -e '/check_submodule(external\/trezor-common)/d' \
@@ -150,32 +138,21 @@ step_monero() {
     -e '/check_submodule(external\/utf8proc)/d' \
     "$MONERO/CMakeLists.txt"
 
-  # Monero v0.18.5.0 wires translations through ExternalProject_Add and may
-  # import the Android-built generator as an executable. Remove that entire
-  # host-only project from the copied CMakeLists before configuring Android.
   if android; then
     python3 - "$MONERO/CMakeLists.txt" "$MONERO/translations/CMakeLists.txt" <<'PY'
 from pathlib import Path
 import re
 import shutil
 import sys
-
 top = Path(sys.argv[1])
 trans = Path(sys.argv[2])
-
 s = top.read_text()
-pattern = re.compile(
-    r'\n?\s*include\(ExternalProject\)\s*'
-    r'\n\s*ExternalProject_Add\(generate_translations_header.*?'
-    r'\n\s*include_directories\("\$\{CMAKE_CURRENT_BINARY_DIR\}/translations"\)',
-    re.S,
-)
+pattern = re.compile(r'\n?\s*include\(ExternalProject\)\s*\n\s*ExternalProject_Add\(generate_translations_header.*?\n\s*include_directories\("\$\{CMAKE_CURRENT_BINARY_DIR\}/translations"\)', re.S)
 replacement = '\ninclude_directories("${CMAKE_CURRENT_BINARY_DIR}/translations")'
 s2, n = pattern.subn(replacement, s, count=1)
 if n != 1:
     raise SystemExit("failed to remove generate_translations_header ExternalProject block")
 top.write_text(s2)
-
 t = trans.read_text()
 marker = "project(translations)\n"
 guard = 'if(CMAKE_SYSTEM_NAME STREQUAL "Android")\n  return()\nendif()\n'
@@ -184,15 +161,10 @@ if guard not in t:
         raise SystemExit("translations project marker not found")
     t = t.replace(marker, marker + "\n" + guard, 1)
 trans.write_text(t)
-
-# Never reuse CMake state from a configuration that contained the old target.
 shutil.rmtree(top / "build", ignore_errors=True)
 PY
   fi
 
-  # Upstream Android targets build translations first; that creates an ARM
-  # generate_translations_header and then executes it inside the x86_64 container.
-  # Skip that host-only sub-build; the wallet libraries do not need it.
   if android; then
     python3 - "$MONERO/Makefile" <<'PY'
 from pathlib import Path
@@ -207,33 +179,21 @@ p.write_text(s)
 PY
   fi
 
-  # Keep the translation include directory available to the rest of Monero.
-  # The generator project is intentionally absent from the Android build.
-  # wallet2.cpp includes polyseed as "polyseed/include/polyseed.h".
-
-  # wallet2.cpp includes polyseed as "polyseed/include/polyseed.h".
-  # Expose the same header path from the Monero source tree.
-  # "polyseed/include/polyseed.h". Make that path resolve regardless of
-  # CMake's Android include-path handling.
   rm -rf "$MONERO/src/wallet/polyseed"
   ln -s "$MONERO/polyseed" "$MONERO/src/wallet/polyseed"
   cd "$MONERO"
-  # The Monero source is bind-mounted from the GitHub runner with a different
-  # owner. Git commands used by the Android release target must trust the tree.
   git config --global --add safe.directory /src
   git config --global --add safe.directory "$MONERO"
   if android; then
-    # Keep the author's Android build command exactly. The CI-only
-    # submodule handling above is completed before entering this step.
+    # The Monero Makefile's Android release target changes into build/release
+    # before invoking CMake. We removed the stale CMake tree above, so recreate
+    # the directory explicitly rather than letting the target assume it exists.
+    mkdir -p "$MONERO/build/release"
     CFLAGS="-I$MONERO ${CFLAGS:-}" CXXFLAGS="-I$MONERO ${CXXFLAGS:-}" \
       CMAKE_INCLUDE_PATH="$PREFIX/include" \
       CMAKE_LIBRARY_PATH="$PREFIX/lib" ANDROID_STANDALONE_TOOLCHAIN_PATH= \
       ANDROID_NDK_ROOT="$NDK" USE_SINGLE_BUILDDIR=1 \
       make "$MONERO_TARGET" -j"$NPROC"
-    # The Android release target does not necessarily build the wallet API
-    # static archive. Build it explicitly because the JNI layer links against it.
-    # wallet_api is marked EXCLUDE_FROM_ALL upstream; build it explicitly and
-    # verify the archive in the configured archive output directory.
     cmake --build "$MONERO/build/release" --target wallet_api --parallel "$NPROC"
     test -s "$MONERO/build/release/lib/libwallet_api.a"
   else
