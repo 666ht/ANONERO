@@ -1,0 +1,58 @@
+name: Android Cloud Build
+
+on:
+  push:
+    branches:
+      - "XMR中文"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+        with:
+          ref: XMR中文
+          fetch-depth: 1
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install Android SDK packages
+        run: |
+          sdkmanager "platform-tools" "platforms;android-35" "build-tools;36.0.0" "cmake;3.31.12"
+
+      - name: Pull official Monero v0.18.5.0
+        run: |
+          rm -rf external-libs/monero
+          git clone --depth 1 --branch v0.18.5.0 --recurse-submodules             https://github.com/monero-project/monero.git external-libs/monero
+          git -C external-libs/monero describe --tags --always
+
+      - name: Build native Android libraries
+        working-directory: external-libs
+        run: |
+          make android NPROC=4
+
+      - name: Build APK
+        run: |
+          chmod +x ./gradlew
+          ./gradlew :app:assembleAnonDebug --stacktrace --no-daemon
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: anonero-XMR中文-debug
+          path: app/build/outputs/apk/**/*.apk
+          if-no-files-found: error
