@@ -38,22 +38,24 @@ jobs:
           yes | "$SDKMANAGER" --licenses >/dev/null || true
           "$SDKMANAGER" "platform-tools" "platforms;android-35" "build-tools;36.0.0" "cmake;3.31.5" "ndk;29.0.13599879"
 
-      - name: Use uploaded modified Monero submodule
+      - name: Prepare matching Monero source without Tor
         run: |
           set -euxo pipefail
-          sudo apt-get update
-          sudo apt-get install -y --no-install-recommends tor torsocks ca-certificates
-          sudo systemctl start tor
-          for _ in {1..30}; do
-            if torsocks curl --silent --show-error --max-time 10 https://check.torproject.org/api/ip | grep -q '"IsTor":true'; then
-              break
-            fi
-            sleep 2
-          done
-          git -c http.proxy=socks5h://127.0.0.1:9050 clone --filter=blob:none http://git.anonero5wmhraxqsvzq2ncgptq6gq45qoto6fnkfwughfl4gbt44swad.onion/ANONERO/monero.git external-libs/monero
+          rm -rf /tmp/monero_c external-libs/monero
+          git clone --filter=blob:none https://github.com/MrCyjaneK/monero_c.git /tmp/monero_c
+          git -C /tmp/monero_c checkout --detach 7352f1cdd5e59f09f7b2431df124a53e834a2ba5
+          git clone --filter=blob:none https://github.com/monero-project/monero.git external-libs/monero
           cd external-libs/monero
-          git checkout --detach f0e0ca94c91cf8c192fec00249ac7272677a097c
-          git -C external-libs/monero -c http.proxy=socks5h://127.0.0.1:9050 submodule update --init --recursive
+          git checkout --detach dbcc7d212c094bd1a45f7291dbb99a4b4627a96d
+          git submodule update --init --recursive
+          git am -3 --whitespace=fix /tmp/monero_c/patches/monero/0007-polyseed.patch
+          git am -3 --whitespace=fix /tmp/monero_c/patches/monero/0008-coin-control.patch
+          cp '../../wallet2(1).txt' src/wallet/wallet2.cpp
+          rm -rf external/polyseed external/utf8proc
+          git clone --filter=blob:none https://github.com/tevador/polyseed.git external/polyseed
+          git -C external/polyseed checkout bd79f5014c331273357277ed8a3d756fb61b9fa1
+          git clone --filter=blob:none https://github.com/JuliaStrings/utf8proc.git external/utf8proc
+          git -C external/utf8proc checkout 3de4596fbe28956855df2ecb3c11c0bbc3535838
           cd ../..
       - name: Build native Android libraries
         working-directory: external-libs
