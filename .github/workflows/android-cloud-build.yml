@@ -50,10 +50,10 @@ jobs:
             fi
             sleep 2
           done
-          torsocks git clone --filter=blob:none http://git.anonero5wmhraxqsvzq2ncgptq6gq45qoto6fnkfwughfl4gbt44swad.onion/ANONERO/monero.git external-libs/monero
+          git -c http.proxy=socks5h://127.0.0.1:9050 clone --filter=blob:none http://git.anonero5wmhraxqsvzq2ncgptq6gq45qoto6fnkfwughfl4gbt44swad.onion/ANONERO/monero.git external-libs/monero
           cd external-libs/monero
           git checkout --detach f0e0ca94c91cf8c192fec00249ac7272677a097c
-          torsocks git submodule update --init --recursive
+          git -C external-libs/monero -c http.proxy=socks5h://127.0.0.1:9050 submodule update --init --recursive
           cd ../..
       - name: Build native Android libraries
         working-directory: external-libs
