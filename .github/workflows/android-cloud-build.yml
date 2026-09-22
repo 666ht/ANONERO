@@ -26,7 +26,7 @@ jobs:
         run: |
           set -euxo pipefail
           rm -rf external-libs/monero
-          git clone --depth 1 --branch v0.18.5.0 https://github.com/monero-project/monero.git external-libs/monero
+          git clone --depth 1 --recurse-submodules --shallow-submodules --branch v0.18.5.0 https://github.com/monero-project/monero.git external-libs/monero
           test -s external-libs/monero/src/wallet/wallet2.cpp
           git -C external-libs/monero describe --tags --exact-match
           git -C external-libs/monero rev-parse HEAD
