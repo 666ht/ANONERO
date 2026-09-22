@@ -39,13 +39,14 @@ image:
 	rm -rf $(ABI) && mkdir -p $(ABI)
 	mkdir -p .ccache
 	set -e; \
-	trap 'chown -R $${SUDO_UID:-$$(id -u)}:$${SUDO_GID:-$$(id -g)} .ccache >/dev/null 2>&1 || true; $(CONTAINER) rm -f anonero-$(TARGET)-out >/dev/null 2>&1 || true' EXIT; \
 	$(CONTAINER) run --name anonero-$(TARGET)-out --user 0:0 \
 	    -v $(CURDIR)/monero:/src \
 	    -v $(CURDIR)/.ccache:/ccache \
 	    -e TARGET=$(TARGET) -e NPROC=$(NPROC) -e CCACHE_DIR=/ccache -e CCACHE_MAXSIZE=5G \
-	    -w /external-libs anonero-$(TARGET) bash -lc './build.sh monero && ./build.sh collect' >/dev/null
-	$(CONTAINER) cp anonero-$(TARGET)-out:/opt/out/. $(ABI)/
+	    -w /external-libs anonero-$(TARGET) bash -lc './build.sh monero && ./build.sh collect' >/dev/null; \
+	$(CONTAINER) cp anonero-$(TARGET)-out:/opt/out/. $(ABI)/; \
+	$(CONTAINER) rm -f anonero-$(TARGET)-out >/dev/null 2>&1 || true; \
+	chown -R $${SUDO_UID:-$$(id -u)}:$${SUDO_GID:-$$(id -g)} .ccache >/dev/null 2>&1 || true
 	@# docker runs as root; hand the artifacts back to the invoking user
 	-@chown -R $${SUDO_UID:-$$(id -u)}:$${SUDO_GID:-$$(id -g)} $(ABI)
 
