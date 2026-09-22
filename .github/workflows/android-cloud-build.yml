@@ -75,28 +75,9 @@ jobs:
           cmp -s "wallet2(1).txt" external-libs/monero/src/wallet/wallet2.cpp
           sha256sum "wallet2(1).txt" external-libs/monero/src/wallet/wallet2.cpp
 
-          # wallet2(1).txt contains three additional wallet2 methods that are
-          # not declared by stock v0.18.5.0 wallet2.h. Inject their exact
-          # declarations into the existing public section of wallet2.
-          python3 - <<'PY'
-          from pathlib import Path
-          p = Path("external-libs/monero/src/wallet/wallet2.h")
-          s = p.read_text()
-          decl = """    bool get_polyseed(epee::wipeable_string& polyseed, epee::wipeable_string& passphrase) const;
-              uint64_t view_only_balance(uint32_t index_major, const std::vector<crypto::key_image>& selected_inputs);
-              uint64_t get_blockchain_height_by_timestamp(uint64_t timestamp_target);
-          """
-          if "view_only_balance(uint32_t index_major" not in s:
-              marker = "  class wallet2\n  {"
-              if marker not in s:
-                  raise SystemExit("wallet2 class marker not found")
-              s = s.replace(marker, marker + "\n  public:\n" + decl, 1)
-              p.write_text(s)
-          grep = ["get_polyseed", "view_only_balance", "get_blockchain_height_by_timestamp"]
-          for x in grep:
-              if x not in s:
-                  raise SystemExit(f"missing declaration: {x}")
-          print("wallet2.h declarations verified")
+          # wallet2(1).txt is paired with the declarations supplied by the upstream
+          # polyseed/coin-control patches; do not redeclare them here.
+          grep -n -E "get_polyseed|view_only_balance|get_blockchain_height_by_timestamp" external-libs/monero/src/wallet/wallet2.h
 
       - name: Set up JDK 17
         uses: actions/setup-java@v5
