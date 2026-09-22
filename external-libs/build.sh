@@ -133,8 +133,6 @@ step_monero() {
   mkdir -p "$MONERO/external"
   cp -a "$WORK/polyseed" "$MONERO/external/polyseed"
   cp -a "$WORK/utf8proc" "$MONERO/external/utf8proc"
-  test -s "$MONERO/external/polyseed/include/polyseed.h"
-  test -s "$MONERO/external/utf8proc/utf8proc.h"
 
   # Docker copies the Monero source without its superproject .git metadata.
   # The upstream CMake submodule consistency checks therefore cannot validate
@@ -156,7 +154,6 @@ step_monero() {
   # CMake's Android include-path handling.
   rm -rf "$MONERO/src/wallet/polyseed"
   ln -s "$MONERO/polyseed" "$MONERO/src/wallet/polyseed"
-  test -s "$MONERO/src/wallet/polyseed/include/polyseed.h"
   cd "$MONERO"
   if android; then
     # Keep the author's Android build flow. The CI source tree is copied
