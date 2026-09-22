@@ -227,7 +227,7 @@ PY
     # Android does not build the host Qt translation generator. Provide the
     # empty embedded-translation header expected by src/common/i18n.cpp.
     mkdir -p "$MONERO/build/release/translations"
-    cat > "$MONERO/build/release/translations/translation_files.h" <<\x27EOF\x27
+    cat > "$MONERO/build/release/translations/translation_files.h" <<'EOF'
 #ifndef TRANSLATION_FILES_H
 #define TRANSLATION_FILES_H
 #include <string>
