@@ -129,6 +129,14 @@ jobs:
             external-libs/VERSION
           key: anonero-native-android-v1-${{ runner.os }}-${{ hashFiles('.github/workflows/android-cloud-build.yml', 'external-libs/Makefile', 'external-libs/Containerfile', 'external-libs/build.sh', 'app/CMakeLists.txt', 'app/src/main/cpp/**', 'wallet2(1).txt') }}
 
+      - name: Cache native compiler objects
+        uses: actions/cache@v4
+        with:
+          path: external-libs/.ccache
+          key: anonero-ccache-v1-${{ runner.os }}-${{ hashFiles('external-libs/build.sh', 'external-libs/Containerfile', 'app/CMakeLists.txt', 'app/src/main/cpp/**', 'wallet2(1).txt') }}
+          restore-keys: |
+            anonero-ccache-v1-${{ runner.os }}-
+
       - name: Build native Android libraries
         if: steps.native-cache.outputs.cache-hit != 'true'
         working-directory: external-libs
