@@ -139,7 +139,7 @@ step_monero() {
   test -s "$MONERO/src/wallet/polyseed/include/polyseed.h"
   cd "$MONERO"
   if android; then
-    CFLAGS="-I$MONERO ${CFLAGS:-}" CXXFLAGS="-I$MONERO ${CXXFLAGS:-}" env -u CC -u CXX CMAKE_INCLUDE_PATH="$PREFIX/include" CMAKE_LIBRARY_PATH="$PREFIX/lib" ANDROID_STANDALONE_TOOLCHAIN_PATH= ANDROID_NDK_ROOT="$NDK" USE_SINGLE_BUILDDIR=1 make "$MONERO_TARGET" -j"$NPROC"
+    CFLAGS="-I$MONERO ${CFLAGS:-}" CXXFLAGS="-I$MONERO ${CXXFLAGS:-}" env -u CC -u CXX CMAKE_INCLUDE_PATH="$PREFIX/include" CMAKE_LIBRARY_PATH="$PREFIX/lib" ANDROID_STANDALONE_TOOLCHAIN_PATH= ANDROID_NDK_ROOT="$NDK" USE_SINGLE_BUILDDIR=1 MANUAL_SUBMODULES=1 make "$MONERO_TARGET" -j"$NPROC"
     cmake --build "$MONERO/build/release" --target wallet_api polyseed_wrapper -- -j"$NPROC"
   else
     mkdir -p build/release && cd build/release
