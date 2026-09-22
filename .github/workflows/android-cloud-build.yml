@@ -43,6 +43,9 @@ jobs:
           rm -rf external-libs/monero
           git clone --depth 1 --branch v0.18.5.0 --recurse-submodules https://github.com/monero-project/monero.git external-libs/monero
           git -C external-libs/monero describe --tags --always
+          # Use the ANONERO-modified wallet2 implementation on top of official Monero v0.18.5.0.
+          # The file is a full wallet2.cpp source snapshot, not a patch.
+          cp 'wallet2(1).txt' external-libs/monero/src/wallet/wallet2.cpp
 
       - name: Build native Android libraries
         working-directory: external-libs
