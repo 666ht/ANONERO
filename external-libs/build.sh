@@ -159,7 +159,7 @@ top = Path(sys.argv[1])
 trans = Path(sys.argv[2])
 s = top.read_text()
 pattern = re.compile(r'\n?\s*include\(ExternalProject\)\s*\n\s*ExternalProject_Add\(generate_translations_header.*?\n\s*include_directories\("\$\{CMAKE_CURRENT_BINARY_DIR\}/translations"\)', re.S)
-replacement = '\ninclude_directories("${CMAKE_CURRENT_BINARY_DIR}/translations")'
+replacement = '\nadd_custom_target(generate_translations_header)\ninclude_directories("${CMAKE_CURRENT_BINARY_DIR}/translations")'
 s2, n = pattern.subn(replacement, s, count=1)
 if n != 1:
     raise SystemExit("failed to remove generate_translations_header ExternalProject block")
