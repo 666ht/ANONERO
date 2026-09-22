@@ -52,9 +52,9 @@ jobs:
           # targets a newer Monero tree than v0.18.5.0, so its unrelated hunks are
           # intentionally not applied wholesale.
           git apply --include='src/polyseed/*' /tmp/0007-polyseed.patch
-          git clone https://github.com/tevador/polyseed.git external/polyseed
+          git clone --filter=blob:none https://github.com/tevador/polyseed.git external/polyseed
           git -C external/polyseed checkout bd79f5014c331273357277ed8a3d756fb61b9fa1
-          git clone https://github.com/JuliaStrings/utf8proc.git external/utf8proc
+          git clone --filter=blob:none https://github.com/JuliaStrings/utf8proc.git external/utf8proc
           git -C external/utf8proc checkout 3de4596fbe28956855df2ecb3c11c0bbc3535838
 
           # Wire Polyseed into the v0.18.5.0 build tree.
