@@ -158,25 +158,18 @@ import sys
 top = Path(sys.argv[1])
 trans = Path(sys.argv[2])
 s = top.read_text()
-pattern = re.compile(r'\n?\s*include\(ExternalProject\)\s*\n\s*ExternalProject_Add\(generate_translations_header.*?\n\s*include_directories\("\$\{CMAKE_CURRENT_BINARY_DIR\}/translations"\)', re.S)
-replacement = '\nadd_custom_target(generate_translations_header)\ninclude_directories("${CMAKE_CURRENT_BINARY_DIR}/translations")'
-s2, n = pattern.subn(replacement, s, count=1)
-if n != 1:
-    raise SystemExit("failed to remove generate_translations_header ExternalProject block")
-top.write_text(s2)
-t = trans.read_text()
-marker = "project(translations)\n"
-guard = 'if(CMAKE_SYSTEM_NAME STREQUAL "Android")\n  return()\nendif()\n'
-if guard not in t:
-    if marker not in t:
-        raise SystemExit("translations project marker not found")
-    t = t.replace(marker, marker + "\n" + guard, 1)
-trans.write_text(t)
-shutil.rmtree(top / "build", ignore_errors=True)
-PY
-  fi
-
-  if android; then
+start = s.find("ExternalProject_Add(generate_translations_header")
+if start < 0:
+    raise SystemExit("generate_translations_header ExternalProject block not found")
+end_marker = 'include_directories("${CMAKE_CURRENT_BINARY_DIR}/translations")'
+end = s.find(end_marker, start)
+if end < 0:
+    raise SystemExit("translation include_directories marker not found")
+end += len(end_marker)
+line_start = s.rfind("\n", 0, start) + 1
+s2 = s[:line_start] + 'add_custom_target(generate_translations_header)\n' + s[end:]
+s2 = s2.replace('include(ExternalProject)\n', '', 1)
+if android; then
     python3 - "$MONERO/Makefile" <<'PY'
 from pathlib import Path
 import re
