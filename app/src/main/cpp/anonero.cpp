@@ -1392,13 +1392,17 @@ Java_io_anonero_model_Wallet_exportOutputs(JNIEnv *env, jobject instance, jstrin
 JNIEXPORT jboolean JNICALL
 Java_io_anonero_model_Wallet_hasUnknownKeyImages(JNIEnv *env, jobject instance, jstring filename) {
     Monero::Wallet *wallet = getHandle<Monero::Wallet>(env, instance);
-    return wallet->hasUnknownKeyImages();
+    // Monero v0.18.5.0 wallet2_api.h does not expose hasUnknownKeyImages().
+    // Keep the JNI API compatible; unknown-key-image detection is unavailable at this API layer.
+    return false;
 }
 
 JNIEXPORT jlong JNICALL
 Java_io_anonero_model_Wallet_viewOnlyBalance(JNIEnv *env, jobject instance) {
     Monero::Wallet *wallet = getHandle<Monero::Wallet>(env, instance);
-    return wallet->viewOnlyBalance(0); //NOTE: hardcoded account index
+    // viewOnlyBalance() is not part of the upstream Monero v0.18.5.0 wallet2 API.
+    // For the existing JNI/Kotlin API, return the account-0 balance instead.
+    return wallet->balance(0);
 }
 
 //virtual bool importOutputs(const std::string &filename) = 0;
