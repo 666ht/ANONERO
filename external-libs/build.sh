@@ -192,15 +192,27 @@ PY
   git config --global --add safe.directory /src
   git config --global --add safe.directory "$MONERO"
   if android; then
-    # The Monero Makefile's Android release target changes into build/release
-    # before invoking CMake. We removed the stale CMake tree above, so recreate
-    # the directory explicitly rather than letting the target assume it exists.
-    mkdir -p "$MONERO/build/release"
+    # Build Android directly with CMake instead of the Monero Makefile
+    # wrapper. The wrapper also builds translations first, which is not usable
+    # with the Android toolchain in this container.
+    rm -rf "$MONERO/build/release"
     CFLAGS="-I$MONERO ${CFLAGS:-}" CXXFLAGS="-I$MONERO ${CXXFLAGS:-}" \
       CMAKE_INCLUDE_PATH="$PREFIX/include" \
-      CMAKE_LIBRARY_PATH="$PREFIX/lib" ANDROID_STANDALONE_TOOLCHAIN_PATH= \
-      ANDROID_NDK_ROOT="$NDK" USE_SINGLE_BUILDDIR=1 \
-      make "$MONERO_TARGET" -j"$NPROC"
+      CMAKE_LIBRARY_PATH="$PREFIX/lib" \
+      ANDROID_NDK_ROOT="$NDK" \
+      cmake -S "$MONERO" -B "$MONERO/build/release" \
+        -D CMAKE_TOOLCHAIN_FILE="$NDK/build/cmake/android.toolchain.cmake" \
+        -D CMAKE_BUILD_TYPE=Release \
+        -D BUILD_TESTS=OFF \
+        -D ARCH="armv8-a" \
+        -D STATIC=ON \
+        -D BUILD_64=ON \
+        -D BUILD_GUI_DEPS=1 \
+        -D USE_DEVICE_TREZOR=OFF \
+        -D STACK_TRACE=OFF \
+        -D BUILD_TAG="android-armv8" \
+        -D ANDROID_ABI="arm64-v8a" \
+        -D ANDROID_PLATFORM="android-$API"
     cmake --build "$MONERO/build/release" --target wallet_api --parallel "$NPROC"
     test -s "$MONERO/build/release/lib/libwallet_api.a"
   else
