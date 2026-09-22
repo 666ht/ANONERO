@@ -48,7 +48,6 @@ jobs:
           cp -a /tmp/monero_c/monero external-libs/monero
           cd external-libs/monero
           git fetch --unshallow origin || true
-          git -C ../../tmp/monero_c fetch --unshallow origin || true
           git am -3 --whitespace=fix /tmp/monero_c/patches/monero/0007-polyseed.patch
           git am -3 --whitespace=fix /tmp/monero_c/patches/monero/0008-coin-control.patch
           cp '../../wallet2(1).txt' src/wallet/wallet2.cpp
