@@ -73,7 +73,9 @@ pin() {
 cc() {
   if android; then
     export ANDROID_NDK_ROOT=$NDK TC=$TC_DIR
-    export CC=$CLANG-clang CXX=$CLANG-clang++
+    export CC="ccache $CLANG-clang" CXX="ccache $CLANG-clang++"
+    export CCACHE_DIR="${CCACHE_DIR:-/ccache}"
+    export CCACHE_MAXSIZE="${CCACHE_MAXSIZE:-5G}"
     export AR=$TC/bin/llvm-ar RANLIB=$TC/bin/llvm-ranlib STRIP=$TC/bin/llvm-strip
     export PATH=$TC/bin:$PATH
   fi
@@ -159,7 +161,7 @@ step_monero() {
     # Keep the author's Android build command exactly. The CI-only
     # submodule handling above is completed before entering this step.
     CFLAGS="-I$MONERO ${CFLAGS:-}" CXXFLAGS="-I$MONERO ${CXXFLAGS:-}" \
-      env -u CC -u CXX CMAKE_INCLUDE_PATH="$PREFIX/include" \
+      CMAKE_INCLUDE_PATH="$PREFIX/include" \
       CMAKE_LIBRARY_PATH="$PREFIX/lib" ANDROID_STANDALONE_TOOLCHAIN_PATH= \
       ANDROID_NDK_ROOT="$NDK" USE_SINGLE_BUILDDIR=1 \
       make "$MONERO_TARGET" -j"$NPROC"
