@@ -66,9 +66,28 @@ jobs:
           cmp -s "wallet2(1).txt" external-libs/monero/src/wallet/wallet2.cpp
           sha256sum "wallet2(1).txt" external-libs/monero/src/wallet/wallet2.cpp
 
-          # The companion patches may already declare some methods. Add only
-          # declarations that are genuinely missing, avoiding duplicate members.
-          python3 -c 'from pathlib import Path; p=Path("external-libs/monero/src/wallet/wallet2.h"); s=p.read_text(); decls=["    bool get_polyseed(epee::wipeable_string& polyseed, epee::wipeable_string& passphrase) const;","    uint64_t view_only_balance(uint32_t index_major, const std::vector<crypto::key_image>& selected_inputs);","    uint64_t get_blockchain_height_by_timestamp(uint64_t timestamp_target);"]; missing=[d for d in decls if d.split("(")[0].split()[-1]+"(" not in s]; marker="  class wallet2\n  {"; ((marker not in s) and missing) and (_ for _ in ()).throw(SystemExit("wallet2 class marker not found")); s=s.replace(marker,marker+"\n  public:\n"+"\n".join(missing),1) if missing else s; p.write_text(s); print("wallet2.h added missing declarations:",len(missing))'
+          # Companion patches already provide get_polyseed and timestamp helpers.
+          # The uploaded wallet2.cpp additionally defines view_only_balance(), so
+          # explicitly add only that missing declaration to the wallet2 class.
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path("external-libs/monero/src/wallet/wallet2.h")
+          s = p.read_text()
+          if "view_only_balance(" not in s:
+              marker = "  class wallet2\n  {"
+              pos = s.find(marker)
+              if pos < 0:
+                  raise SystemExit("wallet2 class marker not found")
+              public_pos = s.find("  public:", pos)
+              if public_pos < 0:
+                  raise SystemExit("wallet2 public section not found")
+              decl = "    uint64_t view_only_balance(uint32_t index_major, const std::vector<crypto::key_image>& selected_inputs);\n"
+              s = s[:public_pos + len("  public:\n")] + decl + s[public_pos + len("  public:\n"):]
+              p.write_text(s)
+              print("added view_only_balance declaration")
+          else:
+              print("view_only_balance declaration already present")
+          PY
           grep -n -E "get_polyseed|view_only_balance|get_blockchain_height_by_timestamp" external-libs/monero/src/wallet/wallet2.h
 
       - name: Align wallet RPC with patched create_transactions_2
