@@ -30,7 +30,7 @@ RUN set -x \
       > /etc/apt/apt.conf.d/10repro
 
 RUN set -x && apt-get update && apt-get install -y --no-install-recommends \
-      build-essential automake libtool pkg-config curl wget file unzip git \
+      build-essential automake libtool pkg-config curl wget file unzip git ccache \
       ca-certificates python3 python-is-python3 flex bison \
  && rm -rf /var/lib/apt/lists/*
 
@@ -40,7 +40,7 @@ WORKDIR /external-libs
 COPY build.sh /external-libs/
 RUN ./build.sh fetch
 
-FROM sources
+FROM sources AS deps
 ARG TARGET
 ARG NPROC=4
 ENV TARGET=${TARGET} NPROC=${NPROC}
@@ -60,10 +60,9 @@ RUN ./build.sh unbound
 RUN ./build.sh polyseed
 RUN ./build.sh utf8proc
 
-# Monero source last, so editing it leaves every layer above cached.
-COPY monero/ /src/
-RUN ./build.sh monero
-RUN ./build.sh collect
+# Monero is built at container runtime rather than during `docker build`.
+# This lets the CI job mount a persistent ccache directory, so a failed
+# compilation can reuse all previously successful translation units.
 
 # jni.h, for building libanonero.so against this image's glibc rather than the host's.
 # Compile-time only -- JNI calls go through the JNIEnv table, so the .so links no JVM
