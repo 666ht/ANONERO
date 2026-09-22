@@ -131,6 +131,12 @@ step_monero() {
   mkdir -p "$MONERO/polyseed"
   cp -a "$WORK/polyseed/include" "$MONERO/polyseed/"
   test -s "$MONERO/polyseed/include/polyseed.h"
+  # wallet2.cpp uses a source-relative include:
+  # "polyseed/include/polyseed.h". Make that path resolve regardless of
+  # CMake's Android include-path handling.
+  rm -rf "$MONERO/src/wallet/polyseed"
+  ln -s "$MONERO/polyseed" "$MONERO/src/wallet/polyseed"
+  test -s "$MONERO/src/wallet/polyseed/include/polyseed.h"
   cd "$MONERO"
   if android; then
     CFLAGS="-I$MONERO ${CFLAGS:-}" CXXFLAGS="-I$MONERO ${CXXFLAGS:-}" env -u CC -u CXX CMAKE_INCLUDE_PATH="$PREFIX/include" CMAKE_LIBRARY_PATH="$PREFIX/lib" ANDROID_STANDALONE_TOOLCHAIN_PATH= ANDROID_NDK_ROOT="$NDK" USE_SINGLE_BUILDDIR=1 make "$MONERO_TARGET" -j"$NPROC"
