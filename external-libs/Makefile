@@ -33,7 +33,7 @@ image:
 	@command -v $(CONTAINER) >/dev/null || { echo "$(CONTAINER) not found"; exit 1; }
 	@echo "==> $(TARGET) -> $(ABI)  ($(CONTAINER), -j$(NPROC))"
 	-$(CONTAINER) container rm anonero-$(TARGET) -f >/dev/null 2>&1
-	$(CONTAINER) build -f Containerfile --build-arg TARGET=$(TARGET) --build-arg NPROC=$(NPROC) \
+	BUILDKIT_PROGRESS=plain $(CONTAINER) build --progress=plain -f Containerfile --build-arg TARGET=$(TARGET) --build-arg NPROC=$(NPROC) \
 	    --build-arg BASE=$(BASE) --build-arg SNAPSHOT=$(SNAPSHOT) \
 	    --build-arg SOURCE_DATE_EPOCH=$(SOURCE_DATE_EPOCH) -t anonero-$(TARGET) .
 	$(CONTAINER) create -it --name anonero-$(TARGET) anonero-$(TARGET) bash >/dev/null
