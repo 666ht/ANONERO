@@ -33,13 +33,20 @@ image:
 	@command -v $(CONTAINER) >/dev/null || { echo "$(CONTAINER) not found"; exit 1; }
 	@echo "==> $(TARGET) -> $(ABI)  ($(CONTAINER), -j$(NPROC))"
 	-$(CONTAINER) container rm anonero-$(TARGET) -f >/dev/null 2>&1
-	BUILDKIT_PROGRESS=plain $(CONTAINER) build --progress=plain -f Containerfile --build-arg TARGET=$(TARGET) --build-arg NPROC=$(NPROC) \
+	BUILDKIT_PROGRESS=plain $(CONTAINER) build --progress=plain -f Containerfile --target deps --build-arg TARGET=$(TARGET) --build-arg NPROC=$(NPROC) \
 	    --build-arg BASE=$(BASE) --build-arg SNAPSHOT=$(SNAPSHOT) \
 	    --build-arg SOURCE_DATE_EPOCH=$(SOURCE_DATE_EPOCH) -t anonero-$(TARGET) .
-	$(CONTAINER) create -it --name anonero-$(TARGET) anonero-$(TARGET) bash >/dev/null
 	rm -rf $(ABI) && mkdir -p $(ABI)
-	$(CONTAINER) cp anonero-$(TARGET):/opt/out/. $(ABI)/
-	-$(CONTAINER) container rm anonero-$(TARGET) -f >/dev/null
+	mkdir -p .ccache
+	set -e; trap 'chown -R ${SUDO_UID:-$(id -u)}:${SUDO_GID:-$(id -g)} .ccache >/dev/null 2>&1 || true' EXIT; \
+	$(CONTAINER) run --rm --user 0:0 \
+	    -v $(CURDIR)/monero:/src \
+	    -v $(CURDIR)/.ccache:/ccache \
+	    -e TARGET=$(TARGET) -e NPROC=$(NPROC) -e CCACHE_DIR=/ccache -e CCACHE_MAXSIZE=5G \
+	    -w /external-libs anonero-$(TARGET) bash -lc './build.sh monero && ./build.sh collect'
+	$(CONTAINER) create --name anonero-$(TARGET)-out anonero-$(TARGET) bash >/dev/null
+	$(CONTAINER) cp anonero-$(TARGET)-out:/opt/out/. $(ABI)/
+	-$(CONTAINER) container rm anonero-$(TARGET)-out -f >/dev/null
 	@# docker runs as root; hand the artifacts back to the invoking user
 	-@chown -R $${SUDO_UID:-$$(id -u)}:$${SUDO_GID:-$$(id -g)} $(ABI)
 
