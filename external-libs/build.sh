@@ -169,7 +169,11 @@ end += len(end_marker)
 line_start = s.rfind("\n", 0, start) + 1
 s2 = s[:line_start] + 'add_custom_target(generate_translations_header)\n' + s[end:]
 s2 = s2.replace('include(ExternalProject)\n', '', 1)
-if android; then
+top.write_text(s2)
+PY
+  fi
+
+  if android; then
     python3 - "$MONERO/Makefile" <<'PY'
 from pathlib import Path
 import re
