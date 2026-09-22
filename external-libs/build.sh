@@ -150,6 +150,10 @@ step_monero() {
     -e '/check_submodule(external\/utf8proc)/d' \
     "$MONERO/CMakeLists.txt"
 
+  # The translation-header generator is a host executable. Do not let the
+  # Android toolchain compile it as an ARM target executable.
+  sed -i 's@CMAKE_ARGS -DLRELEASE_PATH=${LRELEASE_PATH}@CMAKE_ARGS -DLRELEASE_PATH=${LRELEASE_PATH} -DCMAKE_C_COMPILER=/usr/bin/cc -DCMAKE_CXX_COMPILER=/usr/bin/c++@' "$MONERO/CMakeLists.txt"
+
   # wallet2.cpp includes polyseed as "polyseed/include/polyseed.h".
   # Expose the same header path from the Monero source tree.
   # "polyseed/include/polyseed.h". Make that path resolve regardless of
