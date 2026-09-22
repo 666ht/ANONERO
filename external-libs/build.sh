@@ -224,6 +224,22 @@ PY
         -D BUILD_TAG="android-$ABI" \
         -D ANDROID_ABI="arm64-v8a" \
         -D ANDROID_PLATFORM="android-$API"
+    # Android does not build the host Qt translation generator. Provide the
+    # empty embedded-translation header expected by src/common/i18n.cpp.
+    mkdir -p "$MONERO/build/release/translations"
+    cat > "$MONERO/build/release/translations/translation_files.h" <<\x27EOF\x27
+#ifndef TRANSLATION_FILES_H
+#define TRANSLATION_FILES_H
+#include <string>
+static const struct embedded_file {
+  const std::string *name;
+  const std::string *data;
+} embedded_files[] = {
+  {NULL, NULL}
+};
+static bool find_embedded_file(const std::string &, std::string &) { return false; }
+#endif
+EOF
     cmake --build "$MONERO/build/release" --target wallet_api --parallel "$NPROC"
     test -s "$MONERO/build/release/lib/libwallet_api.a"
   else
