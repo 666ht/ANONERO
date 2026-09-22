@@ -22,22 +22,22 @@ jobs:
           fetch-depth: 1
           submodules: false
 
-      - name: Prepare Monero source
+      - name: Prepare Monero v0.18.5.0
         run: |
           set -euxo pipefail
           rm -rf external-libs/monero
-          git clone --depth 1 https://github.com/monero-project/monero.git external-libs/monero
+          git clone --depth 1 --branch v0.18.5.0 https://github.com/monero-project/monero.git external-libs/monero
           test -s external-libs/monero/src/wallet/wallet2.cpp
-          cd external-libs/monero
-          git rev-parse HEAD
-          cd ../..
+          git -C external-libs/monero describe --tags --exact-match
+          git -C external-libs/monero rev-parse HEAD
 
-      - name: Use uploaded wallet2.cpp directly
+      - name: Replace wallet2.cpp with uploaded file
         run: |
           set -euxo pipefail
           test -s "wallet2(1).txt"
           cp "wallet2(1).txt" external-libs/monero/src/wallet/wallet2.cpp
           cmp -s "wallet2(1).txt" external-libs/monero/src/wallet/wallet2.cpp
+          sha256sum "wallet2(1).txt" external-libs/monero/src/wallet/wallet2.cpp
 
       - name: Set up JDK 17
         uses: actions/setup-java@v5
@@ -48,13 +48,13 @@ jobs:
       - name: Install Android SDK packages
         run: |
           set -euxo pipefail
-          SDKMANAGER="${ANDROID_HOME}/cmdline-tools/latest/bin/sdkmanager"
-          if [ ! -x "$SDKMANAGER" ]; then
-            SDKMANAGER="${ANDROID_HOME}/cmdline-tools/12.0/bin/sdkmanager"
+          SDKMANAGER="\$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager"
+          if [ ! -x "\$SDKMANAGER" ]; then
+            SDKMANAGER="\$ANDROID_HOME/cmdline-tools/12.0/bin/sdkmanager"
           fi
-          "$SDKMANAGER" --version
-          yes | "$SDKMANAGER" --licenses >/dev/null || true
-          "$SDKMANAGER" "platform-tools" "platforms;android-35" "build-tools;36.0.0" "cmake;3.31.5" "ndk;29.0.13599879"
+          "\$SDKMANAGER" --version
+          yes | "\$SDKMANAGER" --licenses >/dev/null || true
+          "\$SDKMANAGER" "platform-tools" "platforms;android-35" "build-tools;36.0.0" "cmake;3.31.5" "ndk;29.0.13599879"
 
       - name: Build native Android libraries
         working-directory: external-libs
