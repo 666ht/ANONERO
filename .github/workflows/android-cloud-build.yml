@@ -42,12 +42,12 @@ jobs:
         run: |
           set -euxo pipefail
           rm -rf /tmp/monero_c external-libs/monero
-          git clone --filter=blob:none --no-checkout https://github.com/MrCyjaneK/monero_c.git /tmp/monero_c
+          git clone --filter=blob:none https://github.com/MrCyjaneK/monero_c.git /tmp/monero_c
           git -C /tmp/monero_c checkout --detach 7352f1cdd5e59f09f7b2431df124a53e834a2ba5
-          git -C /tmp/monero_c submodule update --init --recursive --force monero
-          cp -a /tmp/monero_c/monero external-libs/monero
+          git clone --filter=blob:none --no-checkout https://github.com/monero-project/monero.git external-libs/monero
           cd external-libs/monero
-          git fetch --unshallow origin || true
+          git checkout --detach dbcc7d212c094bd1a45f7291dbb99a4b4627a96d
+          git submodule update --init --recursive
           git am -3 --whitespace=fix /tmp/monero_c/patches/monero/0007-polyseed.patch
           git am -3 --whitespace=fix /tmp/monero_c/patches/monero/0008-coin-control.patch
           cp '../../wallet2(1).txt' src/wallet/wallet2.cpp
