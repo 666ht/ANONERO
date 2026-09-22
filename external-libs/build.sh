@@ -200,6 +200,22 @@ PY
   git config --global --add safe.directory /src
   git config --global --add safe.directory "$MONERO"
   if android; then
+    # Android does not run the host translation generator. Keep the fallback
+    # header beside i18n.cpp so the compiler finds it without relying on a
+    # generated binary-directory include path.
+    cat > "$MONERO/src/common/translation_files.h" <<'EOF'
+#ifndef TRANSLATION_FILES_H
+#define TRANSLATION_FILES_H
+#include <string>
+static const struct embedded_file {
+  const std::string *name;
+  const std::string *data;
+} embedded_files[] = {
+  {NULL, NULL}
+};
+static bool find_embedded_file(const std::string &, std::string &) { return false; }
+#endif
+EOF
     # Build Android directly with CMake instead of the Monero Makefile
     # wrapper. The wrapper also builds translations first, which is not usable
     # with the Android toolchain in this container.
@@ -221,22 +237,6 @@ PY
         -D BUILD_TAG="android-$ABI" \
         -D ANDROID_ABI="arm64-v8a" \
         -D ANDROID_PLATFORM="android-$API"
-    # Android does not build the host Qt translation generator. Provide the
-    # empty embedded-translation header expected by src/common/i18n.cpp.
-    mkdir -p "$MONERO/build/release/translations"
-    cat > "$MONERO/build/release/translations/translation_files.h" <<'EOF'
-#ifndef TRANSLATION_FILES_H
-#define TRANSLATION_FILES_H
-#include <string>
-static const struct embedded_file {
-  const std::string *name;
-  const std::string *data;
-} embedded_files[] = {
-  {NULL, NULL}
-};
-static bool find_embedded_file(const std::string &, std::string &) { return false; }
-#endif
-EOF
     cmake --build "$MONERO/build/release" --target wallet_api --parallel "$NPROC"
     test -s "$MONERO/build/release/lib/libwallet_api.a"
   else
