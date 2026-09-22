@@ -15,20 +15,20 @@ jobs:
     timeout-minutes: 120
 
     steps:
-      - name: Checkout source and uploaded Monero submodule
+      -  name: Checkout source and Monero submodule
         uses: actions/checkout@v4
         with:
           ref: XMR中文
           fetch-depth: 1
-          submodules: false
+          submodules: true
 
-      - name: Prepare Monero v0.18.5.0 source
+      - name: Verify Monero v0.18.5.0 submodule
         run: |
           set -euxo pipefail
-          rm -rf external-libs/monero
-          git clone --depth 1 --branch v0.18.5.0 https://github.com/monero-project/monero.git external-libs/monero
-          test -f external-libs/monero/src/wallet/wallet2.cpp
+          test -d external-libs/monero/.git -o -f external-libs/monero/.git
+          test "$(git -C external-libs/monero rev-parse HEAD)" = "f0e0ca94c91cf8c192fec00249ac7272677a097c"
           grep -q '"v0.18.5.0"' external-libs/monero/src/version.cpp
+          test -s external-libs/monero/src/wallet/wallet2.cpp
 
       - name: Apply uploaded wallet2.cpp
         run: |
