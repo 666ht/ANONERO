@@ -190,6 +190,23 @@ shutil.rmtree(top / "build", ignore_errors=True)
 PY
   fi
 
+  # Upstream Android targets build translations first; that creates an ARM
+  # generate_translations_header and then executes it inside the x86_64 container.
+  # Skip that host-only sub-build; the wallet libraries do not need it.
+  if android; then
+    python3 - "$MONERO/Makefile" <<'PY'
+from pathlib import Path
+import sys
+p = Path(sys.argv[1])
+s = p.read_text()
+old = s
+s = ''.join(line for line in s.splitlines(True) if 'release/translations' not in line)
+if s == old:
+    raise SystemExit("failed to remove Android translation sub-build")
+p.write_text(s)
+PY
+  fi
+
   # Keep the translation include directory available to the rest of Monero.
   # The generator project is intentionally absent from the Android build.
   # wallet2.cpp includes polyseed as "polyseed/include/polyseed.h".
