@@ -44,16 +44,48 @@ jobs:
           git clone --depth 1 --branch v0.18.5.0 --recurse-submodules https://github.com/monero-project/monero.git external-libs/monero
           git -C external-libs/monero describe --tags --always
           # Restore the Polyseed integration required by ANONERO's wallet2 snapshot.
-          # This is the original Monero/Polyseed integration patch used by the ANONERO-derived wallet2.
           curl -fL --retry 5 --retry-all-errors \
             https://raw.githubusercontent.com/MrCyjaneK/monero_c/7352f1cdd5e59f09f7b2431df124a53e834a2ba5/patches/monero/0007-polyseed.patch \
             -o /tmp/0007-polyseed.patch
           cd external-libs/monero
-          git apply --3way --exclude=src/wallet/wallet2.cpp /tmp/0007-polyseed.patch
-          git clone --depth 1 https://github.com/tevador/polyseed.git external/polyseed
-          git -C external/polyseed checkout 50aa33733ac4b5f795230e8c1ef8569abaf8c5c4
-          git clone --depth 1 https://github.com/JuliaStrings/utf8proc.git external/utf8proc
-          git -C external/utf8proc checkout b3e0f28adaec943ac25e3e27514dd6037e7a022e
+          # Apply only the Polyseed implementation files. The full historical patch
+          # targets a newer Monero tree than v0.18.5.0, so its unrelated hunks are
+          # intentionally not applied wholesale.
+          git apply --include='src/polyseed/*' /tmp/0007-polyseed.patch
+          git clone https://github.com/tevador/polyseed.git external/polyseed
+          git -C external/polyseed checkout bd79f5014c331273357277ed8a3d756fb61b9fa1
+          git clone https://github.com/JuliaStrings/utf8proc.git external/utf8proc
+          git -C external/utf8proc checkout 3de4596fbe28956855df2ecb3c11c0bbc3535838
+
+          # Wire Polyseed into the v0.18.5.0 build tree.
+          python3 - <<'PY'
+          from pathlib import Path
+
+          def once(path, old, new):
+              p = Path(path)
+              s = p.read_text()
+              if new in s:
+                  return
+              if old not in s:
+                  raise SystemExit(f"missing insertion point: {path}")
+              p.write_text(s.replace(old, new, 1))
+
+          once("CMakeLists.txt",
+               "include_directories(external/rapidjson/include external/easylogging++ src contrib/epee/include external external/supercop/include)",
+               "include_directories(external/rapidjson/include external/easylogging++ src contrib/epee/include external external/supercop/include external/polyseed/include external/utf8proc)")
+          once("external/CMakeLists.txt",
+               "add_subdirectory(qrcodegen)\n",
+               "add_subdirectory(qrcodegen)\nadd_subdirectory(polyseed EXCLUDE_FROM_ALL)\nadd_subdirectory(utf8proc EXCLUDE_FROM_ALL)\n")
+          once("src/CMakeLists.txt",
+               "add_subdirectory(mnemonics)\n",
+               "add_subdirectory(mnemonics)\nadd_subdirectory(polyseed)\n")
+          once("src/cryptonote_basic/CMakeLists.txt",
+               "    device\n",
+               "    device\n    polyseed_wrapper\n")
+          once("src/cryptonote_config.h",
+               "#define DNS_BLOCKLIST_LIFETIME (86400 * 8)\n",
+               "#define DNS_BLOCKLIST_LIFETIME (86400 * 8)\n\n#define POLYSEED_COIN POLYSEED_MONERO\n")
+          PY
           cd ../..
           # Use the ANONERO-modified wallet2 implementation on top of official Monero v0.18.5.0.
           # The file is a full wallet2.cpp source snapshot, not a patch.
