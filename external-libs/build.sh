@@ -269,7 +269,12 @@ step_monero() {
         # NDK from ANDROID_NDK_ROOT. Non-empty dies on a directory nobody creates.
         env -u CC -u CXX CMAKE_INCLUDE_PATH="$PREFIX/include" CMAKE_LIBRARY_PATH="$PREFIX/lib" \
             ANDROID_STANDALONE_TOOLCHAIN_PATH= \
-            ANDROID_NDK_ROOT="$NDK" USE_SINGLE_BUILDDIR=1 make "$MONERO_TARGET" -j"$NPROC"
+            ANDROID_NDK_ROOT="$NDK" USE_SINGLE_BUILDDIR=1 make "$MONERO_TARGET" -j"$NPROC"\
+        # Monero 0.18.5.0 marks wallet_api and polyseed_wrapper EXCLUDE_FROM_ALL,\
+        # so the Android aggregate target does not produce these archives. Build them explicitly.\
+        env -u CC -u CXX CMAKE_INCLUDE_PATH="$PREFIX/include" CMAKE_LIBRARY_PATH="$PREFIX/lib" \
+            ANDROID_STANDALONE_TOOLCHAIN_PATH= \
+            ANDROID_NDK_ROOT="$NDK" USE_SINGLE_BUILDDIR=1 make wallet_api polyseed_wrapper -j"$NPROC"
     else
         # No linux wallet_api target in the fork, so drive cmake directly, pointed at our
         # prefix rather than the system. STATIC stays OFF: STATIC=ON would set
