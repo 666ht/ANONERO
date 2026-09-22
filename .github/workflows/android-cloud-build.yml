@@ -38,23 +38,19 @@ jobs:
           yes | "$SDKMANAGER" --licenses >/dev/null || true
           "$SDKMANAGER" "platform-tools" "platforms;android-35" "build-tools;36.0.0" "cmake;3.31.5" "ndk;29.0.13599879"
 
-      - name: Pull official Monero v0.18.5.0
+      - name: Pull matching patched Monero source
         run: |
-          rm -rf external-libs/monero
-          git clone --depth 1 --branch v0.18.5.0 --recurse-submodules https://github.com/monero-project/monero.git external-libs/monero
-          git -C external-libs/monero describe --tags --always
-          # Restore the exact Polyseed + coin-control dependency set used by wallet2(1).txt.
-          curl -fL --retry 5 --retry-all-errors \
-            https://raw.githubusercontent.com/MrCyjaneK/monero_c/7352f1cdd5e59f09f7b2431df124a53e834a2ba5/patches/monero/0007-polyseed.patch \
-            -o /tmp/0007-polyseed.patch
-          curl -fL --retry 5 --retry-all-errors \
-            https://raw.githubusercontent.com/MrCyjaneK/monero_c/7352f1cdd5e59f09f7b2431df124a53e834a2ba5/patches/monero/0008-coin-control.patch \
-            -o /tmp/0008-coin-control.patch
+          set -euxo pipefail
+          rm -rf /tmp/monero_c external-libs/monero
+          git clone --filter=blob:none --no-checkout https://github.com/MrCyjaneK/monero_c.git /tmp/monero_c
+          git -C /tmp/monero_c checkout --detach 7352f1cdd5e59f09f7b2431df124a53e834a2ba5
+          git -C /tmp/monero_c submodule update --init --recursive --force monero
+          cp -a /tmp/monero_c/monero external-libs/monero
           cd external-libs/monero
-          git fetch --unshallow origin v0.18.5.0 || true
-          git fetch origin release-v0.18 --filter=blob:none || true
-          git apply --3way /tmp/0007-polyseed.patch
-          git apply --3way /tmp/0008-coin-control.patch
+          git fetch --unshallow origin || true
+          git -C ../../tmp/monero_c fetch --unshallow origin || true
+          git am -3 --whitespace=fix /tmp/monero_c/patches/monero/0007-polyseed.patch
+          git am -3 --whitespace=fix /tmp/monero_c/patches/monero/0008-coin-control.patch
           cp '../../wallet2(1).txt' src/wallet/wallet2.cpp
           rm -rf external/polyseed external/utf8proc
           git clone --filter=blob:none https://github.com/tevador/polyseed.git external/polyseed
