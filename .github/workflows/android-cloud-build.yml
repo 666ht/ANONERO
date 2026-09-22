@@ -31,15 +31,37 @@ jobs:
           git -C external-libs/monero describe --tags --exact-match
           git -C external-libs/monero rev-parse HEAD
 
-          # Port the companion files required by wallet2(1).txt.
-          # The base remains the required official Monero v0.18.5.0.
           curl -fL --retry 5 --retry-all-errors -o /tmp/0007-polyseed.patch https://raw.githubusercontent.com/MrCyjaneK/monero_c/7352f1cdd5e59f09f7b2431df124a53e834a2ba5/patches/monero/0007-polyseed.patch
           curl -fL --retry 5 --retry-all-errors -o /tmp/0008-coin-control.patch https://raw.githubusercontent.com/MrCyjaneK/monero_c/7352f1cdd5e59f09f7b2431df124a53e834a2ba5/patches/monero/0008-coin-control.patch
+
           cd external-libs/monero
-          # These patches were authored against a nearby Monero tree. Use 3-way
-          # application so harmless context drift in v0.18.5.0 does not abort the build.
-          git apply --3way --ignore-whitespace --exclude=.gitmodules --exclude=external/polyseed --exclude=external/utf8proc --exclude=src/wallet/wallet2.cpp /tmp/0007-polyseed.patch
-          git apply --3way --ignore-whitespace --exclude=src/wallet/wallet2.cpp /tmp/0008-coin-control.patch
+
+          # The upstream patches contain changes to the onion author's submodules
+          # and wallet2.cpp. Those are deliberately excluded because:
+          # 1) dependencies are built by the author's build.sh flow, and
+          # 2) wallet2.cpp is replaced below by wallet2(1).txt.
+          filter_patch() {
+            src="$1"
+            dst="$2"
+            awk '
+              /^diff --git a\// {
+                path=$3
+                sub(/^a\//, "", path)
+                skip=(path==".gitmodules" || path=="external/polyseed" || path=="external/utf8proc" || path=="src/wallet/wallet2.cpp")
+              }
+              !skip { print }
+            ' "$src" > "$dst"
+          }
+
+          filter_patch /tmp/0007-polyseed.patch /tmp/0007-polyseed.filtered.patch
+          filter_patch /tmp/0008-coin-control.patch /tmp/0008-coin-control.filtered.patch
+
+          # GNU patch supports fuzzed context matching, which is needed because
+          # the companion patches target a nearby Monero tree rather than the
+          # exact v0.18.5.0 checkout.
+          patch --batch --forward --fuzz=5 -p1 < /tmp/0007-polyseed.filtered.patch
+          patch --batch --forward --fuzz=5 -p1 < /tmp/0008-coin-control.filtered.patch
+
           test -s src/cryptonote_basic/account.h
           test -s src/polyseed/polyseed.cpp
           test -s src/wallet/api/coins.cpp
