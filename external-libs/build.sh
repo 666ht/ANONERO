@@ -136,12 +136,19 @@ step_monero() {
   test -s "$MONERO/external/polyseed/include/polyseed.h"
   test -s "$MONERO/external/utf8proc/utf8proc.h"
 
-  # The polyseed patch adds these two entries to Monero's submodule check.
-  # They are materialized above rather than represented as gitlinks, so disable
-  # that source-tree consistency check for this CI-built source tree.
-  if grep -q 'check_submodule(external/polyseed)' "$MONERO/CMakeLists.txt"; then
-    sed -i '/check_submodule(external\/polyseed)/d; /check_submodule(external\/utf8proc)/d' "$MONERO/CMakeLists.txt"
-  fi
+  # Docker copies the Monero source without its superproject .git metadata.
+  # The upstream CMake submodule consistency checks therefore cannot validate
+  # the copied tree. All required submodules were already materialized during
+  # the recursive clone in the CI preparation step, so disable those checks
+  # for this copied build tree.
+  sed -i \
+    -e '/check_submodule(external\/rapidjson)/d' \
+    -e '/check_submodule(external\/trezor-common)/d' \
+    -e '/check_submodule(external\/randomx)/d' \
+    -e '/check_submodule(external\/supercop)/d' \
+    -e '/check_submodule(external\/polyseed)/d' \
+    -e '/check_submodule(external\/utf8proc)/d' \
+    "$MONERO/CMakeLists.txt"
 
   # wallet2.cpp includes polyseed as "polyseed/include/polyseed.h".
   # Expose the same header path from the Monero source tree.
