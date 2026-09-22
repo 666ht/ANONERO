@@ -19,6 +19,7 @@ jobs:
     timeout-minutes: 120
 
     steps:
+      # Uses fixed translation heredoc in external-libs/build.sh.
       - name: Checkout source
         uses: actions/checkout@v4
         with:
