@@ -580,7 +580,9 @@ fun TransactionScreen(
                                         view.performHapticFeedback(
                                             HapticFeedbackConstants.CONFIRM
                                         )
+                                        refreshState.snapTo(1f)
                                         walletState.refresh()
+                                        refreshState.animateToHidden()
                                     }
                                 }
                             )
