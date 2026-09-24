@@ -336,7 +336,7 @@ fun NodeSettings(onBackPress: () -> Unit = {}) {
                                     nodeSettingsVM.connect(it)
                                 }
                             editingNode = null
-                        }, nodeSettingsVM
+                        }, nodeSettingsVM = nodeSettingsVM
                     )
                 }
             }
