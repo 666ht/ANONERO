@@ -347,7 +347,7 @@ fun ReviewTransactionScreen(
                         Text(
                             stringResource(
                                 R.string.unable_to_broadcast_transaction,
-                                viewModel.broadCastError?.message ?: "Unknown Error"
+                                viewModel.broadCastError?.message ?: stringResource(R.string.unknown_error)
                             ),
                             style = MaterialTheme.typography.bodyMedium.copy(
                                 color = DangerColor
@@ -511,7 +511,7 @@ fun ReviewTransactionScreen(
                                             signing = false
                                             qrScannerParam = SpendQRExchangeParam(
                                                 exportType = ExportType.SIGNED_TX,
-                                                title = "SIGNED TX",
+                                                title = stringResource(R.string.signed_tx),
                                                 ctaText = context.getString(R.string.finish)    ,
                                             )
                                         } else {
@@ -527,8 +527,8 @@ fun ReviewTransactionScreen(
                                     if (AnonConfig.viewOnly && !readyToBroadcast) {
                                         qrScannerParam = SpendQRExchangeParam(
                                             exportType = ExportType.UN_SIGNED_TX,
-                                            title = "UNSIGNED TX",
-                                            ctaText = "SCAN SIGNED TX",
+                                            title = stringResource(R.string.unsigned_tx),
+                                            ctaText = stringResource(R.string.scan_signed_tx),
                                         )
                                     } else {
                                         viewModel.broadCast()?.invokeOnCompletion { error ->

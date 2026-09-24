@@ -30,6 +30,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontFamily
@@ -147,7 +148,7 @@ fun LogViewer(
         topBar = {
             TopAppBar(
                 title = {
-                    Text("Logs")
+                    Text(stringResource(R.string.logs))
                 },
                 navigationIcon = {
                     IconButton(
@@ -192,14 +193,14 @@ fun LogViewer(
                                 }
                         }
                     ) {
-                        Icon(AnonIcons.Share_log, contentDescription = "Share Logs")
+                        Icon(AnonIcons.Share_log, contentDescription = stringResource(R.string.share_logs))
                     }
                     IconButton(
                         onClick = {
                             viewModel.clearLogs()
                         }
                     ) {
-                        Icon(AnonIcons.Clear_all, contentDescription = "Clear Logs")
+                        Icon(AnonIcons.Clear_all, contentDescription = stringResource(R.string.clear_logs))
                     }
                 },
                 scrollBehavior = scrollBehavior

@@ -202,7 +202,7 @@ fun RestoreWallet(
                             isError = invalidSeed,
                             supportingText = {
                                 if (invalidSeed) {
-                                    Text("Invalid seed", color = MaterialTheme.colorScheme.error)
+                                    Text(stringResource(R.string.invalid_seed), color = MaterialTheme.colorScheme.error)
                                 }
                             },
                             maxLines = 5,

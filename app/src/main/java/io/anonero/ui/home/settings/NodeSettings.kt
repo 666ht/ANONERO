@@ -360,7 +360,7 @@ fun NodeSettings(onBackPress: () -> Unit = {}) {
                                 showMenu = !showMenu
                             }
                         ) {
-                            Icon(Icons.Default.MoreVert, contentDescription = "More")
+                            Icon(Icons.Default.MoreVert, contentDescription = stringResource(R.string.more))
                             DropdownMenu(
                                 expanded = showMenu,
                                 containerColor = MaterialTheme.colorScheme.background,
@@ -375,14 +375,14 @@ fun NodeSettings(onBackPress: () -> Unit = {}) {
                                 onDismissRequest = { showMenu = false }
                             ) {
                                 DropdownMenuItem(
-                                    text = { Text("Resync BlockChain") },
+                                    text = { Text(stringResource(R.string.resync_blockchain)) },
                                     onClick = {
                                         showMenu = false
                                         val result = walletState.resyncBlockchain()
                                         if (result.isFailure) {
                                             scope.launch {
                                                 toastState.show(
-                                                    "Error : ${result.exceptionOrNull()?.message}",
+                                                    stringResource(R.string.error_colon, result.exceptionOrNull()?.message ?: ""),
                                                     type = ToastType.Warning,
                                                     duration = 6.seconds
                                                 )
@@ -402,7 +402,7 @@ fun NodeSettings(onBackPress: () -> Unit = {}) {
 
                     },
                     title = {
-                        Text("Nodes")
+                        Text(stringResource(R.string.nodes))
                     },
                 )
                 WalletProgressIndicator()

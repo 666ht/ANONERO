@@ -142,7 +142,7 @@
     <string name="label_cannot_be_empty">标签不能为空</string>
     <string name="update">更新</string>
     <string name="dismiss_button">取消</string>
-    <string name="battery_optimization_message">为了让ΛИ0ИΞR0在后台正常运行，建议关闭电池优化，\n你可以随时在Android的应用设置中更改此设置。\n\n是否继续？</string>
+    <string name="battery_optimization_message">为了让ΛИ0ИΞR0在后台正常运行，建议关闭电池优化，&#10;你可以随时在Android的应用设置中更改此设置。&#10;&#10;是否继续？</string>
     <string name="broadcast_transaction_confirm">是否广播交易？</string>
     <string name="exit_confirm">是否退出 %1$s？</string>
     <string name="exit">退出</string>
@@ -170,4 +170,13 @@
     <string name="primary_address_title">主地址</string>
     <string name="balance">余额</string>
     <string name="created_at">创建时间：%1$s</string>
+    <string name="nodes">节点</string>
+    <string name="more">更多</string>
+    <string name="error_colon">错误：%1$s</string>
+    <string name="unknown_error">未知错误</string>
+    <string name="signed_tx">已签名交易</string>
+    <string name="unsigned_tx">未签名交易</string>
+    <string name="scan_signed_tx">扫描已签名交易</string>
+    <string name="invalid_seed">无效的助记词</string>
+    <string name="share_logs">分享日志</string>
 </resources>
