@@ -575,7 +575,13 @@ fun TransactionScreen(
                             DropdownMenuItem(
                                 text = { Text(stringResource(R.string.refresh)) },
                                 onClick = {
-                                    navigateTo(CoinsScreenRoute)
+                                    showMenu = false
+                                    scope.launch {
+                                        view.performHapticFeedback(
+                                            HapticFeedbackConstants.CONFIRM
+                                        )
+                                        walletState.refresh()
+                                    }
                                 }
                             )
                             DropdownMenuItem(
