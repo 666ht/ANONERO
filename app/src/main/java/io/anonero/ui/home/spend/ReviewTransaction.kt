@@ -372,7 +372,7 @@ fun ReviewTransactionScreen(
                             tint = SuccessColor,
                             modifier = Modifier.size(44.dp)
                         )
-                        Text("Success")
+                        Text(stringResource(R.string.success))
                     }
                 }
                 AnimatedVisibility(
