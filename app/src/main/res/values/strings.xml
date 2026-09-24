@@ -155,6 +155,7 @@
     <string name="daemon_height">Daemon Height: %1$s</string>
     <string name="disconnect">Disconnect</string>
     <string name="remove">Remove</string>
+    <string name="edit">Edit</string>
     <string name="password_upper">PASSWORD</string>
     <string name="share_encrypted_backup_file">Share Encrypted Backup File</string>
     <string name="clear_logs">Clear Logs</string>
