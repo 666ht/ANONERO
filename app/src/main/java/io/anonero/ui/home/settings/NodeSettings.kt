@@ -279,6 +279,7 @@ class NodeSettingsViewModel(
 fun NodeSettings(onBackPress: () -> Unit = {}) {
     val nodeSettingsVM = koinViewModel<NodeSettingsViewModel>()
     var showNodeDetails by remember { mutableStateOf(false) }
+    var editingNode by remember { mutableStateOf<Node?>(null) }
     val walletState = koinInject<WalletState>()
     var showMenu by remember { mutableStateOf(false) }
     val availableNodes by nodeSettingsVM.nodes.collectAsState(arrayListOf())
@@ -325,11 +326,16 @@ fun NodeSettings(onBackPress: () -> Unit = {}) {
                                 showNodeDetails = false
                             }
                         }, onConnect = {
+                            val oldNode = editingNode
+                            if (oldNode != null) {
+                                nodeSettingsVM.removeItem(oldNode.toNodeString())
+                            }
                             nodeSettingsVM.addItem(it)
                             nodeSettingsVM.viewModelScope
                                 .launch {
                                     nodeSettingsVM.connect(it)
                                 }
+                            editingNode = null
                         }, nodeSettingsVM
                     )
                 }
@@ -460,7 +466,11 @@ fun NodeSettings(onBackPress: () -> Unit = {}) {
                                         }
                                     }
                             },
-                            onRemove = { nodeSettingsVM.removeItem(node.toNodeString()) })
+                            onRemove = { nodeSettingsVM.removeItem(node.toNodeString()) },
+                            onEdit = {
+                                editingNode = node
+                                showNodeDetails = true
+                            })
                     }
                 }
         }
@@ -486,6 +496,7 @@ fun NodeListItem(
     onDisconnect: (node: Node) -> Unit = {},
     onConnect: (node: Node) -> Unit = {},
     onRemove: (node: Node) -> Unit = {},
+    onEdit: (node: Node) -> Unit = {},
 ) {
     var menu by remember { mutableStateOf(false) }
     val daemonStatus by nodeSettingsVM.getCurrentDaemonLive().observeAsState(null)
@@ -558,6 +569,14 @@ fun NodeListItem(
                     if (!active) {
                         HorizontalDivider()
                         DropdownMenuItem(
+                            text = { Text(stringResource(R.string.update)) },
+                            onClick = {
+                                onEdit(node)
+                                menu = false
+                            },
+                        )
+                        HorizontalDivider()
+                        DropdownMenuItem(
                             text = { Text(stringResource(R.string.remove)) },
                             onClick = {
                                 onRemove(node)
@@ -573,14 +592,16 @@ fun NodeListItem(
 
 @Composable
 fun NodeForm(
+    initialNode: Node? = null,
+    submitLabel: String? = null,
     onBackPress: () -> Unit = {},
     onConnect: (node: Node) -> Unit = {},
     nodeSettingsVM: NodeSettingsViewModel
 ) {
     val connectionError by nodeSettingsVM.connectionError.observeAsState(null)
-    var rpcHost by remember { mutableStateOf("") }
-    var rpcUsername by remember { mutableStateOf("") }
-    var rpcPassPhrase by remember { mutableStateOf("") }
+    var rpcHost by remember { mutableStateOf(initialNode?.let { "http://${it.host}:${it.rpcPort}" } ?: "") }
+    var rpcUsername by remember { mutableStateOf(initialNode?.username ?: "") }
+    var rpcPassPhrase by remember { mutableStateOf(initialNode?.password ?: "") }
     val labelColor = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.3f)
     Column(
         modifier = Modifier
@@ -726,7 +747,7 @@ fun NodeForm(
                     }
                 },
             ) {
-                Text(stringResource(R.string.connect))
+                Text(submitLabel ?: stringResource(R.string.connect))
             }
         }
     }
