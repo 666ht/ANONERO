@@ -43,6 +43,7 @@ import androidx.core.content.FileProvider
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.anonero.AnonConfig
+import io.anonero.R
 import io.anonero.icons.AnonIcons
 import io.anonero.store.AnonLog
 import io.anonero.store.LogRepository
