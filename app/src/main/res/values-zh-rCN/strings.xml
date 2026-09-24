@@ -115,8 +115,8 @@
     <string name="view">查看</string>
     <string name="legacy_seed">传统助记词 (legacy seed)</string>
     <string name="polyseed">助记词 (Polyseed)</string>
-    <string name="view_key">查看密钥</string>
-    <string name="spend_key">消费密钥</string>
+    <string name="view_key">查看密钥 (view key)</string>
+    <string name="spend_key">消费密钥 (spend key)</string>
     <string name="export_nero_keys">导出 [ИΞR0] 密钥</string>
     <string name="settings_connection">连接</string>
     <string name="settings_node_settings">节点设置</string>
