@@ -38,6 +38,7 @@
     <string name="tor_logs">Tor Logs</string>
     <string name="node_disconnected">Node disconnected&#10;please connect to a node to view coins</string>
     <string name="no_coins_available">No coins available&#10;Your coins will appear here once you receive transactions</string>
+    <string name="yes">Yes</string>
     <string name="confirm">Confirm</string>
     <string name="spend">Spend</string>
     <string name="coins">Coins</string>

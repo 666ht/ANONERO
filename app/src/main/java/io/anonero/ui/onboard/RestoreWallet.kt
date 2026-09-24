@@ -187,7 +187,7 @@ fun RestoreWallet(
                 ListItem(
                     headlineContent = {
                         Text(
-                            text = "ENTER SEED",
+                            text = stringResource(R.string.seed),
                             color = MaterialTheme.colorScheme.primary,
                             modifier = Modifier.padding(start = 4.dp)
                         )

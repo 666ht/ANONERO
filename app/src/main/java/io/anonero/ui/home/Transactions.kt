@@ -243,7 +243,7 @@ fun TransactionScreen(
                                 broadcastSignedTxPath = null
                             }
                         }
-                    }) { Text("Yes") }
+                    }) { Text(stringResource(R.string.yes)) }
             },
         )
     }
@@ -358,7 +358,7 @@ fun TransactionScreen(
                         showScanner = false
                         qrScannerParam = SpendQRExchangeParam(
                             exportType = ExportType.IMAGE,
-                            title = "KEY IMAGES",
+                            title = stringResource(R.string.key_images),
                             ctaText = "SCAN UNSIGNED TX",
                         )
                     }

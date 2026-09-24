@@ -187,7 +187,7 @@ fun LogViewer(
                                         context.startActivity(
                                             Intent.createChooser(
                                                 shareIntent,
-                                                "Share Encrypted Backup File"
+                                                stringResource(R.string.share_encrypted_backup_file)
                                             )
                                         )
                                     }
@@ -290,7 +290,7 @@ private fun LogViewerPrev() {
             topBar = {
                 TopAppBar(
                     title = {
-                        Text("Logs")
+                        Text(stringResource(R.string.logs))
                     },
                 )
             }
