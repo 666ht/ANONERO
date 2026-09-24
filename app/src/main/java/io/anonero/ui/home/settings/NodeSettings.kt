@@ -410,7 +410,10 @@ fun NodeSettings(onBackPress: () -> Unit = {}) {
 
                     },
                     title = {
-                        Text(stringResource(R.string.nodes))
+                        Text(
+                            stringResource(R.string.nodes),
+                            color = Color.Transparent
+                        )
                     },
                 )
                 WalletProgressIndicator()
