@@ -27,7 +27,7 @@
     <string name="username">用户名</string>
     <string name="optional">(可选)</string>
     <string name="password">密码</string>
-    <string name="wallet_loading">钱包加载中\n 请稍候...</string>
+    <string name="wallet_loading">钱包加载中\n请稍候...</string>
     <string name="manual_proxy">手动代理</string>
     <string name="on">开启</string>
     <string name="off">关闭</string>
@@ -88,11 +88,11 @@
     <string name="create">创建</string>
     <string name="wallet">%1$s %2$s 钱包</string>
     <string name="restore_height">恢复高度</string>
-    <string name="private_view_key">私有查看密钥 (Private View Key)</string>
+    <string name="private_view_key">私有查看密钥</string>
     <string name="primary_address">主地址</string>
     <string name="import_view_keys">导入查看密钥</string>
     <string name="invalid_qr_code">无效的二维码</string>
-    <string name="loading">正在加载....</string>
+    <string name="loading">正在加载...</string>
     <string name="unable_to_create_wallet">无法创建钱包</string>
     <string name="enter_new_pin">输入新 PIN 码</string>
     <string name="enter_pin">输入 PIN 码</string>
@@ -114,10 +114,10 @@
     <string name="wipe">擦除</string>
     <string name="nero_keys">[ИΞR0] 密钥</string>
     <string name="view">查看</string>
-    <string name="legacy_seed">传统助记词 (Legacy Seed)</string>
+    <string name="legacy_seed">传统助记词</string>
     <string name="polyseed">Polyseed 助记词</string>
-    <string name="view_key">查看密钥 (View Key)</string>
-    <string name="spend_key">消费密钥 (Spend Key)</string>
+    <string name="view_key">查看密钥</string>
+    <string name="spend_key">消费密钥</string>
     <string name="export_nero_keys">导出 [ИΞR0] 密钥</string>
     <string name="settings_connection">网络连接</string>
     <string name="settings_node_settings">节点设置</string>
@@ -128,7 +128,7 @@
     <string name="settings_export_backup">导出备份</string>
     <string name="settings_secure_wipe">安全擦除数据</string>
     <string name="settings_logs">日志</string>
-    <string name="settings_app_version">%1$s %2$s (%3$d)</string>
+    <string name="settings_app_version">%1$s %2$s</string>
     <string name="total">总计</string>
     <string name="finish">完成</string>
     <string name="broadcast_tx">广播交易</string>
