@@ -24,7 +24,7 @@
     <string name="node">节点</string>
     <string name="onion_address_example">http://onion地址:端口</string>
     <string name="username">用户名</string>
-    <string name="optional">可选</string>
+    <string name="optional">（可选）</string>
     <string name="password">密码</string>
     <string name="wallet_loading">钱包加载中\n请稍候</string>
     <string name="manual_proxy">手动代理</string>
@@ -52,7 +52,7 @@
     <string name="invalid_address">无效地址</string>
     <string name="amount">金额</string>
     <string name="sweeping_balance">正在清空余额：</string>
-    <string name="minus_fees">扣除手续费</string>
+    <string name="minus_fees">（扣除手续费）</string>
     <string name="available_balance">可用余额：</string>
     <string name="_1_coin_selected">已选择 1 个硬币</string>
     <string name="coins_selected">个硬币已选择</string>
