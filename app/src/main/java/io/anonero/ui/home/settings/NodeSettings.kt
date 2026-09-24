@@ -569,7 +569,7 @@ fun NodeListItem(
                     if (!active) {
                         HorizontalDivider()
                         DropdownMenuItem(
-                            text = { Text(stringResource(R.string.update)) },
+                            text = { Text(stringResource(R.string.edit)) },
                             onClick = {
                                 onEdit(node)
                                 menu = false
