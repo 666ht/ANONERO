@@ -63,12 +63,6 @@ fun SeedSetup(
                     modifier = Modifier
                         .size(120.dp)
                 )
-                Spacer(Modifier.height(16.dp))
-                Text(
-                    text = stringResource(R.string.polyseed_mnemonic),
-                    style = MaterialTheme.typography.headlineSmall,
-                    fontWeight = FontWeight.Bold
-                )
             }
             LazyVerticalGrid(
                 modifier = Modifier
