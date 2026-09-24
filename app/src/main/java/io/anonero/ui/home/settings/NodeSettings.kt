@@ -529,7 +529,7 @@ fun NodeListItem(
         supportingContent = {
             if (active)
                 Text(
-                    "Daemon Height : ${daemonStatus?.daemonHeight?.toString() ?: ""} ",
+                    stringResource(R.string.daemon_height, daemonStatus?.daemonHeight?.toString() ?: ""),
                     style = MaterialTheme
                         .typography.bodySmall,
                     modifier = Modifier.padding(top = 4.dp)
