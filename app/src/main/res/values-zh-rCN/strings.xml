@@ -1,7 +1,6 @@
 <resources>
     <!-- Do not translate the app name. The app_name will be modified by the Gradle build system based on the build variants (Nero/Anon). -->
     <string name="app_name">anonnero</string>
-    <!---->
     <string name="polyseed_mnemonic">POLYSEED 助记词</string>
     <string name="next">下一步</string>
     <string name="passphrase_encryption">密码短语加密</string>
@@ -14,7 +13,7 @@
     <string name="create_wallet">创建钱包</string>
     <string name="restore_wallet">恢复钱包</string>
     <string name="proxy">代理</string>
-    <string name="initializing_tor">正在初始化 TOR ...</string>
+    <string name="initializing_tor">正在初始化 TOR</string>
     <string name="copied_to_clipboard">已复制到剪贴板</string>
     <string name="transactions">交易记录</string>
     <string name="receive">接收</string>
@@ -25,9 +24,9 @@
     <string name="node">节点</string>
     <string name="onion_address_example">http://onion地址:端口</string>
     <string name="username">用户名</string>
-    <string name="optional">(可选)</string>
+    <string name="optional">可选</string>
     <string name="password">密码</string>
-    <string name="wallet_loading">钱包加载中\n请稍候...</string>
+    <string name="wallet_loading">钱包加载中\n请稍候</string>
     <string name="manual_proxy">手动代理</string>
     <string name="on">开启</string>
     <string name="off">关闭</string>
@@ -49,11 +48,11 @@
     <string name="unlock_wallet">解锁钱包</string>
     <string name="wallet_not_connected_to_node_please_check_network">钱包未连接到节点，请检查网络</string>
     <string name="address">地址</string>
-    <string name="constructing_transaction">正在构建交易...</string>
+    <string name="constructing_transaction">正在构建交易</string>
     <string name="invalid_address">无效地址</string>
     <string name="amount">金额</string>
     <string name="sweeping_balance">正在清空余额：</string>
-    <string name="minus_fees">(扣除手续费)</string>
+    <string name="minus_fees">扣除手续费</string>
     <string name="available_balance">可用余额：</string>
     <string name="_1_coin_selected">已选择 1 个硬币</string>
     <string name="coins_selected">个硬币已选择</string>
@@ -76,11 +75,11 @@
     <string name="coin_control">硬币控制</string>
     <string name="refresh">刷新</string>
     <string name="resync_blockchain">重新同步区块链</string>
-    <string name="resync_initiated_this_may_take_a_while">已启动重新同步…这可能需要一些时间。</string>
+    <string name="resync_initiated_this_may_take_a_while">已启动重新同步，这可能需要一些时间。</string>
     <string name="show_outputs">显示输出</string>
     <string name="lock">锁定</string>
-    <string name="creating_wallet">正在创建钱包...</string>
-    <string name="restoring_wallet">正在恢复钱包...</string>
+    <string name="creating_wallet">正在创建钱包</string>
+    <string name="restoring_wallet">正在恢复钱包</string>
     <string name="close">关闭</string>
     <string name="logs">日志</string>
     <string name="unable_to">无法</string>
@@ -92,7 +91,7 @@
     <string name="primary_address">主地址</string>
     <string name="import_view_keys">导入查看密钥</string>
     <string name="invalid_qr_code">无效的二维码</string>
-    <string name="loading">正在加载...</string>
+    <string name="loading">正在加载</string>
     <string name="unable_to_create_wallet">无法创建钱包</string>
     <string name="enter_new_pin">输入新 PIN 码</string>
     <string name="enter_pin">输入 PIN 码</string>
@@ -132,8 +131,8 @@
     <string name="total">总计</string>
     <string name="finish">完成</string>
     <string name="broadcast_tx">广播交易</string>
-    <string name="unable_to_broadcast_transaction">无法广播交易\n %1$s</string>
-    <string name="broadcast_in_progress">正在广播交易...</string>
+    <string name="unable_to_broadcast_transaction">无法广播交易\n%1$s</string>
+    <string name="broadcast_in_progress">正在广播交易</string>
     <string name="fee">手续费</string>
     <string name="export_as_file">导出为文件</string>
     <string name="importing_outputs">正在导入输出</string>
