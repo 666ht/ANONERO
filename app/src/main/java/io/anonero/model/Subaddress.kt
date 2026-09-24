@@ -38,7 +38,7 @@ class Subaddress(
     val displayLabel: String
         get() = if (label.isEmpty() || DEFAULT_LABEL_FORMATTER.matcher(label)
                 .matches()
-        ) "SubAddress #$addressIndex" else label
+        ) "SubAddress $addressIndex" else label
 
     companion object {
         val DEFAULT_LABEL_FORMATTER: Pattern =
