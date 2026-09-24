@@ -266,7 +266,7 @@ fun RestorePreview(
                             horizontal = 16.dp,
                         ),
                 ) {
-                    Text("View Logs")
+                    Text(stringResource(R.string.view_logs))
                 }
             }
         }
@@ -319,7 +319,7 @@ fun RestorePreview(
                             .padding(8.dp),
                         headlineContent = {
                             Text(
-                                "Wallet ",
+                                stringResource(R.string.wallet_title),
                                 textAlign = TextAlign.Center,
                                 modifier = Modifier.padding(
                                     top = 8.dp
@@ -339,7 +339,7 @@ fun RestorePreview(
                                     )
                                 )
                                 ListWidget(
-                                    title = "Seed",
+                                    title = stringResource(R.string.seed),
                                     subtitle = "${wallet.seed}",
                                     modifier = Modifier.padding(
                                         bottom = 8.dp
@@ -353,7 +353,7 @@ fun RestorePreview(
                                         )
                                     )
                                     ListWidget(
-                                        title = "Primary Address",
+                                        title = stringResource(R.string.primary_address_title),
                                         subtitle = "${wallet.primaryAddress}",
                                         modifier = Modifier.padding(
                                             bottom = 8.dp
@@ -366,7 +366,7 @@ fun RestorePreview(
                                     )
                                 )
                                 ListWidget(
-                                    title = "Balance",
+                                    title = stringResource(R.string.balance),
                                     subtitle = "${Wallet.getDisplayAmount(wallet.balanceAll)}",
                                     modifier = Modifier.weight(1f)
                                 )
@@ -376,7 +376,7 @@ fun RestorePreview(
                                     )
                                 )
                                 ListWidget(
-                                    title = "Restore Height",
+                                    title = stringResource(R.string.restore_height),
                                     subtitle = "${wallet.restoreHeight}",
                                     modifier = Modifier.weight(1f)
                                 )
@@ -482,7 +482,7 @@ fun RestorePreview(
 
                             },
                         ){
-                            Text("Restore Wallet")
+                            Text(stringResource(R.string.restore_wallet))
                         }
                     }
                 }
