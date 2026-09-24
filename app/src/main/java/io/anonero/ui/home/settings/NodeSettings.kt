@@ -52,6 +52,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
@@ -284,6 +285,7 @@ fun NodeSettings(onBackPress: () -> Unit = {}) {
     val activeNode by nodeSettingsVM.activeNode.collectAsState(null)
     val scope = rememberCoroutineScope()
     val toastState = rememberToasterState()
+    val context = LocalContext.current
 
     if (showNodeDetails)
         Dialog(
@@ -382,7 +384,7 @@ fun NodeSettings(onBackPress: () -> Unit = {}) {
                                         if (result.isFailure) {
                                             scope.launch {
                                                 toastState.show(
-                                                    stringResource(R.string.error_colon, result.exceptionOrNull()?.message ?: ""),
+                                                    context.getString(R.string.error_colon, result.exceptionOrNull()?.message ?: ""),
                                                     type = ToastType.Warning,
                                                     duration = 6.seconds
                                                 )
@@ -390,7 +392,7 @@ fun NodeSettings(onBackPress: () -> Unit = {}) {
                                         } else {
                                             scope.launch {
                                                 toastState.show(
-                                                    stringResource(R.string.resync_initiated),
+                                                    context.getString(R.string.resync_initiated),
                                                     type = ToastType.Success,
                                                 )
                                             }
