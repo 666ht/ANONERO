@@ -98,6 +98,13 @@ fun SetupPassphrase(
                     modifier = Modifier
                         .size(120.dp)
                 )
+                Spacer(Modifier.height(16.dp))
+                Text(
+                    text = stringResource(R.string.passphrase_encryption),
+                    style = MaterialTheme.typography.headlineSmall,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.Transparent
+                )
             }
             Column(
                 modifier = Modifier
