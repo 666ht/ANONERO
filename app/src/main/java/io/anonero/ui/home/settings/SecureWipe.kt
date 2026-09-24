@@ -124,7 +124,7 @@ class SecureWipeViewModel(
             _wipeProgressMessage.postValue("Logs Cleared")
             delay(1200)
             _wipeProgress.postValue(1f)
-            _wipeProgressMessage.postValue(AnonConfig.context?.getString(R.string.wallet_wiped_successfully) ?: "Wallet wiped successfully")
+            _wipeProgressMessage.postValue("Wallet wiped successfully")
         }
     }
 
