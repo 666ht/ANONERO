@@ -125,7 +125,8 @@ fun SetupNodeComposable(
                 Text(
                     text = stringResource(R.string.node_connection),
                     style = MaterialTheme.typography.headlineSmall,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Bold,
+                    color = Color.Transparent
                 )
             }
             Column(
