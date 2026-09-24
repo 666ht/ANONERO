@@ -141,6 +141,7 @@
     <string name="importing_unsigned_transaction">正在导入未签名的交易</string>
     <string name="label_cannot_be_empty">标签不能为空</string>
     <string name="update">更新</string>
+    <string name="edit">编辑</string>
     <string name="dismiss_button">取消</string>
     <string name="battery_optimization_message">为了让ΛИ0ИΞR0在后台正常运行，建议关闭电池优化，&#10;你可以随时在Android的应用设置中更改此设置。&#10;&#10;是否继续？</string>
     <string name="broadcast_transaction_confirm">是否广播交易？</string>
