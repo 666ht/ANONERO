@@ -143,7 +143,7 @@
     <string name="label_cannot_be_empty">Label cannot be empty</string>
     <string name="update">Update</string>
     <string name="dismiss_button">Dismiss</string>
-    <string name="battery_optimization_message">In order for ΛИ0ИΞR0 to function properly in the background, it is recommended to disable battery optimization.&#10;You can change this setting anytime in Android's app settings.&#10;&#10;Would you like to proceed?</string>
+    <string name="battery_optimization_message">In order for ΛИ0ИΞR0 to function properly in the background, it is recommended to disable battery optimization. You can change this setting anytime in Android's app settings. Would you like to proceed?</string>
     <string name="broadcast_transaction_confirm">Do you want to broadcast transaction?</string>
     <string name="exit_confirm">Do you want to exit %1$s?</string>
     <string name="exit">Exit</string>
