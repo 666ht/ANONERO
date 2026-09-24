@@ -511,7 +511,7 @@ fun ReviewTransactionScreen(
                                             signing = false
                                             qrScannerParam = SpendQRExchangeParam(
                                                 exportType = ExportType.SIGNED_TX,
-                                                title = stringResource(R.string.signed_tx),
+                                                title = context.getString(R.string.signed_tx),
                                                 ctaText = context.getString(R.string.finish)    ,
                                             )
                                         } else {
@@ -527,8 +527,8 @@ fun ReviewTransactionScreen(
                                     if (AnonConfig.viewOnly && !readyToBroadcast) {
                                         qrScannerParam = SpendQRExchangeParam(
                                             exportType = ExportType.UN_SIGNED_TX,
-                                            title = stringResource(R.string.unsigned_tx),
-                                            ctaText = stringResource(R.string.scan_signed_tx),
+                                            title = context.getString(R.string.unsigned_tx),
+                                            ctaText = context.getString(R.string.scan_signed_tx),
                                         )
                                     } else {
                                         viewModel.broadCast()?.invokeOnCompletion { error ->
