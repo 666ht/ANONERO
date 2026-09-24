@@ -29,6 +29,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
@@ -100,6 +101,23 @@ fun ReceiveScreen(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Top,
             ) {
+                item {
+                    Text(
+                        text = nextAddress!!.displayLabel,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .alpha(0f)
+                            .clickable {
+                                labelDialog = true
+                            },
+                        style = MaterialTheme.typography.bodyLarge.copy(
+                            color = MaterialTheme.colorScheme.primary,
+                            fontSize = 30.sp,
+                            fontWeight = FontWeight.Bold
+                        ),
+                    )
+                }
                 item {
                     Spacer(Modifier.height(24.dp))
                 }
