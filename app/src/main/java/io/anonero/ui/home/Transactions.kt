@@ -188,7 +188,7 @@ fun TransactionScreen(
                 )
             },
             text = {
-                Text("Do you want to broadcast transaction?")
+                Text(stringResource(R.string.broadcast_transaction_confirm))
             },
             onDismissRequest = {
                 scanFailure = null
@@ -272,7 +272,7 @@ fun TransactionScreen(
                 )
             },
             text = {
-                Text("Do you want to exit ${stringResource(R.string.app_name)}?")
+                Text(stringResource(R.string.exit_confirm, stringResource(R.string.app_name)))
             },
             onDismissRequest = {
                 showExitDialog = false
@@ -313,7 +313,7 @@ fun TransactionScreen(
                     ),
                     onClick = {
                         activity?.finishAffinity()
-                    }) { Text("Exit") }
+                    }) { Text(stringResource(R.string.exit)) }
             },
         )
     }
