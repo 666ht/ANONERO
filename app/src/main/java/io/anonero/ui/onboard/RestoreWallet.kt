@@ -170,6 +170,13 @@ fun RestoreWallet(
                     modifier = Modifier
                         .size(120.dp)
                 )
+                Spacer(Modifier.height(16.dp))
+                Text(
+                    text = "IMPORT POLYSEED MNEMONIC",
+                    style = MaterialTheme.typography.headlineSmall,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.Transparent
+                )
             }
             Column(
                 modifier = Modifier
