@@ -710,6 +710,9 @@ fun TransactionScreen(
                         }
                     }
                 }
+                item(key = "transaction_spacing") {
+                    androidx.compose.foundation.layout.Spacer(Modifier.size(48.dp))
+                }
                 items(transactions.size, key = { transactions[it].getListKey() }) {
                     with(sharedTransitionScope) {
                         TransactionItem(
