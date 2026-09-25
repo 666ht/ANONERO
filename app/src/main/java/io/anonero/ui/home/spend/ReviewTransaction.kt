@@ -222,7 +222,7 @@ fun ReviewTransactionScreen(
     )
     val subTitleStyle = MaterialTheme.typography.bodyMedium.copy(
         color = MaterialTheme.colorScheme.onBackground,
-        fontSize = 12.sp
+        fontSize = 14.sp
     )
 
     BackHandler {
@@ -467,7 +467,7 @@ fun ReviewTransactionScreen(
                                                 reviewModel!!.total
                                             ),
                                             textAlign = TextAlign.Center,
-                                            style = MaterialTheme.typography.titleLarge.copy(fontSize = 12.sp),
+                                            style = MaterialTheme.typography.titleLarge,
                                             modifier = Modifier
                                                 .fillMaxWidth()
                                                 .padding(
