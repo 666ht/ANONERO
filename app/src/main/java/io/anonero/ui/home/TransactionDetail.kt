@@ -396,7 +396,7 @@ private fun TransactionDetailItem(
         )
         Text(
             Formats.formatTransactionTime(tx.timestamp),
-            style = MaterialTheme.typography.labelSmall
+            style = androidx.compose.ui.text.TextStyle(fontSize = 12.sp)
         )
     }
 }
