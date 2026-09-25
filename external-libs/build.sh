@@ -221,12 +221,13 @@ EOF
     # Build Android directly with CMake instead of the Monero Makefile
     # wrapper. The wrapper also builds translations first, which is not usable
     # with the Android toolchain in this container.
-    rm -rf "$MONERO/build/release"
+    BUILD_DIR="$MONERO/build/$ABI"
+    mkdir -p "$BUILD_DIR"
     CFLAGS="-I$MONERO ${CFLAGS:-}" CXXFLAGS="-I$MONERO ${CXXFLAGS:-}" \
       CMAKE_INCLUDE_PATH="$PREFIX/include" \
       CMAKE_LIBRARY_PATH="$PREFIX/lib" \
       ANDROID_NDK_ROOT="$NDK" \
-      cmake -S "$MONERO" -B "$MONERO/build/release" \
+      cmake -S "$MONERO" -B "$BUILD_DIR" \
         -D CMAKE_TOOLCHAIN_FILE="$NDK/build/cmake/android.toolchain.cmake" \
         -D CMAKE_BUILD_TYPE=Release \
         -D BUILD_TESTS=OFF \
@@ -246,7 +247,8 @@ EOF
     cmake -D CMAKE_BUILD_TYPE=Release -D STATIC=OFF -D ARCH="$MONERO_ARCH" -D BUILD_64=ON -D BUILD_TESTS=OFF -D BUILD_GUI_DEPS=1 -D USE_DEVICE_TREZOR=OFF -D STACK_TRACE=OFF -D CMAKE_POSITION_INDEPENDENT_CODE=ON -D BUILD_TAG="linux-x64" -D CMAKE_PREFIX_PATH="$PREFIX" -D BOOST_ROOT="$PREFIX" -D BOOST_IGNORE_SYSTEM_PATHS=ON -D OPENSSL_ROOT_DIR="$PREFIX" ../..
     make wallet_api -j"$NPROC"
   fi
-  cd "$MONERO/build/release" && mkdir -p lib
+  BUILD_DIR="${BUILD_DIR:-$MONERO/build/release}"
+  cd "$BUILD_DIR" && mkdir -p lib
   find . -path ./lib -prune -o -name '*.a' -exec cp '{}' lib \;
 }
 
