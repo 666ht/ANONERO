@@ -146,6 +146,7 @@
     <string name="importing_unsigned_transaction">Importing unsigned transaction</string>
     <string name="label_cannot_be_empty">Label cannot be empty</string>
     <string name="update">Update</string>
+    <string name="confirm_add_label">Confirm</string>
     <string name="dismiss_button">Dismiss</string>
     <string name="battery_optimization_message">Please disable battery optimization to allow the wallet to run in the background.</string>
     <string name="broadcast_transaction_confirm">Do you want to broadcast transaction?</string>
