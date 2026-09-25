@@ -112,11 +112,20 @@ class Wallet {
 
     private external fun getAddressJ(accountIndex: Int, addressIndex: Int): String
     private fun getSubaddressObject(accountIndex: Int, subAddressIndex: Int): Subaddress {
+        val rawLabel = getSubaddressLabel(accountIndex, subAddressIndex)
+        val displayLabel = if (
+            subAddressIndex == 0 &&
+            Subaddress.DEFAULT_PRIMARY_LABEL_FORMATTER.matcher(rawLabel.trim()).matches()
+        ) {
+            "主地址 0"
+        } else {
+            rawLabel
+        }
         return Subaddress(
             accountIndex,
             subAddressIndex,
             getSubaddress(subAddressIndex),
-            getSubaddressLabel(0, subAddressIndex)
+            displayLabel
         )
     }
 
