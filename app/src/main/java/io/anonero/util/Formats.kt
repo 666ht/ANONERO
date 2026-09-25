@@ -22,7 +22,7 @@ object Formats {
 
 
     fun maskAmount(amount: Long): String {
-        return "#".repeat(13)
+        return "#".repeat(14)
     }
 
     fun getDisplayAmount(amount: Long): String {
