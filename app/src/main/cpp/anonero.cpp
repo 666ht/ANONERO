@@ -19,9 +19,7 @@
 #include <mutex>
 #include "anonero.h"
 #include "wallet2_api.h"
-#define private public
 #include "wallet/api/wallet.h"
-#undef private
 #include "epee/string_tools.h"
 
 //TODO explicit casting jlong, jint, jboolean to avoid warnings
@@ -776,9 +774,16 @@ Java_io_anonero_model_WalletManager_closeJ(JNIEnv *env, jobject instance,
 /**********************************/
 
 
+class WalletApiAccessorTest {
+public:
+    static tools::wallet2 *wallet2(Monero::Wallet *wallet) {
+        auto *impl = dynamic_cast<Monero::WalletImpl *>(wallet);
+        return impl != nullptr && impl->m_wallet != nullptr ? impl->m_wallet.get() : nullptr;
+    }
+};
+
 static tools::wallet2 *getWallet2ForFreeze(Monero::Wallet *wallet) {
-    auto *impl = dynamic_cast<Monero::WalletImpl *>(wallet);
-    return impl != nullptr && impl->m_wallet != nullptr ? impl->m_wallet.get() : nullptr;
+    return WalletApiAccessorTest::wallet2(wallet);
 }
 
 static bool parseKeyImage(JNIEnv *env, jstring keyImage, crypto::key_image &ki) {
