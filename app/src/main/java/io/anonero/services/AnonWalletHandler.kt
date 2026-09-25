@@ -208,29 +208,51 @@ class AnonWalletHandler(
     fun wipe(passPhrase: String): Boolean {
         val wallet = WalletManager.instance?.wallet
 
-        // Stop normal wallet activity first, but do not let a close failure abort the wipe.
+        // Stop normal wallet activity first.
         wallet?.pauseRefresh()
-        wallet?.stopBackgroundSync(passPhrase)
+        try {
+            wallet?.stopBackgroundSync(passPhrase)
+        } catch (e: Exception) {
+            Timber.tag(TAG).e(e, "stopBackgroundSync failed; continuing wipe")
+        }
         WalletManager.instance?.setDaemon(null)
 
-        try {
-            wallet?.close()
-        } catch (e: Exception) {
-            Timber.tag(TAG).e(e, "wallet.close() failed; continuing wipe")
-        }
-
-        // Deletion is the actual wipe operation. It must be attempted even when
-        // wallet.close() returns false or throws.
+        // Remove the wallet files BEFORE calling native close(). This guarantees
+        // that a native close failure or hang cannot prevent the actual file wipe.
         val walletDir = AnonConfig.context?.let {
             AnonConfig.getDefaultWalletDir(it)
         }
-
         val deleted = walletDir?.deleteRecursively() == true
         if (!deleted) {
             Timber.tag(TAG).e("wallet directory deletion failed")
             throw UnableToCloseWallet()
         }
 
+        // Native close() is best-effort only. Run it off the wipe coroutine and
+        // bound how long we wait for it, because native closeWallet() can block.
+        wallet?.let { currentWallet ->
+            val closeThread = Thread {
+                try {
+                    currentWallet.close()
+                } catch (e: Exception) {
+                    Timber.tag(TAG).e(e, "wallet.close() failed after file deletion")
+                }
+            }.apply {
+                name = "wallet-close-after-wipe"
+                isDaemon = true
+            }
+            closeThread.start()
+            try {
+                closeThread.join(1500L)
+            } catch (e: InterruptedException) {
+                Thread.currentThread().interrupt()
+            }
+            if (closeThread.isAlive) {
+                Timber.tag(TAG).e("wallet.close() timed out after file deletion; continuing wipe")
+            }
+        }
+
+        WalletManager.resetInstance()
         return true
     }
 
