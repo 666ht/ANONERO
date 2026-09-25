@@ -63,6 +63,8 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -127,6 +129,8 @@ class TransactionsViewModel : ViewModel() {
 }
 
 private const val TAG = "Transactions"
+
+private val XmrFontFamily = FontFamily(Font(R.font.xmr_font))
 
 @OptIn(
     ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class,
@@ -683,14 +687,24 @@ fun TransactionScreen(
                             )
                             .fillParentMaxWidth()
                     ) {
-                        Text(
-                            if (hideAmounts) Formats.maskAmount(balance ?: 0)
-                            else Formats.getDisplayAmount(balance ?: 0),
-                            style = MaterialTheme.typography
-                                .displaySmall,
+                        Row(
                             modifier = Modifier.fillMaxWidth(),
-                            textAlign = TextAlign.End
-                        )
+                            verticalAlignment = Alignment.Bottom,
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Text(
+                                "XMR",
+                                style = MaterialTheme.typography.displaySmall.copy(
+                                    fontFamily = XmrFontFamily
+                                )
+                            )
+                            Text(
+                                if (hideAmounts) Formats.maskAmount(balance ?: 0)
+                                else Formats.getDisplayAmount(balance ?: 0),
+                                style = MaterialTheme.typography.displaySmall,
+                                textAlign = TextAlign.End
+                            )
+                        }
                     }
                 }
                 items(transactions.size, key = { transactions[it].getListKey() }) {
