@@ -445,6 +445,101 @@ Java_io_anonero_model_WalletManager_openWalletJ(JNIEnv *env, jobject instance,
     return reinterpret_cast<jlong>(wallet);
 }
 
+
+JNIEXPORT jlong JNICALL
+Java_io_anonero_model_WalletManager_recoveryWalletJ(JNIEnv *env, jobject instance,
+                                                    jstring path, jstring password,
+                                                    jstring mnemonic, jstring offset,
+                                                    jint networkType,
+                                                    jlong restoreHeight) {
+    const char *_path = env->GetStringUTFChars(path, nullptr);
+    const char *_password = env->GetStringUTFChars(password, nullptr);
+    const char *_mnemonic = env->GetStringUTFChars(mnemonic, nullptr);
+    const char *_offset = env->GetStringUTFChars(offset, nullptr);
+
+    Monero::NetworkType _networkType = static_cast<Monero::NetworkType>(networkType);
+    Monero::Wallet *wallet = nullptr;
+
+    try {
+        wallet = Monero::WalletManagerFactory::getWalletManager()->recoveryWallet(
+                std::string(_path),
+                std::string(_password),
+                std::string(_mnemonic),
+                _networkType,
+                static_cast<uint64_t>(restoreHeight),
+                1,
+                std::string(_offset));
+
+        if (wallet != nullptr) {
+            const bool setupStatus = wallet->setupBackgroundSync(
+                    Monero::Wallet::BackgroundSync_ReusePassword,
+                    std::string(_password), {});
+            LOGD("recoveryWalletJ(): setupBackgroundSync(): %s",
+                 setupStatus ? "success" : "failure");
+        } else {
+            LOGE("recoveryWalletJ(): recoveryWallet returned null");
+        }
+    } catch (const std::exception &e) {
+        LOGE("recoveryWalletJ(): exception: %s", e.what());
+        wallet = nullptr;
+    } catch (...) {
+        LOGE("recoveryWalletJ(): unknown exception");
+        wallet = nullptr;
+    }
+
+    env->ReleaseStringUTFChars(path, _path);
+    env->ReleaseStringUTFChars(password, _password);
+    env->ReleaseStringUTFChars(mnemonic, _mnemonic);
+    env->ReleaseStringUTFChars(offset, _offset);
+    return reinterpret_cast<jlong>(wallet);
+}
+
+JNIEXPORT jlong JNICALL
+Java_io_anonero_model_WalletManager_recoveryWalletPolyseedJ(JNIEnv *env, jobject instance,
+                                                            jstring path, jstring password,
+                                                            jstring mnemonic, jstring offset,
+                                                            jint networkType) {
+    const char *_path = env->GetStringUTFChars(path, nullptr);
+    const char *_password = env->GetStringUTFChars(password, nullptr);
+    const char *_mnemonic = env->GetStringUTFChars(mnemonic, nullptr);
+    const char *_offset = env->GetStringUTFChars(offset, nullptr);
+
+    Monero::NetworkType _networkType = static_cast<Monero::NetworkType>(networkType);
+    Monero::Wallet *wallet = nullptr;
+
+    try {
+        wallet = Monero::WalletManagerFactory::getWalletManager()->createWalletFromPolyseed(
+                std::string(_path),
+                std::string(_password),
+                _networkType,
+                std::string(_mnemonic),
+                std::string(_offset),
+                true);
+
+        if (wallet != nullptr) {
+            const bool setupStatus = wallet->setupBackgroundSync(
+                    Monero::Wallet::BackgroundSync_ReusePassword,
+                    std::string(_password), {});
+            LOGD("recoveryWalletPolyseedJ(): setupBackgroundSync(): %s",
+                 setupStatus ? "success" : "failure");
+        } else {
+            LOGE("recoveryWalletPolyseedJ(): createWalletFromPolyseed returned null");
+        }
+    } catch (const std::exception &e) {
+        LOGE("recoveryWalletPolyseedJ(): exception: %s", e.what());
+        wallet = nullptr;
+    } catch (...) {
+        LOGE("recoveryWalletPolyseedJ(): unknown exception");
+        wallet = nullptr;
+    }
+
+    env->ReleaseStringUTFChars(path, _path);
+    env->ReleaseStringUTFChars(password, _password);
+    env->ReleaseStringUTFChars(mnemonic, _mnemonic);
+    env->ReleaseStringUTFChars(offset, _offset);
+    return reinterpret_cast<jlong>(wallet);
+}
+
 #ifdef __cplusplus
 }
 #endif
