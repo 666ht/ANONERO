@@ -228,6 +228,7 @@ endif()
 include_directories( ${CMAKE_SOURCE_DIR}/../external-libs/monero/src )
 include_directories( ${CMAKE_SOURCE_DIR}/../external-libs/monero/contrib/epee/include )
 include_directories( ${CMAKE_SOURCE_DIR}/../external-libs/monero/external/easylogging++ )
+include_directories( ${CMAKE_SOURCE_DIR}/../external-libs/monero/src/crypto/crypto_ops_builder/include )
 include_directories( ${EXTERNAL_LIBS_DIR}/include )
 
 message(STATUS EXTERNAL_LIBS_DIR :  ${EXTERNAL_LIBS_DIR})
