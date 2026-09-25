@@ -206,17 +206,22 @@ class AnonWalletHandler(
     }
 
     fun wipe(passPhrase: String): Boolean {
-        WalletManager.instance?.wallet?.pauseRefresh()
-        WalletManager.instance?.wallet?.stopBackgroundSync(passPhrase)
+        val wallet = WalletManager.instance?.wallet
+            ?: throw UnableToCloseWallet()
+
+        // Stop native callbacks/refresh before closing the wallet.
+        wallet.pauseRefresh()
+        wallet.setListener(null)
         WalletManager.instance?.setDaemon(null)
-        if (WalletManager.instance?.wallet?.close() == true) {
-            AnonConfig.context?.let { AnonConfig.getDefaultWalletDir(it) }
-                ?.deleteRecursively()
-            return true
-        } else {
+
+        if (!wallet.close()) {
             throw UnableToCloseWallet()
         }
 
+        AnonConfig.context?.let { AnonConfig.getDefaultWalletDir(it) }
+            ?.deleteRecursively()
+
+        return true
     }
 
 }
