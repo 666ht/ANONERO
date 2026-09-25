@@ -384,34 +384,46 @@ Java_io_anonero_model_WalletManager_createWalletJ(JNIEnv *env, jobject instance,
     std::string err;
     bool _polyseedCreate = Monero::Wallet::createPolyseed(seed_words, err);
     if (!_polyseedCreate) {
-        LOGE("Failed to polyseedCreate");
+        LOGE("createWalletJ(): createPolyseed failed: %s", err.c_str());
+        return 0;
     }
-
-//     wallet->createPolyseed(seed_words, err);
 
     const char *_path = env->GetStringUTFChars(path, nullptr);
     const char *_password = env->GetStringUTFChars(password, nullptr);
     const char *_passpharse = env->GetStringUTFChars(passpharse, nullptr);
-    const char *_language = env->GetStringUTFChars(language, nullptr); // NOT USED ANYMORE?????
+    const char *_language = env->GetStringUTFChars(language, nullptr);
     Monero::NetworkType _networkType = static_cast<Monero::NetworkType>(networkType);
-    Monero::Wallet *wallet =
-            Monero::WalletManagerFactory::getWalletManager()->createWalletFromPolyseed(
-                    std::string(_path),
-                    std::string(_password),
-                    _networkType,
-                    seed_words,
-                    std::string(_passpharse), true);
+    Monero::Wallet *wallet = nullptr;
 
-    bool setupStatus = wallet->setupBackgroundSync(Monero::Wallet::BackgroundSync_ReusePassword,
-                                                   std::string(_password), {});
-    if (setupStatus == true) {
-        LOGD("createWalletJ(): setupBackgroundSync(): success!");
-    } else {
-        LOGD("createWalletJ(): setupBackgroundSync(): failure!");
+    try {
+        wallet =
+                Monero::WalletManagerFactory::getWalletManager()->createWalletFromPolyseed(
+                        std::string(_path),
+                        std::string(_password),
+                        _networkType,
+                        seed_words,
+                        std::string(_passpharse), true);
+
+        if (wallet != nullptr) {
+            bool setupStatus = wallet->setupBackgroundSync(
+                    Monero::Wallet::BackgroundSync_ReusePassword,
+                    std::string(_password), {});
+            LOGD("createWalletJ(): setupBackgroundSync(): %s",
+                 setupStatus ? "success" : "failure");
+        } else {
+            LOGE("createWalletJ(): createWalletFromPolyseed returned null");
+        }
+    } catch (const std::exception &e) {
+        LOGE("createWalletJ(): exception: %s", e.what());
+        wallet = nullptr;
+    } catch (...) {
+        LOGE("createWalletJ(): unknown exception");
+        wallet = nullptr;
     }
 
     env->ReleaseStringUTFChars(path, _path);
     env->ReleaseStringUTFChars(password, _password);
+    env->ReleaseStringUTFChars(passpharse, _passpharse);
     env->ReleaseStringUTFChars(language, _language);
     return reinterpret_cast<jlong>(wallet);
 }
