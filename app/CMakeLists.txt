@@ -12,7 +12,10 @@ add_library( anonero
              src/main/cpp/anonero.cpp )
 
 # Fix Boost.Asio + NDK 29 std::aligned_alloc unresolved symbol
-target_compile_definitions(anonero PRIVATE BOOST_ASIO_DISABLE_STD_ALIGNED_ALLOC)
+target_compile_definitions(anonero PRIVATE
+        BOOST_ASIO_DISABLE_STD_ALIGNED_ALLOC=1
+        BOOST_ASIO_DISABLE_BOOST_ALIGN=1
+)
 
 set(EXTERNAL_LIBS_DIR ${CMAKE_SOURCE_DIR}/../external-libs)
 
