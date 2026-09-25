@@ -232,6 +232,8 @@ jobs:
             cp -a "external-libs/$abi/include/boost/." external-libs/include/boost/
           done
           test -s external-libs/include/sodium/export.h
+          test -d external-libs/monero/external/polyseed/include
+          test -s external-libs/monero/external/polyseed/include/polyseed.h
 
       - name: Verify native Android libraries
         run: |
