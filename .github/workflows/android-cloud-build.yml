@@ -283,6 +283,8 @@ jobs:
             cp -a "/tmp/openssl-$OPENSSL_VERSION" "$work"
             cd "$work"
             ./Configure "$target" -D__ANDROID_API__=21 no-shared no-tests >/dev/null
+            # Generate OpenSSL templated public headers only; do not compile native libraries.
+            make build_generated >/dev/null
             mkdir -p "$GITHUB_WORKSPACE/external-libs/$abi/include/openssl"
             cp -aL include/openssl/. "$GITHUB_WORKSPACE/external-libs/$abi/include/openssl/"
           done
