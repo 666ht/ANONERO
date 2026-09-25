@@ -95,13 +95,7 @@ fun WalletProgressIndicator(modifier: Modifier = Modifier, refreshIndicatorProgr
                 )
                 if (progress.left > 50) {
                     Text(
-                        stringResource(
-                            R.string.blocks_left,
-                            Formats.convertNumber(
-                                progress.left,
-                                Locale.getDefault()
-                            ) ?: ""
-                        ),
+                        "剩余${Formats.convertNumber(progress.left, Locale.getDefault()) ?: ""}个区块",
                         modifier = Modifier.padding(top = 8.dp),
                         style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.primary
