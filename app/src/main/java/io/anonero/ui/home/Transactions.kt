@@ -208,7 +208,7 @@ fun TransactionScreen(
                     )
                 ) {
                     Text(
-                        "Cancel",
+                        stringResource(R.string.cancel),
                         style = MaterialTheme.typography.bodyMedium.copy(
                             color = MaterialTheme.colorScheme.onSecondary.copy(
                                 alpha = 0.8f
@@ -292,7 +292,7 @@ fun TransactionScreen(
                     )
                 ) {
                     Text(
-                        "Cancel",
+                        stringResource(R.string.cancel),
                         style = MaterialTheme.typography.bodyMedium.copy(
                             color = MaterialTheme.colorScheme.onSecondary.copy(
                                 alpha = 0.8f
@@ -359,7 +359,7 @@ fun TransactionScreen(
                         qrScannerParam = SpendQRExchangeParam(
                             exportType = ExportType.IMAGE,
                             title = stringResource(R.string.key_images),
-                            ctaText = "SCAN UNSIGNED TX",
+                            ctaText = stringResource(R.string.scan_unsigned_tx),
                         )
                     }
 
@@ -369,7 +369,7 @@ fun TransactionScreen(
 
                     ImportEvents.IMPORT_KEY_IMAGES -> {
                         toastState.show(
-                            "Key images imported",
+                            stringResource(R.string.key_images_imported),
                             type = ToastType.Success,
                             duration = 4.seconds
                         )
@@ -436,7 +436,7 @@ fun TransactionScreen(
                     )
                 ) {
                     Text(
-                        "Ok",
+                        stringResource(R.string.confirm),
                         style = MaterialTheme.typography.bodyMedium.copy(
                             color = MaterialTheme.colorScheme.onSecondary.copy(
                                 alpha = 0.8f

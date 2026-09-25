@@ -45,6 +45,8 @@
     <string name="battery_optimization_title">电池优化</string>
     <string name="enable">启用</string>
     <string name="cancel">取消</string>
+    <string name="pin_changed_successfully">PIN修改成功</string>
+    <string name="pin_change_error">PIN修改失败，请查看日志了解更多详情</string>
     <string name="enter_current_pin">输入当前PIN</string>
     <string name="unlock_wallet">输入PIN</string>
     <string name="wallet_not_connected_to_node_please_check_network">钱包未连接到节点，请检查网络</string>
@@ -60,6 +62,7 @@
     <string name="scan_key_images">扫描密钥映像</string>
     <string name="key_images">密钥映像</string>
     <string name="scan_unsigned_tx">扫描未签名交易</string>
+    <string name="key_images_imported">密钥映像导入成功</string>
     <string name="outputs">输出</string>
     <string name="set_transaction_description">设置交易备注</string>
     <string name="save">保存</string>

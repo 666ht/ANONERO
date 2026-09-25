@@ -46,6 +46,8 @@
     <string name="battery_optimization_title">Battery Optimization</string>
     <string name="enable">Enable</string>
     <string name="cancel">Cancel</string>
+    <string name="pin_changed_successfully">PIN changed successfully</string>
+    <string name="pin_change_error">Error changing PIN. Check logs for more details</string>
     <string name="enter_current_pin">ENTER CURRENT PIN</string>
     <string name="unlock_wallet">UNLOCK WALLET</string>
     <string name="wallet_not_connected_to_node_please_check_network">Wallet not connected to node. please check network</string>
@@ -61,6 +63,7 @@
     <string name="scan_key_images">SCAN KEY IMAGES</string>
     <string name="key_images">KEY IMAGES</string>
     <string name="scan_unsigned_tx">SCAN UNSIGNED TX</string>
+    <string name="key_images_imported">Key images imported</string>
     <string name="outputs">OUTPUTS</string>
     <string name="set_transaction_description">Set transaction description</string>
     <string name="save">Save</string>
