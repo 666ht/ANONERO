@@ -165,6 +165,13 @@
     <string name="share_encrypted_backup_file">Share Encrypted Backup File</string>
     <string name="clear_logs">Clear Logs</string>
     <string name="wallet_wiped_successfully">Wallet wiped successfully</string>
+    <string name="wiping_wallet">Wiping wallet...</string>
+    <string name="wallet_cleared">Wallet cleared</string>
+    <string name="clearing_preferences">Clearing preferences...</string>
+    <string name="clearing_nodes">Clearing nodes...</string>
+    <string name="clearing_logs">Clearing logs...</string>
+    <string name="logs_cleared">Logs cleared</string>
+    <string name="blocks_left">%1$s blocks left</string>
     <string name="success">Success</string>
     <string name="view_logs">View Logs</string>
     <string name="loading_backup">Loading...</string>
