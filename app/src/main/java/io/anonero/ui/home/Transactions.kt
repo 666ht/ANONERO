@@ -524,7 +524,7 @@ fun TransactionScreen(
                             tint = torIconColor
                         )
                     }
-                    val context = LocalContext.current
+                    // context is captured from the composable scope
 //                    LockButton(
 //                        onLock = {
 //                            scope.launch {
