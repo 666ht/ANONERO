@@ -103,72 +103,40 @@ class SecureWipeViewModel(
             (activity as MainActivity).stopNotificationService()
             _wipeProgress.postValue(.3f)
             _wipeProgressMessage.postValue("正在删除钱包")
-            var allStepsSucceeded = true
-
-            try {
-                if (!anonWalletHandler.wipe(passPhrase)) {
-                    allStepsSucceeded = false
-                }
-            } catch (e: Exception) {
-                allStepsSucceeded = false
-                Timber.tag(TAG).e(e, "wallet wipe failed; continuing cleanup")
-            }
+            anonWalletHandler.wipe(passPhrase)
 
             delay(1000)
             _wipeProgress.postValue(.5f)
-            _wipeProgressMessage.postValue("钱包清理步骤已执行，继续清除设置")
+            _wipeProgressMessage.postValue("钱包清理完成")
             delay(1200)
 
             _wipeProgress.postValue(.6f)
             _wipeProgressMessage.postValue("正在清除设置")
-            try {
-                if (!sharedPreferences.edit().clear().commit()) {
-                    allStepsSucceeded = false
-                    Timber.tag(TAG).e("clear preferences commit failed")
-                }
-            } catch (e: Exception) {
-                allStepsSucceeded = false
-                Timber.tag(TAG).e(e, "clear preferences failed")
+            if (!sharedPreferences.edit().clear().commit()) {
+                throw IllegalStateException("clear preferences failed")
             }
-            delay(800)
 
+            delay(800)
             _wipeProgress.postValue(.7f)
             _wipeProgressMessage.postValue("正在清除节点")
-            try {
-                nodesRepository.clearAll()
-            } catch (e: Exception) {
-                allStepsSucceeded = false
-                Timber.tag(TAG).e(e, "clear nodes failed")
-            }
-            delay(1200)
+            nodesRepository.clearAll()
 
+            delay(1200)
             _wipeProgressMessage.postValue("正在清除日志")
             delay(1000)
-            try {
-                logRepository.clear()
-            } catch (e: Exception) {
-                allStepsSucceeded = false
-                Timber.tag(TAG).e(e, "clear logs failed")
-            }
+            logRepository.clear()
 
             _wipeProgress.postValue(.8f)
             _wipeProgressMessage.postValue("正在删除应用全部数据")
-            try {
-                if (!AnonConfig.clearAllAppData(activity)) {
-                    allStepsSucceeded = false
-                }
-            } catch (e: Exception) {
-                allStepsSucceeded = false
-                Timber.tag(TAG).e(e, "clear all app data failed")
+            if (!AnonConfig.clearAllAppData(activity)) {
+                throw IllegalStateException("clear all app data failed")
             }
 
             AnonConfig.disposeState()
 
             delay(800)
             _wipeProgress.postValue(1f)
-            _wipeProgressMessage.postValue(
-                if (allStepsSucceeded) "应用全部数据已清除" else "清理步骤已全部执行，但有步骤报告失败"
-            )
+            _wipeProgressMessage.postValue("应用全部数据已清除")
         }
     }
 
