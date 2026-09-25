@@ -800,10 +800,6 @@ fun TransactionItem(tx: TransactionInfo, hideAmounts: Boolean = false, modifier:
                 style = MaterialTheme.typography.titleLarge
             )
         }
-        Text(
-            Formats.formatTransactionTime(tx.timestamp),
-            style = MaterialTheme.typography.labelSmall
-        )
     }
 }
 
