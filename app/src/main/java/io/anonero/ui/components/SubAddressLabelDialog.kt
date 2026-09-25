@@ -133,7 +133,7 @@ fun SubAddressLabelDialog(label: String, onSave: (String) -> Unit, onCancel: () 
                     ),
                 onClick = {
                     saveLabel()
-                }) { Text(stringResource(R.string.update)) }
+                }) { Text(stringResource(R.string.confirm_add_label)) }
         },
         dismissButton = {
             Button(
