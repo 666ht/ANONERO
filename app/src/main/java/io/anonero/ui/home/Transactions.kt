@@ -359,8 +359,8 @@ fun TransactionScreen(
                         showScanner = false
                         qrScannerParam = SpendQRExchangeParam(
                             exportType = ExportType.IMAGE,
-                            title = "KEY IMAGES",
-                            ctaText = "SCAN UNSIGNED TX",
+                            title = context.getString(R.string.key_images),
+                            ctaText = context.getString(R.string.scan_unsigned_tx),
                         )
                     }
 
