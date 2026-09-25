@@ -210,11 +210,6 @@ class AnonWalletHandler(
 
         // Stop normal wallet activity first.
         wallet?.pauseRefresh()
-        try {
-            wallet?.stopBackgroundSync(passPhrase)
-        } catch (e: Exception) {
-            Timber.tag(TAG).e(e, "stopBackgroundSync failed; continuing wipe")
-        }
         WalletManager.instance?.setDaemon(null)
 
         // Remove the wallet files BEFORE calling native close(). This guarantees
@@ -228,27 +223,32 @@ class AnonWalletHandler(
             throw UnableToCloseWallet()
         }
 
-        // Native close() is best-effort only. Run it off the wipe coroutine and
-        // bound how long we wait for it, because native closeWallet() can block.
+        // Native cleanup is best-effort only. Run it off the wipe coroutine and
+        // bound the total wait, because either native operation can block.
         wallet?.let { currentWallet ->
-            val closeThread = Thread {
+            val cleanupThread = Thread {
+                try {
+                    currentWallet.stopBackgroundSync(passPhrase)
+                } catch (e: Exception) {
+                    Timber.tag(TAG).e(e, "stopBackgroundSync failed after file deletion")
+                }
                 try {
                     currentWallet.close()
                 } catch (e: Exception) {
                     Timber.tag(TAG).e(e, "wallet.close() failed after file deletion")
                 }
             }.apply {
-                name = "wallet-close-after-wipe"
+                name = "wallet-native-cleanup-after-wipe"
                 isDaemon = true
             }
-            closeThread.start()
+            cleanupThread.start()
             try {
-                closeThread.join(1500L)
+                cleanupThread.join(1500L)
             } catch (e: InterruptedException) {
                 Thread.currentThread().interrupt()
             }
-            if (closeThread.isAlive) {
-                Timber.tag(TAG).e("wallet.close() timed out after file deletion; continuing wipe")
+            if (cleanupThread.isAlive) {
+                Timber.tag(TAG).e("native wallet cleanup timed out after file deletion; continuing wipe")
             }
         }
 
