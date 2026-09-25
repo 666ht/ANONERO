@@ -100,7 +100,7 @@ fun WalletProgressIndicator(modifier: Modifier = Modifier, refreshIndicatorProgr
                             Formats.convertNumber(
                                 progress.left,
                                 Locale.getDefault()
-                            )
+                            ) ?: ""
                         ),
                         modifier = Modifier.padding(top = 8.dp),
                         style = MaterialTheme.typography.labelSmall,
