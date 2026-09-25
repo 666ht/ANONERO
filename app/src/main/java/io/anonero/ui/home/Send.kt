@@ -344,8 +344,8 @@ fun SendScreen(
     val walletState: WalletState by inject(WalletState::class.java)
 
     val showIndefiniteLoading by walletState.isLoading.asLiveData().observeAsState(false)
-\n
-val unLockedAmount = Formats.getDisplayAmount(
+
+    val unLockedAmount = Formats.getDisplayAmount(
         unlockedBalance ?: 0L
     )
 
