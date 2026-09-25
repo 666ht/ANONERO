@@ -226,11 +226,12 @@ jobs:
       - name: Export Boost headers for APK build
         run: |
           set -euxo pipefail
-          mkdir -p external-libs/include/boost
+          mkdir -p external-libs/include/boost external-libs/include/sodium
           for abi in arm64-v8a armeabi-v7a; do
             test -d "external-libs/$abi/include/boost"
             cp -a "external-libs/$abi/include/boost/." external-libs/include/boost/
           done
+          test -s external-libs/include/sodium/export.h
 
       - name: Verify native Android libraries
         run: |
