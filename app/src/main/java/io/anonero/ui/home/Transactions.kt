@@ -701,7 +701,7 @@ fun TransactionScreen(
                                 if (hideAmounts) Formats.maskAmount(balance ?: 0)
                                 else Formats.getDisplayAmount(balance ?: 0),
                                 style = MaterialTheme.typography.displaySmall,
-                                textAlign = TextAlign.Start
+                                textAlign = TextAlign.End
                             )
                         }
                     }
