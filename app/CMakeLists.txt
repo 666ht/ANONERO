@@ -219,7 +219,7 @@ include_directories( ${CMAKE_SOURCE_DIR}/../external-libs/monero/src/crypto/cryp
 include_directories( ${EXTERNAL_LIBS_DIR}/include )
 include_directories( ${EXTERNAL_LIBS_DIR}/include/sodium )
 include_directories( ${EXTERNAL_LIBS_DIR}/monero/src )
-include_directories( ${EXTERNAL_LIBS_DIR}/monero/external/polyseed/include )
+include_directories( ${EXTERNAL_LIBS_DIR}/monero/external )
 
 message(STATUS EXTERNAL_LIBS_DIR :  ${EXTERNAL_LIBS_DIR})
 
