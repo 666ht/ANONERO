@@ -240,8 +240,8 @@ EOF
         -D BUILD_TAG="android-$ABI" \
         -D ANDROID_ABI="$ABI" \
         -D ANDROID_PLATFORM="android-$API"
-    cmake --build "$MONERO/build/release" --target wallet_api --parallel "$NPROC"
-    test -s "$MONERO/build/release/lib/libwallet_api.a"
+    cmake --build "$BUILD_DIR" --target wallet_api --parallel "$NPROC"
+    test -s "$BUILD_DIR/lib/libwallet_api.a"
   else
     mkdir -p build/release && cd build/release
     cmake -D CMAKE_BUILD_TYPE=Release -D STATIC=OFF -D ARCH="$MONERO_ARCH" -D BUILD_64=ON -D BUILD_TESTS=OFF -D BUILD_GUI_DEPS=1 -D USE_DEVICE_TREZOR=OFF -D STACK_TRACE=OFF -D CMAKE_POSITION_INDEPENDENT_CODE=ON -D BUILD_TAG="linux-x64" -D CMAKE_PREFIX_PATH="$PREFIX" -D BOOST_ROOT="$PREFIX" -D BOOST_IGNORE_SYSTEM_PATHS=ON -D OPENSSL_ROOT_DIR="$PREFIX" ../..
@@ -259,7 +259,8 @@ step_collect() {
   mkdir -p "$OUT/include/boost"
   cp -a "$PREFIX/include/boost/." "$OUT/include/boost/"
   find "$PREFIX/lib" -maxdepth 1 -name '*.a' -exec cp -a {} "$OUT"/ \; 2>/dev/null || true
-  cp -a "$MONERO"/build/release/lib/. "$OUT"/monero/
+  COLLECT_BUILD_DIR="${BUILD_DIR:-$MONERO/build/release}"
+  cp -a "$COLLECT_BUILD_DIR"/lib/. "$OUT"/monero/
   local missing=0 l
   for l in libwallet_api.a libwallet.a libcryptonote_core.a libcryptonote_basic.a libringct.a libcncrypto.a libcommon.a libepee.a libdevice.a libmnemonics.a libpolyseed_wrapper.a libeasylogging.a liblmdb.a libblocks.a libcheckpoints.a libmultisig.a libversion.a libnet.a librandomx.a libhardforks.a librpc_base.a libblockchain_db.a libringct_basic.a libcryptonote_format_utils_basic.a; do
     [ -s "$OUT/monero/$l" ] || { echo "MISSING monero/$l" >&2; missing=1; }
