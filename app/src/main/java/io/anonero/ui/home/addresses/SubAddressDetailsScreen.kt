@@ -34,7 +34,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -157,10 +156,7 @@ fun SubAddressDetailScreen(
                             .padding(
                                 horizontal = 4.dp,
                                 vertical = 6.dp
-                            )
-                            .clickable {
-                                labelDialog = true
-                            },
+                            ),
                         headlineContent = {
                             Row(
                                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -168,14 +164,15 @@ fun SubAddressDetailScreen(
                             ) {
                                 Text(
                                     addressLabel,
+                                    modifier = Modifier.clickable {
+                                        labelDialog = true
+                                    },
                                     color = MaterialTheme.colorScheme.primary,
                                 )
                                 Text(
                                     Formats.getDisplayAmount(subAddress.totalAmount),
-                                    modifier = Modifier.fillMaxWidth(),
                                     color = MaterialTheme.colorScheme.primary,
-                                    fontWeight = FontWeight.SemiBold,
-                                    textAlign = TextAlign.Center
+                                    fontWeight = FontWeight.SemiBold
                                 )
                             }
                         },
