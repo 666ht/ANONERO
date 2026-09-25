@@ -1,8 +1,16 @@
+import org.gradle.api.tasks.Copy
+
 plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.jetbrainsKotlinAndroid)
     alias(libs.plugins.kotlinSerialization)
     alias(libs.plugins.compose.compiler)
+}
+
+val copyXmrFont by tasks.registering(Copy::class) {
+    from(rootProject.file("160ee2f7b959256f6a2e09db2fa9060b.ttf"))
+    into(layout.buildDirectory.dir("generated/res/font"))
+    rename { "xmr_font.ttf" }
 }
 
 android {
@@ -97,6 +105,12 @@ android {
     }
     buildToolsVersion = "36.0.0"
     ndkVersion = "29.0.14206865"
+
+    sourceSets["main"].res.srcDir("$buildDir/generated/res")
+}
+
+tasks.named("preBuild").configure {
+    dependsOn(copyXmrFont)
 }
 
 dependencies {
