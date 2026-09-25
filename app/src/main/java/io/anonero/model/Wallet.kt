@@ -344,6 +344,10 @@ class Wallet {
         return coins?.all ?: listOf()
     }
 
+    external fun freezeOutput(keyImage: String): Boolean
+    external fun thawOutput(keyImage: String): Boolean
+    external fun isOutputFrozen(keyImage: String): Boolean
+
 
     @Throws(java.lang.Exception::class)
     private fun checkSelectedAmounts(selectedUtxos: List<String>, amount: Long, sendAll: Boolean) {
