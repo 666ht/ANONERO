@@ -219,9 +219,8 @@ class AnonNeroService : Service() {
             .setContentTitle(title)
             .setContentText(content)
             .apply {
-                if (progress != null) {
-                    val percent = (progress.progress * 100f).coerceIn(0f, 100f).toInt()
-                    this.setProgress(100, percent, false)
+                if (progress != null && progress.progress < 1) {
+                    this.setProgress(100, (progress.progress * 100).toInt(), false)
                 }
             }
             .setGroup("BackgroundService")
