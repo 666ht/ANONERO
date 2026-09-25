@@ -123,18 +123,34 @@ jobs:
           yes | "$SDKMANAGER" --licenses >/dev/null || true
           "$SDKMANAGER" "platform-tools" "platforms;android-35" "build-tools;36.0.0" "cmake;3.31.5" "ndk;29.0.14206865"
 
-      - name: Cache native Android libraries
+      - name: Restore completed native Android libraries
         id: native-cache
-        uses: actions/cache@v4
+        uses: actions/cache/restore@v4
         with:
           path: |
             external-libs/arm64-v8a
             external-libs/armeabi-v7a
             external-libs/include
             external-libs/VERSION
-          key: anonero-native-android-v3-${{ runner.os }}-monero-0.18.5.0-${{ hashFiles('external-libs/Makefile', 'external-libs/Containerfile', 'external-libs/build.sh', 'app/CMakeLists.txt', 'app/src/main/cpp/**', 'wallet2(1).txt') }}
+            external-libs/monero/build/arm64-v8a
+            external-libs/monero/build/armeabi-v7a
+          key: anonero-native-complete-v4-${{ runner.os }}-monero-0.18.5.0-${{ hashFiles('external-libs/Makefile', 'external-libs/Containerfile', 'external-libs/build.sh', 'wallet2(1).txt') }}
+
+      - name: Restore interrupted native build state
+        id: native-state
+        if: steps.native-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            external-libs/arm64-v8a
+            external-libs/armeabi-v7a
+            external-libs/include
+            external-libs/VERSION
+            external-libs/monero/build/arm64-v8a
+            external-libs/monero/build/armeabi-v7a
+          key: anonero-native-state-v4-${{ runner.os }}-${{ github.ref_name }}-${{ github.run_id }}
           restore-keys: |
-            anonero-native-android-v2-${{ runner.os }}-monero-0.18.5.0-
+            anonero-native-state-v4-${{ runner.os }}-${{ github.ref_name }}-
 
       - name: Restore native compiler cache
         id: ccache-restore
@@ -151,6 +167,32 @@ jobs:
         run: |
           set -euxo pipefail
           make android NPROC=4
+
+      - name: Save completed native Android libraries
+        if: success() && steps.native-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            external-libs/arm64-v8a
+            external-libs/armeabi-v7a
+            external-libs/include
+            external-libs/VERSION
+            external-libs/monero/build/arm64-v8a
+            external-libs/monero/build/armeabi-v7a
+          key: anonero-native-complete-v4-${{ runner.os }}-monero-0.18.5.0-${{ hashFiles('external-libs/Makefile', 'external-libs/Containerfile', 'external-libs/build.sh', 'wallet2(1).txt') }}
+
+      - name: Save interrupted native build state
+        if: always() && steps.native-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            external-libs/arm64-v8a
+            external-libs/armeabi-v7a
+            external-libs/include
+            external-libs/VERSION
+            external-libs/monero/build/arm64-v8a
+            external-libs/monero/build/armeabi-v7a
+          key: anonero-native-state-v4-${{ runner.os }}-${{ github.ref_name }}-${{ github.run_id }}
 
       - name: Save native compiler cache even if build fails
         if: always() && steps.ccache-restore.outputs.cache-primary-key != ''
