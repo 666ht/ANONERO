@@ -687,10 +687,9 @@ fun TransactionScreen(
                             )
                             .fillParentMaxWidth()
                     ) {
-                        Row(
+                        Column(
                             modifier = Modifier.fillMaxWidth(),
-                            verticalAlignment = Alignment.Bottom,
-                            horizontalArrangement = Arrangement.SpaceBetween
+                            horizontalAlignment = Alignment.End
                         ) {
                             Text(
                                 "XMR",
