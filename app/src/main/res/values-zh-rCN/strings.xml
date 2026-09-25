@@ -39,7 +39,7 @@
     <string name="no_coins_available">暂无可用硬币收到交易后，您的硬币将显示在这里</string>
     <string name="yes">是</string>
     <string name="confirm">确认</string>
-    <string name="spend">消费</string>
+    <string name="spend">确认</string>
     <string name="coins">输出</string>
     <string name="output_number">输出 %1$d</string>
     <string name="battery_optimization_title">电池优化</string>
