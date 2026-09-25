@@ -40,7 +40,7 @@ class Subaddress(
             label.isEmpty() || DEFAULT_LABEL_FORMATTER.matcher(label).matches() ->
                 if (addressIndex == 0) "主地址 0" else "子地址 $addressIndex"
             DEFAULT_SUBADDRESS_LABEL_FORMATTER.matcher(label).matches() ->
-                "子地址 ${DEFAULT_SUBADDRESS_LABEL_FORMATTER.matcher(label).replaceFirst("")}"
+                "子地址 $addressIndex"
             DEFAULT_PRIMARY_LABEL_FORMATTER.matcher(label).matches() ->
                 "主地址 0"
             else -> label
@@ -50,7 +50,7 @@ class Subaddress(
         val DEFAULT_LABEL_FORMATTER: Pattern =
             Pattern.compile("^[0-9]{4}-[0-9]{2}-[0-9]{2}-[0-9]{2}:[0-9]{2}:[0-9]{2}$")
         val DEFAULT_SUBADDRESS_LABEL_FORMATTER: Pattern =
-            Pattern.compile("^Subaddress\\s*#?\\s*([0-9]+)$")
+            Pattern.compile("^Subaddress(?:\\s*#?\\s*[0-9]+)?$")
         val DEFAULT_PRIMARY_LABEL_FORMATTER: Pattern =
             Pattern.compile("^Primary address(?: #?0)?$")
     }
