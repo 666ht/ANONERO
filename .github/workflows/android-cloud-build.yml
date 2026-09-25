@@ -159,6 +159,15 @@ jobs:
           path: external-libs/.ccache
           key: ${{ steps.ccache-restore.outputs.cache-primary-key }}
 
+      - name: Export Boost headers for APK build
+        run: |
+          set -euxo pipefail
+          mkdir -p external-libs/include/boost
+          for abi in arm64-v8a armeabi-v7a; do
+            test -d "external-libs/$abi/include/boost"
+            cp -a "external-libs/$abi/include/boost/." external-libs/include/boost/
+          done
+
       - name: Verify native Android libraries
         run: |
           set -euxo pipefail
