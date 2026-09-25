@@ -56,7 +56,7 @@ class Subaddress(
                 !DEFAULT_LABEL_FORMATTER.matcher(normalizedLabel).matches() &&
                 !DEFAULT_SUBADDRESS_LABEL_FORMATTER.matcher(normalizedLabel).matches() &&
                 !DEFAULT_PRIMARY_LABEL_FORMATTER.matcher(normalizedLabel).matches()
-            return if (isCustomLabel) normalizedLabel else displayLabel
+            return if (isCustomLabel) "$normalizedLabel $addressIndex" else displayLabel
         }
 
     companion object {
