@@ -36,7 +36,7 @@ image:
 	BUILDKIT_PROGRESS=plain $(CONTAINER) build --progress=plain -f Containerfile --target deps --build-arg TARGET=$(TARGET) --build-arg NPROC=$(NPROC) \
 	    --build-arg BASE=$(BASE) --build-arg SNAPSHOT=$(SNAPSHOT) \
 	    --build-arg SOURCE_DATE_EPOCH=$(SOURCE_DATE_EPOCH) -t anonero-$(TARGET) .
-	rm -rf $(ABI) && mkdir -p $(ABI)
+	mkdir -p $(ABI)
 	mkdir -p .ccache
 	set -e; \
 	$(CONTAINER) run --name anonero-$(TARGET)-out --user 0:0 \
