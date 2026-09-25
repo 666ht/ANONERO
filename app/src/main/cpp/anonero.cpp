@@ -444,3 +444,7 @@ Java_io_anonero_model_WalletManager_openWalletJ(JNIEnv *env, jobject instance,
     env->ReleaseStringUTFChars(password, _password);
     return reinterpret_cast<jlong>(wallet);
 }
+
+#ifdef __cplusplus
+}
+#endif
