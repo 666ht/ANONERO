@@ -195,11 +195,12 @@ class WalletManager {
 
     external fun closeJ(wallet: Wallet?): Boolean
     fun close(wallet: Wallet): Boolean {
-        unmanageWallet(wallet)
+        // Close the native wallet first. Only remove it from management
+        // after the native handle has been released successfully.
         val closed = closeJ(wallet)
-        if (!closed) {
-            // in case we could not close it
-            // we manage it again
+        if (closed) {
+            unmanageWallet(wallet)
+        } else {
             manageWallet(wallet)
         }
         return closed
