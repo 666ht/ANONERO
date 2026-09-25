@@ -161,13 +161,14 @@ fun SubAddressDetailScreen(
                         headlineContent = {
                             Row(
                                 horizontalArrangement = Arrangement.SpaceBetween,
-                                modifier = Modifier.fillMaxWidth()
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clickable {
+                                        labelDialog = true
+                                    }
                             ) {
                                 Text(
                                     addressLabel,
-                                    modifier = Modifier.clickable {
-                                        labelDialog = true
-                                    },
                                     color = MaterialTheme.colorScheme.primary,
                                 )
                                 Text(
