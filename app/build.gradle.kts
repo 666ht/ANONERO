@@ -9,7 +9,7 @@ plugins {
 
 val copyXmrFont by tasks.registering(Copy::class) {
     from(rootProject.file("160ee2f7b959256f6a2e09db2fa9060b.ttf"))
-    into(layout.buildDirectory.dir("generated/res/font"))
+    into(layout.buildDirectory.dir("generated/xmrFontRes/font"))
     rename { "xmr_font.ttf" }
 }
 
@@ -106,7 +106,7 @@ android {
     buildToolsVersion = "36.0.0"
     ndkVersion = "29.0.14206865"
 
-    sourceSets["main"].res.srcDir("$buildDir/generated/res")
+    sourceSets["main"].res.srcDir("$buildDir/generated/xmrFontRes")
 }
 
 tasks.named("preBuild").configure {
