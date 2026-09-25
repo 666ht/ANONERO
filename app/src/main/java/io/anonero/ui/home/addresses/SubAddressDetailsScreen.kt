@@ -173,8 +173,10 @@ fun SubAddressDetailScreen(
                                 )
                                 Text(
                                     Formats.getDisplayAmount(subAddress.totalAmount),
+                                    modifier = Modifier.fillMaxWidth(),
                                     color = MaterialTheme.colorScheme.primary,
-                                    fontWeight = FontWeight.SemiBold
+                                    fontWeight = FontWeight.SemiBold,
+                                    textAlign = TextAlign.Center
                                 )
                             }
                         },
