@@ -278,6 +278,7 @@ class NodeSettingsViewModel(
 fun NodeSettings(onBackPress: () -> Unit = {}) {
     val nodeSettingsVM = koinViewModel<NodeSettingsViewModel>()
     var showNodeDetails by remember { mutableStateOf(false) }
+    var editingNode by remember { mutableStateOf<Node?>(null) }
     val walletState = koinInject<WalletState>()
     var showMenu by remember { mutableStateOf(false) }
     val availableNodes by nodeSettingsVM.nodes.collectAsState(arrayListOf())
@@ -318,11 +319,16 @@ fun NodeSettings(onBackPress: () -> Unit = {}) {
                         }
                     )
                     NodeForm(
+                        node = editingNode,
                         onBackPress = {
                             scope.launch {
                                 showNodeDetails = false
+                                editingNode = null
                             }
                         }, onConnect = {
+                            if (editingNode != null) {
+                                nodeSettingsVM.removeItem(editingNode!!.toNodeString())
+                            }
                             nodeSettingsVM.addItem(it)
                             nodeSettingsVM.viewModelScope
                                 .launch {
@@ -349,6 +355,7 @@ fun NodeSettings(onBackPress: () -> Unit = {}) {
                     actions = {
                         TextButton(
                             onClick = {
+                                editingNode = null
                                 showNodeDetails = true
                             }
                         ) { Text("添加节点") }
@@ -458,7 +465,11 @@ fun NodeSettings(onBackPress: () -> Unit = {}) {
                                         }
                                     }
                             },
-                            onRemove = { nodeSettingsVM.removeItem(node.toNodeString()) })
+                            onRemove = { nodeSettingsVM.removeItem(node.toNodeString()) },
+                            onEdit = {
+                                editingNode = node
+                                showNodeDetails = true
+                            })
                     }
                 }
         }
@@ -484,6 +495,7 @@ fun NodeListItem(
     onDisconnect: (node: Node) -> Unit = {},
     onConnect: (node: Node) -> Unit = {},
     onRemove: (node: Node) -> Unit = {},
+    onEdit: (node: Node) -> Unit = {},
 ) {
     var menu by remember { mutableStateOf(false) }
     val daemonStatus by nodeSettingsVM.getCurrentDaemonLive().observeAsState(null)
@@ -556,6 +568,14 @@ fun NodeListItem(
                     if (!active) {
                         HorizontalDivider()
                         DropdownMenuItem(
+                            text = { Text("编辑") },
+                            onClick = {
+                                onEdit(node)
+                                menu = false
+                            },
+                        )
+                        HorizontalDivider()
+                        DropdownMenuItem(
                             text = { Text("删除") },
                             onClick = {
                                 onRemove(node)
@@ -571,14 +591,21 @@ fun NodeListItem(
 
 @Composable
 fun NodeForm(
+    node: Node? = null,
     onBackPress: () -> Unit = {},
     onConnect: (node: Node) -> Unit = {},
     nodeSettingsVM: NodeSettingsViewModel
 ) {
     val connectionError by nodeSettingsVM.connectionError.observeAsState(null)
-    var rpcHost by remember { mutableStateOf("") }
-    var rpcUsername by remember { mutableStateOf("") }
-    var rpcPassPhrase by remember { mutableStateOf("") }
+    var rpcHost by remember(node) {
+        mutableStateOf(node?.let { "http://${it.host}:${it.rpcPort}" } ?: "")
+    }
+    var rpcUsername by remember(node) {
+        mutableStateOf(node?.username ?: "")
+    }
+    var rpcPassPhrase by remember(node) {
+        mutableStateOf(node?.password ?: "")
+    }
     val labelColor = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.3f)
     Column(
         modifier = Modifier
