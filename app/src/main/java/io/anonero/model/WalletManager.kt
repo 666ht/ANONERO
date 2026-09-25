@@ -61,6 +61,9 @@ class WalletManager {
     ): Wallet {
         val walletHandle =
             createWalletJ(aFile.absolutePath, password, passphrase, language, networkType.value)
+        if (walletHandle == 0L) {
+            throw IllegalStateException("Native wallet creation failed")
+        }
         val wallet = Wallet(walletHandle)
         manageWallet(wallet)
         if (wallet.status.isOk) {
