@@ -194,10 +194,4 @@
     <string name="invalid_seed">Invalid seed</string>
     <string name="share_logs">Share Logs</string>
     <string name="blocks_left">blocks left: %1$s</string>
-    <string name="wiping_wallet">Wiping Wallet</string>
-    <string name="wallet_cleared">Wallet Cleared</string>
-    <string name="clearing_preferences">Clearing Preferences</string>
-    <string name="clearing_nodes">Clearing Nodes</string>
-    <string name="clearing_logs">Clearing Logs</string>
-    <string name="logs_cleared">Logs Cleared</string>
 </resources>
