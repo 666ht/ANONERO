@@ -1,6 +1,7 @@
 package io.anonero
 
 import android.content.Context
+import io.anonero.model.NetworkType
 import io.matthewnelson.kmp.tor.resource.exec.tor.ResourceLoaderTorExec
 import io.matthewnelson.kmp.tor.runtime.TorRuntime
 import kotlinx.coroutines.CoroutineScope
