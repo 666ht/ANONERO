@@ -157,15 +157,14 @@ fun SubAddressDetailScreen(
                             .padding(
                                 horizontal = 4.dp,
                                 vertical = 6.dp
-                            ),
+                            )
+                            .clickable {
+                                labelDialog = true
+                            },
                         headlineContent = {
                             Row(
                                 horizontalArrangement = Arrangement.SpaceBetween,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .clickable {
-                                        labelDialog = true
-                                    }
+                                modifier = Modifier.fillMaxWidth()
                             ) {
                                 Text(
                                     addressLabel,
