@@ -164,13 +164,62 @@ class SendViewModel : ViewModel() {
                 val errorMessage = e.message.orEmpty()
                 val normalizedError = errorMessage.lowercase()
                 val displayError = errorMessage
-                    .replace(Regex("(?i)insufficient funds"), "余额不足")
-                    .replace(Regex("(?i)insufficient balance"), "余额不足")
-                    .replace(Regex("(?i)not enough money"), "余额不足")
-                    .replace(Regex("(?i)not enough balance"), "余额不足")
-                    .replace(Regex("(?i)balance is too low"), "余额不足")
-                    .replace(Regex("(?i)wallet not connected to node\\.? please check network"), "钱包未连接到节点，请检查网络")
-                    .replace(Regex("(?i)invalid address"), "地址无效")
+                    .replace(
+                        Regex("(?i)Not enough money in unlocked balance"),
+                        "未解锁余额不足"
+                    )
+                    .replace(
+                        Regex("(?i)Failed to find a way to create transactions\\. This is usually due to dust which is so small it cannot pay for itself in fees, or trying to send more money than the unlocked balance, or not leaving enough for fees"),
+                        "无法找到创建交易的方法。这通常是因为存在金额过小、连自身手续费都无法支付的零碎输出，或者尝试发送超过未解锁余额的金额，或者没有留下足够的手续费"
+                    )
+                    .replace(
+                        Regex("(?i)not enough outputs for specified ring size"),
+                        "指定的环签名大小没有足够的输出"
+                    )
+                    .replace(
+                        Regex("(?i)Please use sweep_unmixable\\.?"),
+                        "请使用 sweep_unmixable。"
+                    )
+                    .replace(
+                        Regex("(?i)transaction was not constructed"),
+                        "交易未构建"
+                    )
+                    .replace(
+                        Regex("(?i)transaction (.+) was rejected by daemon"),
+                        "交易 $1 被节点拒绝"
+                    )
+                    .replace(
+                        Regex("(?i)destination amount is zero"),
+                        "转账金额为零"
+                    )
+                    .replace(
+                        Regex("(?i)transaction has no destination"),
+                        "交易没有目标地址"
+                    )
+                    .replace(
+                        Regex("(?i)failed to find a suitable way to split transactions"),
+                        "无法找到合适的方式拆分交易"
+                    )
+                    .replace(
+                        Regex("(?i)unknown transfer error:"),
+                        "未知转账错误："
+                    )
+                    .replace(
+                        Regex("(?i)internal error:"),
+                        "内部错误："
+                    )
+                    .replace(
+                        Regex("(?i)unexpected error:"),
+                        "意外错误："
+                    )
+                    .replace(
+                        Regex("(?i)wallet not connected to node\\.? please check network"),
+                        "钱包未连接到节点，请检查网络"
+                    )
+                    .replace(
+                        Regex("(?i)invalid address"),
+                        "地址无效"
+                    )
                 _txComposeError.postValue(displayError)
                 Timber.tag(TAG).e(e)
                 null
