@@ -163,16 +163,23 @@ class SendViewModel : ViewModel() {
             } catch (e: Exception) {
                 val errorMessage = e.message.orEmpty()
                 val normalizedError = errorMessage.lowercase()
-                val displayError = if (
+                val displayError = when {
                     normalizedError.contains("insufficient") ||
-                    normalizedError.contains("not enough") ||
-                    normalizedError.contains("not enough balance") ||
-                    normalizedError.contains("not enough money") ||
-                    normalizedError.contains("balance is too low")
-                ) {
-                    "余额不足"
-                } else {
-                    errorMessage
+                        normalizedError.contains("not enough") ||
+                        normalizedError.contains("balance is too low") -> {
+                        "余额不足"
+                    }
+                    normalizedError.contains("wallet not connected") ||
+                        normalizedError.contains("not connected to node") -> {
+                        "钱包未连接到节点，请检查网络"
+                    }
+                    normalizedError.contains("invalid address") -> {
+                        "地址无效"
+                    }
+                    normalizedError.contains("fee") && normalizedError.contains("not enough") -> {
+                        "手续费不足"
+                    }
+                    else -> errorMessage
                 }
                 _txComposeError.postValue(displayError)
                 Timber.tag(TAG).e(e)
