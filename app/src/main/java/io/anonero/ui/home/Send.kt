@@ -177,6 +177,14 @@ class SendViewModel : ViewModel() {
                         "指定的环签名大小没有足够的输出"
                     )
                     .replace(
+                        Regex("(?i)output amount"),
+                        "输出金额"
+                    )
+                    .replace(
+                        Regex("(?i)found outputs to use"),
+                        "找到可使用的输出数量"
+                    )
+                    .replace(
                         Regex("(?i)Please use sweep_unmixable\\.?"),
                         "请使用 sweep_unmixable。"
                     )
