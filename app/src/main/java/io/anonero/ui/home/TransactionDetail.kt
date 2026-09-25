@@ -251,7 +251,7 @@ fun TransactionDetailScreen(
             ) {
                 item {
                     with(sharedTransitionScope) {
-                        TransactionItem(
+                        TransactionDetailItem(
                             tx = transactionInfo!!,
                             modifier = Modifier
                                 .clickable {
@@ -332,6 +332,72 @@ fun TransactionDetailScreen(
                 item { Spacer(Modifier.height(44.dp)) }
             }
         }
+    }
+}
+
+@Composable
+private fun TransactionDetailItem(
+    tx: TransactionInfo,
+    modifier: Modifier = Modifier
+) {
+    val isIncoming = tx.direction == TransactionInfo.Direction.Direction_In
+    val confirmations = tx.confirmations
+
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(
+                horizontal = 12.dp,
+                vertical = 20.dp
+            )
+            .border(
+                border = BorderStroke(
+                    1.dp,
+                    Color.Black
+                ),
+                shape = MaterialTheme.shapes.medium
+            )
+            .padding(
+                horizontal = 12.dp,
+                vertical = 12.dp
+            ),
+        verticalAlignment = androidx.compose.ui.Alignment.CenterVertically,
+        horizontalArrangement = androidx.compose.foundation.layout.Arrangement.SpaceBetween
+    ) {
+        Box(modifier = Modifier.padding(top = 2.dp)) {
+            if (confirmations >= 10) {
+                Icon(
+                    if (isIncoming) io.anonero.icons.AnonIcons.ArrowDownLeft else io.anonero.icons.AnonIcons.ArrowUpRight,
+                    modifier = Modifier.size(32.dp),
+                    tint = if (isIncoming) MaterialTheme.colorScheme.primary else androidx.compose.material3.LocalContentColor.current,
+                    contentDescription = ""
+                )
+            } else {
+                androidx.compose.foundation.layout.Box(
+                    modifier = Modifier.size(28.dp)
+                ) {
+                    androidx.compose.material3.CircularProgressIndicator(
+                        modifier = Modifier.size(28.dp),
+                        strokeWidth = 2.dp,
+                        progress = { confirmations.toFloat() / 10f }
+                    )
+                    Text(
+                        text = "$confirmations",
+                        modifier = Modifier.align(androidx.compose.ui.Alignment.Center),
+                        style = MaterialTheme.typography.bodySmall.copy(fontSize = 9.sp)
+                    )
+                }
+            }
+        }
+        Text(
+            Formats.getDisplayAmount(tx.amount),
+            textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+            style = MaterialTheme.typography.titleLarge
+        )
+        Text(
+            Formats.formatTransactionTime(tx.timestamp),
+            style = MaterialTheme.typography.labelSmall
+        )
     }
 }
 
