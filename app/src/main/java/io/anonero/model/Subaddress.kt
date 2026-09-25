@@ -49,6 +49,16 @@ class Subaddress(
             }).replace("#", "")
         }
 
+    val displayLabelWithIndex: String
+        get() {
+            val normalizedLabel = label.trim()
+            val isCustomLabel = normalizedLabel.isNotEmpty() &&
+                !DEFAULT_LABEL_FORMATTER.matcher(normalizedLabel).matches() &&
+                !DEFAULT_SUBADDRESS_LABEL_FORMATTER.matcher(normalizedLabel).matches() &&
+                !DEFAULT_PRIMARY_LABEL_FORMATTER.matcher(normalizedLabel).matches()
+            return if (isCustomLabel) "$normalizedLabel $addressIndex" else displayLabel
+        }
+
     companion object {
         val DEFAULT_LABEL_FORMATTER: Pattern =
             Pattern.compile("^[0-9]{4}-[0-9]{2}-[0-9]{2}-[0-9]{2}:[0-9]{2}:[0-9]{2}$")
