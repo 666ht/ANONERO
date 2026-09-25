@@ -238,7 +238,7 @@ jobs:
           # this does not rebuild any native library. Keep OpenSSL's generated
           # opensslconf.h separate per ABI because it is architecture-specific.
           OPENSSL_VERSION=3.6.2
-          OPENSSL_SHA256=aaf51a1fe064384f811daeaeb4ec4dce7340ec8bd893027eee676af31e83a04
+          OPENSSL_SHA256=aaf51a1fe064384f811daeaeb4ec4dce7340ec8bd893027eee676af31e83a04f
           curl -fL --retry 5 --retry-all-errors --http1.1 \
             -o /tmp/openssl.tar.gz \
             "https://www.openssl.org/source/old/3.6/openssl-$OPENSSL_VERSION.tar.gz"
