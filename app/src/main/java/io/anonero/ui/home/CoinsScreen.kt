@@ -52,6 +52,7 @@ import io.anonero.model.Wallet
 import io.anonero.services.WalletState
 import io.anonero.ui.components.WalletProgressIndicator
 import io.anonero.ui.home.graph.routes.SendScreenRoute
+import io.anonero.ui.home.graph.routes.CoinDetailRoute
 import io.anonero.util.Formats
 import org.koin.java.KoinJavaComponent.inject
 
@@ -60,6 +61,7 @@ import org.koin.java.KoinJavaComponent.inject
 fun CoinsScreen(
     modifier: Modifier = Modifier,
     navigateToSpend: (route: SendScreenRoute) -> Unit = {},
+    navigateToDetail: (route: CoinDetailRoute) -> Unit = {},
     onBackPress: () -> Unit = {},
     selected: Set<String> = setOf(),
 ) {
@@ -165,7 +167,7 @@ fun CoinsScreen(
                             vertical = 6.dp
                         )
                         .clickable {
-                            selectCoin(coin)
+                            navigateToDetail(CoinDetailRoute(coin.key))
                         },
                     headlineContent = {
                         Row(
