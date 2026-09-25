@@ -226,14 +226,11 @@ jobs:
       - name: Export native dependency headers for APK build
         run: |
           set -euxo pipefail
-          mkdir -p external-libs/include/boost external-libs/include/openssl external-libs/include/sodium
+          mkdir -p external-libs/include/boost external-libs/include/sodium
           for abi in arm64-v8a armeabi-v7a; do
             test -d "external-libs/$abi/include/boost"
             cp -a "external-libs/$abi/include/boost/." external-libs/include/boost/
-            test -d "external-libs/$abi/include/openssl"
-            cp -a "external-libs/$abi/include/openssl/." external-libs/include/openssl/
           done
-          test -s external-libs/include/openssl/conf.h
           test -s external-libs/include/sodium/export.h
           test -d external-libs/monero/external/polyseed/include
           test -s external-libs/monero/external/polyseed/include/polyseed.h
