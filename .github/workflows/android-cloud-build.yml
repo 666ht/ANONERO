@@ -284,7 +284,7 @@ jobs:
             cd "$work"
             ./Configure "$target" -D__ANDROID_API__=21 no-shared no-tests >/dev/null
             mkdir -p "$GITHUB_WORKSPACE/external-libs/$abi/include/openssl"
-            cp -a include/openssl/. "$GITHUB_WORKSPACE/external-libs/$abi/include/openssl/"
+            cp -aL include/openssl/. "$GITHUB_WORKSPACE/external-libs/$abi/include/openssl/"
           done
           cd "$GITHUB_WORKSPACE"
           for abi in arm64-v8a armeabi-v7a; do
