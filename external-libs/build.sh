@@ -252,6 +252,26 @@ EOF
   find . -path ./lib -prune -o -name '*.a' -exec cp '{}' lib \;
 }
 
+step_monero_resume() {
+  cc
+  if [ ! -s "$WORK/polyseed/include/polyseed.h" ]; then
+    echo "MISSING $WORK/polyseed/include/polyseed.h" >&2
+    exit 1
+  fi
+  BUILD_DIR="$MONERO/build/$ABI"
+  if [ -s "$BUILD_DIR/lib/libwallet_api.a" ]; then
+    echo "==> $ABI: wallet_api already complete; skip native compile"
+    return 0
+  fi
+  if [ ! -f "$BUILD_DIR/CMakeCache.txt" ]; then
+    echo "MISSING existing CMake build state: $BUILD_DIR/CMakeCache.txt" >&2
+    exit 1
+  fi
+  echo "==> RESUME CMake build: $BUILD_DIR"
+  cmake --build "$BUILD_DIR" --target wallet_api --parallel "$NPROC"
+  test -s "$BUILD_DIR/lib/libwallet_api.a"
+}
+
 step_collect() {
   mkdir -p "$OUT/monero"
   # The Android APK compile happens outside the native build container. Keep the
@@ -278,6 +298,7 @@ case "${1:-}" in
   fetch) step_fetch ;;
   toolchain) step_toolchain ;;
   monero) step_monero ;;
+  resume) step_monero_resume ;;
   collect) step_collect ;;
   "") echo "usage: TARGET=<t> $0 {fetch|toolchain|<dep>|monero|collect}" >&2; exit 1 ;;
   *) declare -F "dep_$1" >/dev/null || { echo "unknown step '$1'" >&2; exit 1; }; "dep_$1" ;;
