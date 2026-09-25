@@ -102,41 +102,29 @@ class SecureWipeViewModel(
         return viewModelScope.launch(Dispatchers.IO) {
             (activity as MainActivity).stopNotificationService()
             _wipeProgress.postValue(.3f)
-            _wipeProgressMessage.postValue("正在删除钱包")
+            _wipeProgressMessage.postValue("Wiping Wallet")
             anonWalletHandler.wipe(passPhrase)
-
             delay(1000)
             _wipeProgress.postValue(.5f)
-            _wipeProgressMessage.postValue("钱包清理完成")
+            _wipeProgressMessage.postValue("Wallet Cleared")
             delay(1200)
-
             _wipeProgress.postValue(.6f)
-            _wipeProgressMessage.postValue("正在清除设置")
-            if (!sharedPreferences.edit().clear().commit()) {
-                throw IllegalStateException("clear preferences failed")
-            }
-
+            _wipeProgressMessage.postValue("Clearing Preferences")
+            sharedPreferences.edit { clear() }
             delay(800)
             _wipeProgress.postValue(.7f)
-            _wipeProgressMessage.postValue("正在清除节点")
+            _wipeProgressMessage.postValue("Clearing Nodes")
             nodesRepository.clearAll()
-
             delay(1200)
-            _wipeProgressMessage.postValue("正在清除日志")
+            _wipeProgressMessage.postValue("Clearing Logs")
             delay(1000)
             logRepository.clear()
-
-            _wipeProgress.postValue(.8f)
-            _wipeProgressMessage.postValue("正在删除应用全部数据")
-            if (!AnonConfig.clearAllAppData(activity)) {
-                throw IllegalStateException("clear all app data failed")
-            }
-
             AnonConfig.disposeState()
-
-            delay(800)
+            _wipeProgress.postValue(.8f)
+            _wipeProgressMessage.postValue("Logs Cleared")
+            delay(1200)
             _wipeProgress.postValue(1f)
-            _wipeProgressMessage.postValue("应用全部数据已清除")
+            _wipeProgressMessage.postValue("Wallet wiped successfully")
         }
     }
 
@@ -201,27 +189,27 @@ fun SecureWipe(
             val hashedPass =
                 KeyStoreHelper.getCrazyPass(AnonConfig.context, passPhrase)
             if (hash == hashedPass) {
-                // The password hash is sufficient authorization for a wipe.
-                // Do not require seed extraction: a damaged/unopened wallet must
-                // still be deletable.
-                passPhraseDialog = false
-                HapticFeedbackConstants.CONTEXT_CLICK
-                activity?.let { activity ->
-                    secureWipeViewModel.wipe(passPhrase, activity)
-                        .invokeOnCompletion {
-                            if (it == null) {
-                                view.performHapticFeedback(
-                                    HapticFeedbackConstants.CONTEXT_CLICK
-                                )
-                                scope.launch(Dispatchers.Main) {
-                                    goToHome()
+                val seed = getWalletSeed(passPhrase)?.split(" ")
+                if (seed != null) {
+                    passPhraseDialog = false
+                    HapticFeedbackConstants.CONTEXT_CLICK
+                    activity?.let { activity ->
+                        secureWipeViewModel.wipe(passPhrase, activity)
+                            .invokeOnCompletion {
+                                if (it == null) {
+                                    view.performHapticFeedback(
+                                        HapticFeedbackConstants.CONTEXT_CLICK
+                                    )
+                                    scope.launch(Dispatchers.Main) {
+                                        goToHome()
+                                    }
+                                } else {
+                                    Timber.tag(TAG).e(it)
+                                    error = it.message
+                                    requestClearScreen(false)
                                 }
-                            } else {
-                                Timber.tag(TAG).e(it)
-                                error = it.message
-                                requestClearScreen(false)
                             }
-                        }
+                    }
                 }
             } else {
                 errorShake.shake(
