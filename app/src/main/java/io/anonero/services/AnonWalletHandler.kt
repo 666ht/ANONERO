@@ -206,79 +206,16 @@ class AnonWalletHandler(
     }
 
     fun wipe(passPhrase: String): Boolean {
-        var success = true
-        val wallet = WalletManager.instance?.wallet
-
-        // Every cleanup step is executed independently. An exception in one
-        // step must never skip the remaining steps.
-        try {
-            wallet?.pauseRefresh()
-        } catch (e: Exception) {
-            success = false
-            Timber.tag(TAG).e(e, "pauseRefresh failed")
+        WalletManager.instance?.wallet?.pauseRefresh()
+        WalletManager.instance?.wallet?.stopBackgroundSync(passPhrase)
+        WalletManager.instance?.setDaemon(null)
+        if (WalletManager.instance?.wallet?.close() == true) {
+            AnonConfig.context?.let { AnonConfig.getDefaultWalletDir(it) }
+                ?.deleteRecursively()
+            return true
+        } else {
+            throw UnableToCloseWallet()
         }
-
-        try {
-            wallet?.setListener(null)
-        } catch (e: Exception) {
-            success = false
-            Timber.tag(TAG).e(e, "detach wallet listener failed")
-        }
-
-        try {
-            WalletManager.instance?.setDaemon(null)
-        } catch (e: Exception) {
-            success = false
-            Timber.tag(TAG).e(e, "clear daemon failed")
-        }
-
-        // Native cleanup is part of the wipe sequence and must finish before
-        // the final filesystem deletion. No timeout is used: returning early
-        // would allow a later native operation to recreate deleted wallet data.
-        wallet?.let { currentWallet ->
-            try {
-                if (!currentWallet.stopBackgroundSync(passPhrase)) {
-                    success = false
-                    Timber.tag(TAG).e("stopBackgroundSync returned false")
-                }
-            } catch (e: Exception) {
-                success = false
-                Timber.tag(TAG).e(e, "stopBackgroundSync failed")
-            }
-
-            try {
-                if (!currentWallet.close()) {
-                    success = false
-                    Timber.tag(TAG).e("wallet.close() returned false")
-                }
-            } catch (e: Exception) {
-                success = false
-                Timber.tag(TAG).e(e, "wallet.close() failed")
-            }
-        }
-
-        try {
-            WalletManager.resetInstance()
-        } catch (e: Exception) {
-            success = false
-            Timber.tag(TAG).e(e, "WalletManager.resetInstance failed")
-        }
-
-        // Delete wallet files only after native wallet operations have finished.
-        val walletDir = AnonConfig.context?.let {
-            AnonConfig.getDefaultWalletDir(it)
-        }
-        try {
-            if (walletDir == null || !walletDir.deleteRecursively() || walletDir.exists()) {
-                success = false
-                Timber.tag(TAG).e("wallet directory deletion failed")
-            }
-        } catch (e: Exception) {
-            success = false
-            Timber.tag(TAG).e(e, "wallet directory deletion failed")
-        }
-
-        return success
     }
 
 }
