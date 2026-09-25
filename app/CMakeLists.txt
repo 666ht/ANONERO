@@ -225,7 +225,6 @@ else()
     set(PLATFORM_LINK_OPTS "-Wl,-z,noexecstack")
 endif()
 
-include_directories( ${EXTERNAL_LIBS_DIR}/include )
 include_directories( ${CMAKE_SOURCE_DIR}/../external-libs/monero/src )
 
 message(STATUS EXTERNAL_LIBS_DIR :  ${EXTERNAL_LIBS_DIR})
