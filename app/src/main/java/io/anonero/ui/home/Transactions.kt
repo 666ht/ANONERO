@@ -162,6 +162,7 @@ fun TransactionScreen(
     val hideAmounts by walletState.hideAmountsFlow.asLiveData().observeAsState(false)
     val scope = rememberCoroutineScope()
     val toastState = rememberToasterState()
+    val keyImagesImportedMessage = stringResource(R.string.key_images_imported)
     val activity = LocalActivity.current;
 
     if (broadcastSignedTxPath != null) {
@@ -369,7 +370,7 @@ fun TransactionScreen(
 
                     ImportEvents.IMPORT_KEY_IMAGES -> {
                         toastState.show(
-                            stringResource(R.string.key_images_imported),
+                            keyImagesImportedMessage,
                             type = ToastType.Success,
                             duration = 4.seconds
                         )
