@@ -164,9 +164,17 @@ jobs:
       - name: Build native Android libraries
         if: steps.native-cache.outputs.cache-hit != 'true'
         working-directory: external-libs
+        env:
+          RESUME_NATIVE: ${{ steps.native-state.outputs.cache-hit == 'true' && '1' || '0' }}
         run: |
           set -euxo pipefail
-          make android NPROC=4
+          if [ "$RESUME_NATIVE" = "1" ]; then
+            echo "Interrupted native state restored: resume from saved CMake failure point"
+            make resume-android NPROC=4
+          else
+            echo "No interrupted native state: start native build"
+            make android NPROC=4
+          fi
 
       - name: Save completed native Android libraries
         if: success() && steps.native-cache.outputs.cache-hit != 'true'
