@@ -37,7 +37,7 @@ class Subaddress(
 
     val displayLabel: String
         get() = (if (label.isEmpty() || DEFAULT_LABEL_FORMATTER.matcher(label).matches()) {
-            if (addressIndex == 0) "主地址" else "子地址 $addressIndex"
+            if (addressIndex == 0) "主地址 0" else "子地址 $addressIndex"
         } else {
             label
         }).replace("#", "")
