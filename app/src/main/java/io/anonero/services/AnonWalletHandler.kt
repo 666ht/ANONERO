@@ -206,54 +206,79 @@ class AnonWalletHandler(
     }
 
     fun wipe(passPhrase: String): Boolean {
+        var success = true
         val wallet = WalletManager.instance?.wallet
 
-        // Stop normal wallet activity first.
-        wallet?.pauseRefresh()
-        WalletManager.instance?.setDaemon(null)
+        // Every cleanup step is executed independently. An exception in one
+        // step must never skip the remaining steps.
+        try {
+            wallet?.pauseRefresh()
+        } catch (e: Exception) {
+            success = false
+            Timber.tag(TAG).e(e, "pauseRefresh failed")
+        }
 
-        // Remove the wallet files BEFORE calling native close(). This guarantees
-        // that a native close failure or hang cannot prevent the actual file wipe.
+        try {
+            wallet?.setListener(null)
+        } catch (e: Exception) {
+            success = false
+            Timber.tag(TAG).e(e, "detach wallet listener failed")
+        }
+
+        try {
+            WalletManager.instance?.setDaemon(null)
+        } catch (e: Exception) {
+            success = false
+            Timber.tag(TAG).e(e, "clear daemon failed")
+        }
+
+        // Native cleanup is part of the wipe sequence and must finish before
+        // the final filesystem deletion. No timeout is used: returning early
+        // would allow a later native operation to recreate deleted wallet data.
+        wallet?.let { currentWallet ->
+            try {
+                if (!currentWallet.stopBackgroundSync(passPhrase)) {
+                    success = false
+                    Timber.tag(TAG).e("stopBackgroundSync returned false")
+                }
+            } catch (e: Exception) {
+                success = false
+                Timber.tag(TAG).e(e, "stopBackgroundSync failed")
+            }
+
+            try {
+                if (!currentWallet.close()) {
+                    success = false
+                    Timber.tag(TAG).e("wallet.close() returned false")
+                }
+            } catch (e: Exception) {
+                success = false
+                Timber.tag(TAG).e(e, "wallet.close() failed")
+            }
+        }
+
+        try {
+            WalletManager.resetInstance()
+        } catch (e: Exception) {
+            success = false
+            Timber.tag(TAG).e(e, "WalletManager.resetInstance failed")
+        }
+
+        // Delete wallet files only after native wallet operations have finished.
         val walletDir = AnonConfig.context?.let {
             AnonConfig.getDefaultWalletDir(it)
         }
-        val deleted = walletDir?.deleteRecursively() == true
-        if (!deleted) {
-            Timber.tag(TAG).e("wallet directory deletion failed")
-            throw UnableToCloseWallet()
+        try {
+            if (walletDir == null || !walletDir.deleteRecursively() || walletDir.exists()) {
+                success = false
+                Timber.tag(TAG).e("wallet directory deletion failed")
+            }
+        } catch (e: Exception) {
+            success = false
+            Timber.tag(TAG).e(e, "wallet directory deletion failed")
         }
 
-        // Native cleanup is best-effort only. Run it off the wipe coroutine and
-        // bound the total wait, because either native operation can block.
-        wallet?.let { currentWallet ->
-            val cleanupThread = Thread {
-                try {
-                    currentWallet.stopBackgroundSync(passPhrase)
-                } catch (e: Exception) {
-                    Timber.tag(TAG).e(e, "stopBackgroundSync failed after file deletion")
-                }
-                try {
-                    currentWallet.close()
-                } catch (e: Exception) {
-                    Timber.tag(TAG).e(e, "wallet.close() failed after file deletion")
-                }
-            }.apply {
-                name = "wallet-native-cleanup-after-wipe"
-                isDaemon = true
-            }
-            cleanupThread.start()
-            try {
-                cleanupThread.join(1500L)
-            } catch (e: InterruptedException) {
-                Thread.currentThread().interrupt()
-            }
-            if (cleanupThread.isAlive) {
-                Timber.tag(TAG).e("native wallet cleanup timed out after file deletion; continuing wipe")
-            }
-        }
-
-        WalletManager.resetInstance()
-        return true
+        return success
     }
 
 }
