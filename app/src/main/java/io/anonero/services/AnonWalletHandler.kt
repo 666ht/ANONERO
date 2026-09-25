@@ -206,17 +206,32 @@ class AnonWalletHandler(
     }
 
     fun wipe(passPhrase: String): Boolean {
-        WalletManager.instance?.wallet?.pauseRefresh()
-        WalletManager.instance?.wallet?.stopBackgroundSync(passPhrase)
+        val wallet = WalletManager.instance?.wallet
+
+        // Stop normal wallet activity first, but do not let a close failure abort the wipe.
+        wallet?.pauseRefresh()
+        wallet?.stopBackgroundSync(passPhrase)
         WalletManager.instance?.setDaemon(null)
-        if (WalletManager.instance?.wallet?.close() == true) {
-            AnonConfig.context?.let { AnonConfig.getDefaultWalletDir(it) }
-                ?.deleteRecursively()
-            return true
-        } else {
+
+        try {
+            wallet?.close()
+        } catch (e: Exception) {
+            Timber.tag(TAG).e(e, "wallet.close() failed; continuing wipe")
+        }
+
+        // Deletion is the actual wipe operation. It must be attempted even when
+        // wallet.close() returns false or throws.
+        val walletDir = AnonConfig.context?.let {
+            AnonConfig.getDefaultWalletDir(it)
+        }
+
+        val deleted = walletDir?.deleteRecursively() == true
+        if (!deleted) {
+            Timber.tag(TAG).e("wallet directory deletion failed")
             throw UnableToCloseWallet()
         }
 
+        return true
     }
 
 }
