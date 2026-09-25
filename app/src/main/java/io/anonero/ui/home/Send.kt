@@ -161,7 +161,20 @@ class SendViewModel : ViewModel() {
                     pendingTx
                 }
             } catch (e: Exception) {
-                _txComposeError.postValue(e.message)
+                val errorMessage = e.message.orEmpty()
+                val normalizedError = errorMessage.lowercase()
+                val displayError = if (
+                    normalizedError.contains("insufficient") ||
+                    normalizedError.contains("not enough") ||
+                    normalizedError.contains("not enough balance") ||
+                    normalizedError.contains("not enough money") ||
+                    normalizedError.contains("balance is too low")
+                ) {
+                    "余额不足"
+                } else {
+                    errorMessage
+                }
+                _txComposeError.postValue(displayError)
                 Timber.tag(TAG).e(e)
                 null
             }
