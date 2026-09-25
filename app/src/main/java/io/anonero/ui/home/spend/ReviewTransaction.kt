@@ -439,9 +439,7 @@ fun ReviewTransactionScreen(
                                             Formats.getDisplayAmount(
                                                 reviewModel!!.amount
                                             ),
-                                            textAlign = TextAlign.Center,
-                                            style = subTitleStyle,
-                                            modifier = Modifier.fillMaxWidth()
+                                            style = subTitleStyle
                                         )
                                     }
                                 )
@@ -455,9 +453,7 @@ fun ReviewTransactionScreen(
                                             Formats.getDisplayAmount(
                                                 reviewModel!!.fee
                                             ),
-                                            textAlign = TextAlign.Center,
-                                            style = subTitleStyle,
-                                            modifier = Modifier.fillMaxWidth()
+                                            style = subTitleStyle
                                         )
                                     }
                                 )
