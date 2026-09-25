@@ -52,7 +52,7 @@ class Subaddress(
         val DEFAULT_SUBADDRESS_LABEL_FORMATTER: Pattern =
             Pattern.compile("^Subaddress(?:\\s*#?\\s*[0-9]+)?$")
         val DEFAULT_PRIMARY_LABEL_FORMATTER: Pattern =
-            Pattern.compile("^Primary address(?: #?0)?$")
+            Pattern.compile("^Primary\\s+address(?:\\s*#?\\s*0)?$")
     }
 
     val totalAmount: Long
