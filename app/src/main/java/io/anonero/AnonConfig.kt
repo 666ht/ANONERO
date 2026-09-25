@@ -107,35 +107,55 @@ object AnonConfig {
         }
     }
 
-    fun clearAllAppData(context: Context) {
+    fun clearAllAppData(context: Context): Boolean {
         val app = context.applicationContext
+        var success = true
 
-        // App-private persistent files, including wallet files and Tor state.
-        runCatching { app.filesDir.deleteRecursively() }
-
-        // App-private cache and temporary data.
-        runCatching { app.cacheDir.deleteRecursively() }
-        runCatching { app.codeCacheDir.deleteRecursively() }
-
-        // App-private databases.
-        runCatching {
-            app.databaseList().forEach { name ->
-                app.deleteDatabase(name)
+        fun deleteTree(file: File) {
+            try {
+                if (file.exists() && (!file.deleteRecursively() || file.exists())) {
+                    success = false
+                }
+            } catch (_: Exception) {
+                success = false
             }
         }
 
-        // SharedPreferences files. This also covers preference names other than
-        // WALLET_PREFERENCES, so stale settings are not left behind.
-        runCatching {
-            File(app.applicationInfo.dataDir, "shared_prefs")
-                .deleteRecursively()
+        // Persistent app-private files, including wallet and Tor state.
+        deleteTree(app.filesDir)
+
+        // Cache and generated code.
+        deleteTree(app.cacheDir)
+        deleteTree(app.codeCacheDir)
+
+        // Databases.
+        try {
+            app.databaseList().forEach { name ->
+                if (!app.deleteDatabase(name)) {
+                    success = false
+                }
+            }
+        } catch (_: Exception) {
+            success = false
         }
 
-        // App-specific external storage, when present.
-        runCatching { app.getExternalFilesDir(null)?.deleteRecursively() }
-        runCatching { app.externalCacheDir?.deleteRecursively() }
+        // SharedPreferences, including preferences outside WALLET_PREFERENCES.
+        deleteTree(File(app.applicationInfo.dataDir, "shared_prefs"))
+
+        // App-specific external storage.
+        try {
+            app.getExternalFilesDir(null)?.let { deleteTree(it) }
+        } catch (_: Exception) {
+            success = false
+        }
+        try {
+            app.externalCacheDir?.let { deleteTree(it) }
+        } catch (_: Exception) {
+            success = false
+        }
 
         walletFound = false
+        return success
     }
 
     fun disposeState() {
