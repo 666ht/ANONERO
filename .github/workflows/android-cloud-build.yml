@@ -52,7 +52,7 @@ jobs:
             external-libs/VERSION
           key: anonero-native-state-v6-${{ runner.os }}-${{ github.ref_name }}-${{ github.run_id }}
           restore-keys: |
-            anonero-native-state-v5-${{ runner.os }}-${{ github.ref_name }}-
+            anonero-native-state-v6-${{ runner.os }}-${{ github.ref_name }}-
 
 
       - name: Prepare Monero v0.18.5.0
