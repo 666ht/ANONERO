@@ -39,8 +39,10 @@ class Subaddress(
         get() {
             val normalizedLabel = label.trim()
             return (when {
+                addressIndex == 0 ->
+                    "主地址 0"
                 normalizedLabel.isEmpty() || DEFAULT_LABEL_FORMATTER.matcher(normalizedLabel).matches() ->
-                    if (addressIndex == 0) "主地址 0" else "子地址 $addressIndex"
+                    "子地址 $addressIndex"
                 DEFAULT_SUBADDRESS_LABEL_FORMATTER.matcher(normalizedLabel).matches() ->
                     "子地址 $addressIndex"
                 DEFAULT_PRIMARY_LABEL_FORMATTER.matcher(normalizedLabel).matches() ->
