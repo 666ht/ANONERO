@@ -404,13 +404,7 @@ Java_io_anonero_model_WalletManager_createWalletJ(JNIEnv *env, jobject instance,
                         seed_words,
                         std::string(_passpharse), true);
 
-        if (wallet != nullptr) {
-            bool setupStatus = wallet->setupBackgroundSync(
-                    Monero::Wallet::BackgroundSync_ReusePassword,
-                    std::string(_password), {});
-            LOGD("createWalletJ(): setupBackgroundSync(): %s",
-                 setupStatus ? "success" : "failure");
-        } else {
+        if (wallet == nullptr) {
             LOGE("createWalletJ(): createWalletFromPolyseed returned null");
         }
     } catch (const std::exception &e) {
@@ -442,15 +436,8 @@ Java_io_anonero_model_WalletManager_openWalletJ(JNIEnv *env, jobject instance,
                     std::string(_password),
                     _networkType);
 
-    if (!viewOnly) {
-        // setup background sync
-        bool setupStatus = wallet->setupBackgroundSync(Monero::Wallet::BackgroundSync_ReusePassword,
-                                                       std::string(_password), {});
-        if (setupStatus == true) {
-            LOGD("openWalletJ(): setupBackgroundSync(): success!");
-        } else {
-            LOGD("openWalletJ(): setupBackgroundSync(): failure!");
-        }
+    if (wallet == nullptr) {
+        LOGE("openWalletJ(): openWallet returned null");
     }
     env->ReleaseStringUTFChars(path, _path);
     env->ReleaseStringUTFChars(password, _password);
