@@ -122,7 +122,7 @@ class AnonNeroService : Service() {
         val wallet = WalletManager.instance?.wallet
         val daemon = prefs.getString(NodeFields.RPC_HOST.value, "") ?: ""
         var torSate = if (torService.socks != null) {
-            " | Tor Daemon: ${torService.socks?.port.toString()}"
+            " | Tor 节点：${torService.socks?.port.toString()}"
         } else {
             ""
         }
@@ -196,7 +196,7 @@ class AnonNeroService : Service() {
     }
 
     private fun foregroundNotification(
-        content: String = "Loading wallet...",
+        content: String = "正在加载钱包...",
         title: String = "[ΛИ0ИΞR0]",
         progress: SyncProgress? = null
     ): Notification {
