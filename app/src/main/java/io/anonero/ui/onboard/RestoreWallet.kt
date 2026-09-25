@@ -116,8 +116,8 @@ fun RestoreWallet(
                 .map { it.trim() }
                 .filter { it.isNotEmpty() }
 
-            if (seedList.size != 16 || seedList.size != 24) {
-                invalidSeed = false
+            if (seedList.size != 16 && seedList.size != 25) {
+                invalidSeed = true
             } else {
                 seedList
                     .forEach {
