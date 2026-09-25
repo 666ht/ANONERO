@@ -41,6 +41,9 @@ data object SettingsLogs
 data object CoinsScreenRoute
 
 @Serializable
+data class CoinDetailRoute(val keyImage: String)
+
+@Serializable
 data object SettingsNodeRoute
 
 @Serializable
