@@ -18,7 +18,6 @@
 #include <cstring>
 #include <mutex>
 #include "anonero.h"
-#include "wallet2_api.h"
 #include "wallet/api/wallet.h"
 #include "epee/string_tools.h"
 
