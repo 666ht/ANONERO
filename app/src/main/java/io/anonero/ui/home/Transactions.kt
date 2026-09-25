@@ -710,9 +710,6 @@ fun TransactionScreen(
                         }
                     }
                 }
-                item(key = "transaction_spacing") {
-                    androidx.compose.foundation.layout.Spacer(Modifier.size(48.dp))
-                }
                 items(transactions.size, key = { transactions[it].getListKey() }) {
                     with(sharedTransitionScope) {
                         TransactionItem(
@@ -761,47 +758,45 @@ fun TransactionItem(tx: TransactionInfo, hideAmounts: Boolean = false, modifier:
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.End
-        ) {
-
-            Box(modifier = Modifier.padding(top = 2.dp)) {
-                if (confirmations >= 10)
-                    Icon(
-                        if (isIncoming) AnonIcons.ArrowDownLeft else AnonIcons.ArrowUpRight,
-                        modifier = Modifier.size(32.dp),
-                        tint = if (isIncoming) MaterialTheme.colorScheme.primary else LocalContentColor.current,
-                        contentDescription = ""
+        Box(modifier = Modifier.padding(top = 2.dp)) {
+            if (confirmations >= 10)
+                Icon(
+                    if (isIncoming) AnonIcons.ArrowDownLeft else AnonIcons.ArrowUpRight,
+                    modifier = Modifier.size(32.dp),
+                    tint = if (isIncoming) MaterialTheme.colorScheme.primary else LocalContentColor.current,
+                    contentDescription = ""
+                )
+            else
+                Box(
+                    modifier = Modifier
+                        .size(28.dp)
+                ) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(28.dp),
+                        strokeWidth = 2.dp,
+                        progress = {
+                            ((confirmations.toFloat()) / (10f))
+                        }
                     )
-                else
-                    Box(
-                        modifier = Modifier
-                            .size(28.dp)
-                    ) {
-                        CircularProgressIndicator(
-                            modifier = Modifier.size(28.dp),
-                            strokeWidth = 2.dp,
-                            progress = {
-                                ((confirmations.toFloat()) / (10f))
-                            }
+                    Text(
+                        text = "$confirmations",
+                        modifier = Modifier.align(Alignment.Center),
+                        style = MaterialTheme.typography.bodySmall.copy(
+                            fontSize = 9.sp
                         )
-                        Text(
-                            text = "$confirmations",
-                            modifier = Modifier.align(Alignment.Center),
-                            style = MaterialTheme.typography.bodySmall.copy(
-                                fontSize = 9.sp
-                            )
-                        )
-                    }
-            }
-            Text(
-                if (hideAmounts) Formats.maskAmount(amount)
-                else Formats.getDisplayAmount(amount),
-                style = MaterialTheme.typography.titleLarge
-            )
+                    )
+                }
         }
+        Text(
+            if (hideAmounts) Formats.maskAmount(amount)
+            else Formats.getDisplayAmount(amount),
+            textAlign = TextAlign.Center,
+            style = MaterialTheme.typography.titleLarge
+        )
+        Text(
+            Formats.formatTransactionTime(tx.timestamp),
+            style = MaterialTheme.typography.labelSmall
+        )
     }
 }
 
