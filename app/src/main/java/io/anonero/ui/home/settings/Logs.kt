@@ -145,6 +145,7 @@ fun LogViewer(
     val listState = rememberLazyListState()
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
     val context = LocalContext.current
+    val shareEncryptedBackupFile = shareEncryptedBackupFile
     Scaffold(
         topBar = {
             TopAppBar(
