@@ -125,7 +125,7 @@ class WalletState {
             if (!backgroundSync) {
                 _nextAddress.update { (wallet.getLatestSubAddress()) }
                 _subAddresses.update { (wallet.getAllUsedSubAddresses()).reversed() }
-                _coins.update { (wallet.coins?.all ?: listOf()).fastFilter { !it.spent } }
+                _coins.update { (wallet.coins?.all ?: listOf()).fastFilter { !it.spent }.map { it.copy(frozen = runCatching { wallet.isOutputFrozen(it.key) }.getOrDefault(false)) } }
             }
         }
     }
@@ -231,6 +231,20 @@ class WalletState {
             }
             update()
         }
+    }
+
+    fun freezeCoin(coin: CoinsInfo): Boolean {
+        val wallet = getWallet ?: return false
+        val success = runCatching { wallet.freezeOutput(coin.key) }.getOrDefault(false)
+        if (success) update()
+        return success
+    }
+
+    fun thawCoin(coin: CoinsInfo): Boolean {
+        val wallet = getWallet ?: return false
+        val success = runCatching { wallet.thawOutput(coin.key) }.getOrDefault(false)
+        if (success) update()
+        return success
     }
 
     fun setTransactionNote(note: String, transactionInfo: TransactionInfo) {
