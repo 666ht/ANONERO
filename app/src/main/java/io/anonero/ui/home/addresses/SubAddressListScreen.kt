@@ -120,7 +120,12 @@ fun SubAddressesScreen(
                                 modifier = Modifier.fillMaxWidth()
                             ) {
                                 Text(
-                                    address.displayLabel, color = MaterialTheme.colorScheme.primary,
+                                    text = if (address.addressIndex == 0) {
+                                        "主地址 0"
+                                    } else {
+                                        "子地址 ${address.addressIndex}"
+                                    },
+                                    color = MaterialTheme.colorScheme.primary,
                                 )
                                 Text(
                                     Formats.getDisplayAmount(address.totalAmount),
