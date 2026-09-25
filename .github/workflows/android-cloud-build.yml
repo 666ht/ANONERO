@@ -226,38 +226,50 @@ jobs:
       - name: Export native dependency headers for APK build
         run: |
           set -euxo pipefail
-          mkdir -p external-libs/include/boost external-libs/include/sodium external-libs/include/openssl
+          mkdir -p external-libs/include/boost external-libs/include/sodium
           for abi in arm64-v8a armeabi-v7a; do
             test -d "external-libs/$abi/include/boost"
             cp -a "external-libs/$abi/include/boost/." external-libs/include/boost/
           done
           test -s external-libs/include/sodium/export.h
+
           # The completed native cache does not contain the temporary OpenSSL
           # install prefix used by build.sh. Recreate only the headers here;
-          # this does not rebuild any native library.
+          # this does not rebuild any native library. Keep OpenSSL's generated
+          # opensslconf.h separate per ABI because it is architecture-specific.
           OPENSSL_VERSION=3.6.2
           OPENSSL_SHA256=aaf51a1fe064384f811daeaeb4ec4dce7340ec8bd893027eee676af31e83a04
           curl -fL --retry 5 --retry-all-errors --http1.1 \
             -o /tmp/openssl.tar.gz \
             "https://www.openssl.org/source/old/3.6/openssl-$OPENSSL_VERSION.tar.gz"
-          echo "$OPENSSL_SHA256  /tmp/openssl.tar.gz" | sha256sum -c -
+          python3 - "$OPENSSL_SHA256" /tmp/openssl.tar.gz <<'PY'
+          import hashlib
+          import sys
+          expected, path = sys.argv[1], sys.argv[2]
+          actual = hashlib.sha256(open(path, "rb").read()).hexdigest()
+          if actual != expected:
+              raise SystemExit(f"OpenSSL SHA256 mismatch: {actual} != {expected}")
+          print(f"OpenSSL SHA256 verified: {actual}")
+          PY
+
           rm -rf /tmp/openssl-$OPENSSL_VERSION
           tar -xzf /tmp/openssl.tar.gz -C /tmp
-          for target in android-arm64 android-arm; do
-            work="/tmp/openssl-$OPENSSL_VERSION-$target"
+          for pair in "arm64-v8a:android-arm64" "armeabi-v7a:android-arm"; do
+            abi="${pair%%:*}"
+            target="${pair##*:}"
+            work="/tmp/openssl-$OPENSSL_VERSION-$abi"
             rm -rf "$work"
             cp -a "/tmp/openssl-$OPENSSL_VERSION" "$work"
             cd "$work"
-            if [ "$target" = android-arm64 ]; then
-              ./Configure android-arm64 -D__ANDROID_API__=21 no-shared no-tests >/dev/null
-            else
-              ./Configure android-arm -D__ANDROID_API__=21 no-shared no-tests >/dev/null
-            fi
-            cp -a include/openssl/. "$GITHUB_WORKSPACE/external-libs/include/openssl/"
+            ./Configure "$target" -D__ANDROID_API__=21 no-shared no-tests >/dev/null
+            mkdir -p "$GITHUB_WORKSPACE/external-libs/$abi/include/openssl"
+            cp -a include/openssl/. "$GITHUB_WORKSPACE/external-libs/$abi/include/openssl/"
           done
           cd "$GITHUB_WORKSPACE"
-          test -s external-libs/include/openssl/conf.h
-          test -s external-libs/include/openssl/opensslconf.h
+          for abi in arm64-v8a armeabi-v7a; do
+            test -s "external-libs/$abi/include/openssl/conf.h"
+            test -s "external-libs/$abi/include/openssl/opensslconf.h"
+          done
           test -d external-libs/monero/external/polyseed/include
           test -s external-libs/monero/external/polyseed/include/polyseed.h
       - name: Verify native Android libraries
