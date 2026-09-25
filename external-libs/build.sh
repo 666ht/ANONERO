@@ -252,6 +252,10 @@ EOF
 
 step_collect() {
   mkdir -p "$OUT/monero"
+  # The Android APK compile happens outside the native build container. Keep the
+  # Boost headers beside the exported archives so cache hits have the same inputs.
+  mkdir -p "$OUT/include/boost"
+  cp -a "$PREFIX/include/boost/." "$OUT/include/boost/"
   find "$PREFIX/lib" -maxdepth 1 -name '*.a' -exec cp -a {} "$OUT"/ \; 2>/dev/null || true
   cp -a "$MONERO"/build/release/lib/. "$OUT"/monero/
   local missing=0 l
