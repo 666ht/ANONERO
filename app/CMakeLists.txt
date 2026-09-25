@@ -202,26 +202,13 @@ if(ANDROID)
     set(PLATFORM_LIBS ${log-lib})
     set(PLATFORM_LINK_OPTS "")
 else()
-    # jni.h comes from the JDK, not a sysroot; zlib comes from our prefix rather than
-    # the platform (Android gets it from the NDK).
-
-    # Only JNI_INCLUDE_DIRS is used -- no JVM library is linked (JNI calls go through
-    # the JNIEnv table). Without COMPONENTS, FindJNI also demands AWT, which a headless
-    # JDK doesn't ship.
     find_package(JNI REQUIRED COMPONENTS JVM)
     find_package(Threads REQUIRED)
     include_directories(${JNI_INCLUDE_DIRS})
-
     add_library(z STATIC IMPORTED)
     set_target_properties(z PROPERTIES IMPORTED_LOCATION
             ${EXTERNAL_LIBS_DIR}/${ANON_ABI}/libz.a)
-
     set(PLATFORM_LIBS z Threads::Threads ${CMAKE_DL_LIBS})
-
-    # libwallet-crypto.a's ed25519 assembly has no .note.GNU-stack marker, so older
-    # linkers mark the whole library as needing an executable stack -- which would apply
-    # to the entire JVM process. It doesn't need one. x86-64 only, so Android never hit
-    # this: libwallet-crypto is not linked on ARM.
     set(PLATFORM_LINK_OPTS "-Wl,-z,noexecstack")
 endif()
 
@@ -230,6 +217,7 @@ include_directories( ${CMAKE_SOURCE_DIR}/../external-libs/monero/contrib/epee/in
 include_directories( ${CMAKE_SOURCE_DIR}/../external-libs/monero/external/easylogging++ )
 include_directories( ${CMAKE_SOURCE_DIR}/../external-libs/monero/src/crypto/crypto_ops_builder/include )
 include_directories( ${EXTERNAL_LIBS_DIR}/include )
+include_directories( ${EXTERNAL_LIBS_DIR}/include/sodium )
 
 message(STATUS EXTERNAL_LIBS_DIR :  ${EXTERNAL_LIBS_DIR})
 
@@ -239,53 +227,13 @@ else()
     set(EXTRA_LIBS "")
 endif()
 
-target_link_libraries(  anonero
-
-                        wallet_api
-                        wallet
-                        cryptonote_core
-                        cryptonote_basic
-                        cryptonote_format_utils_basic
-                        polyseed
-                        polyseed-wrapper
-                        utf8proc
-                        mnemonics
-                        ringct
-                        ringct_basic
-                        net
-                        common
-                        cncrypto
-                        blockchain_db
-                        lmdb
-                        easylogging
-                        unbound
-                        epee
-                        blocks
-                        checkpoints
-                        device
-                        device_trezor
-                        multisig
-                        version
-                        randomx
-                        hardforks
-                        rpc_base
-                        ${EXTRA_LIBS}
-
-                        boost_chrono
-                        boost_date_time
-                        boost_filesystem
-                        boost_program_options
-                        boost_regex
-                        boost_serialization
-                        boost_system
-                        boost_thread
-                        boost_wserialization
-
-                        ssl
-                        crypto
-
-                        sodium
-
-                       ${PLATFORM_LIBS}
-                       )
-target_link_options( anonero PRIVATE "-Wl,--exclude-libs,ALL" ${PLATFORM_LINK_OPTS} )
+target_link_libraries(anonero
+    wallet_api wallet cryptonote_core cryptonote_basic cryptonote_format_utils_basic
+    polyseed polyseed-wrapper utf8proc mnemonics ringct ringct_basic net common cncrypto
+    blockchain_db lmdb easylogging unbound epee blocks checkpoints device device_trezor
+    multisig version randomx hardforks rpc_base ${EXTRA_LIBS}
+    boost_chrono boost_date_time boost_filesystem boost_program_options boost_regex
+    boost_serialization boost_system boost_thread boost_wserialization
+    ssl crypto sodium ${PLATFORM_LIBS}
+)
+target_link_options(anonero PRIVATE "-Wl,--exclude-libs,ALL" ${PLATFORM_LINK_OPTS} )
