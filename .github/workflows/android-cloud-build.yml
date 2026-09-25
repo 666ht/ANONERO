@@ -254,6 +254,27 @@ jobs:
 
           rm -rf /tmp/openssl-$OPENSSL_VERSION
           tar -xzf /tmp/openssl.tar.gz -C /tmp
+
+          # OpenSSL 3.6.2's Android Configure targets still probe for the
+          # pre-NDK-r23 gcc executable names. NDK 29 ships clang only, so
+          # provide temporary compiler-name wrappers. This is header/config
+          # generation only; no OpenSSL or native library is compiled.
+          NDK_ROOT="${ANDROID_NDK_ROOT:-$ANDROID_HOME/ndk/29.0.14206865}"
+          NDK_BIN="$NDK_ROOT/toolchains/llvm/prebuilt/linux-x86_64/bin"
+          test -x "$NDK_BIN/clang"
+          rm -rf /tmp/openssl-android-cc
+          mkdir -p /tmp/openssl-android-cc
+          cat > /tmp/openssl-android-cc/aarch64-linux-android-gcc <<EOF
+          #!/bin/sh
+          exec "$NDK_BIN/clang" --target=aarch64-linux-android21 "$@"
+          EOF
+          cat > /tmp/openssl-android-cc/armv7a-linux-androideabi-gcc <<EOF
+          #!/bin/sh
+          exec "$NDK_BIN/clang" --target=armv7a-linux-androideabi21 "$@"
+          EOF
+          chmod +x /tmp/openssl-android-cc/*
+          export PATH="/tmp/openssl-android-cc:$NDK_BIN:$PATH"
+
           for pair in "arm64-v8a:android-arm64" "armeabi-v7a:android-arm"; do
             abi="${pair%%:*}"
             target="${pair##*:}"
