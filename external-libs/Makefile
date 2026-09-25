@@ -27,7 +27,34 @@ arm64-v8a:    ; @$(MAKE) --no-print-directory image TARGET=android64 ABI=$@
 armeabi-v7a:  ; @$(MAKE) --no-print-directory image TARGET=android32 ABI=$@
 linux-x86_64: ; @$(MAKE) --no-print-directory image TARGET=linux     ABI=$@
 
+.PHONY: resume-android resume-arm64-v8a resume-armeabi-v7a
+resume-android: resume-arm64-v8a resume-armeabi-v7a
+
+resume-arm64-v8a:
+	@$(MAKE) --no-print-directory resume-image TARGET=android64 ABI=arm64-v8a
+resume-armeabi-v7a:
+	@$(MAKE) --no-print-directory resume-image TARGET=android32 ABI=armeabi-v7a
+
 arm64-v8a armeabi-v7a linux-x86_64: monero build.sh Containerfile
+
+resume-image:
+	@command -v $(CONTAINER) >/dev/null || { echo "$(CONTAINER) not found"; exit 1; }
+	@echo "==> RESUME $(TARGET) -> $(ABI)"
+	-$(CONTAINER) container rm anonero-$(TARGET) -f >/dev/null 2>&1
+	BUILDKIT_PROGRESS=plain $(CONTAINER) build --progress=plain -f Containerfile --target deps --build-arg TARGET=$(TARGET) --build-arg NPROC=$(NPROC) --build-arg BASE=$(BASE) --build-arg SNAPSHOT=$(SNAPSHOT) --build-arg SOURCE_DATE_EPOCH=$(SOURCE_DATE_EPOCH) -t anonero-$(TARGET) .
+	mkdir -p $(ABI) .ccache
+	set -e; \
+	if [ -s "monero/build/$(ABI)/lib/libwallet_api.a" ]; then \
+	  echo "==> saved CMake build is complete; skip compile and collect only"; \
+	  CMD='./build.sh collect'; \
+	else \
+	  echo "==> saved CMake build is incomplete; resume compile"; \
+	  CMD='./build.sh monero && ./build.sh collect'; \
+	fi; \
+	$(CONTAINER) run --name anonero-$(TARGET)-out --user 0:0 -v $(CURDIR)/monero:/src -v $(CURDIR)/.ccache:/ccache -e TARGET=$(TARGET) -e NPROC=$(NPROC) -e CCACHE_DIR=/ccache -e CCACHE_MAXSIZE=5G -w /external-libs anonero-$(TARGET) bash -lc "$CMD" >/dev/null; \
+	$(CONTAINER) cp anonero-$(TARGET)-out:/opt/out/. $(ABI)/; \
+	if [ -d "$(ABI)/include/boost" ]; then mkdir -p include/boost; cp -a "$(ABI)/include/boost/." include/boost/; fi; \
+	$(CONTAINER) rm -f anonero-$(TARGET)-out >/dev/null 2>&1 || true
 
 image:
 	@command -v $(CONTAINER) >/dev/null || { echo "$(CONTAINER) not found"; exit 1; }
