@@ -1,7 +1,6 @@
 package io.anonero
 
 import android.content.Context
-import io.anonero.model.NetworkType
 import io.matthewnelson.kmp.tor.resource.exec.tor.ResourceLoaderTorExec
 import io.matthewnelson.kmp.tor.runtime.TorRuntime
 import kotlinx.coroutines.CoroutineScope
@@ -26,16 +25,12 @@ object AnonConfig {
 
     const val EXPORT_OUTPUT_FILE = "export_wallet_outputs.out"
     const val IMPORT_OUTPUT_FILE = "import_wallet_outputs"
-
     const val EXPORT_KEY_IMAGE_FILE = "export_key_images.imgs"
     const val IMPORT_KEY_IMAGE_FILE = "import_key_images"
-
     const val EXPORT_UNSIGNED_TX_FILE = "export_unsigned_tx.utx"
     const val IMPORT_UNSIGNED_TX_FILE = "import_unsigned_tx"
-
     const val EXPORT_SIGNED_TX_FILE = "export_signed_tx.stx"
     const val IMPORT_SIGNED_TX_FILE = "import_signed_tx"
-
 
     fun getNetworkType(): NetworkType {
         if (BuildConfig.APPLICATION_ID.lowercase().contains("stagenet")) {
@@ -48,10 +43,8 @@ object AnonConfig {
 
     fun getDefaultWalletFile(context: Context): File {
         val walletDir = getDefaultWalletDir(context)
-        val anonWallet = File(walletDir, "anon")
-        return anonWallet
+        return File(walletDir, "anon")
     }
-
 
     fun getTorConfig(scope: CoroutineScope): TorRuntime.Environment {
         val torDir = File(context?.filesDir, "tor")
@@ -65,16 +58,14 @@ object AnonConfig {
         )
     }
 
-
     fun isWalletFileExist(): Boolean {
         return walletFound
     }
 
-
     fun getLogFile(context: Context): File {
         val logDir = File(context.applicationContext.cacheDir, "logs")
         if (!logDir.exists()) {
-            logDir.mkdirs() // Create the directory if it doesn't exist
+            logDir.mkdirs()
         }
         val logFile = File(logDir, "anon_log")
         if (!logFile.exists()) {
@@ -101,21 +92,49 @@ object AnonConfig {
         val files = arrayListOf(
             EXPORT_OUTPUT_FILE,
             IMPORT_OUTPUT_FILE,
-
             EXPORT_KEY_IMAGE_FILE,
             IMPORT_KEY_IMAGE_FILE,
-
             EXPORT_UNSIGNED_TX_FILE,
             IMPORT_UNSIGNED_TX_FILE,
-
             EXPORT_SIGNED_TX_FILE,
             IMPORT_SIGNED_TX_FILE
-        );
+        )
         context.cacheDir.listFiles()?.forEach { file ->
             if (files.any { file.name.contains(it) }) {
                 file.delete()
             }
         }
+    }
+
+    fun clearAllAppData(context: Context) {
+        val app = context.applicationContext
+
+        // App-private persistent files, including wallet files and Tor state.
+        runCatching { app.filesDir.deleteRecursively() }
+
+        // App-private cache and temporary data.
+        runCatching { app.cacheDir.deleteRecursively() }
+        runCatching { app.codeCacheDir.deleteRecursively() }
+
+        // App-private databases.
+        runCatching {
+            app.databaseList().forEach { name ->
+                app.deleteDatabase(name)
+            }
+        }
+
+        // SharedPreferences files. This also covers preference names other than
+        // WALLET_PREFERENCES, so stale settings are not left behind.
+        runCatching {
+            File(app.applicationInfo.dataDir, "shared_prefs")
+                .deleteRecursively()
+        }
+
+        // App-specific external storage, when present.
+        runCatching { app.getExternalFilesDir(null)?.deleteRecursively() }
+        runCatching { app.externalCacheDir?.deleteRecursively() }
+
+        walletFound = false
     }
 
     fun disposeState() {
