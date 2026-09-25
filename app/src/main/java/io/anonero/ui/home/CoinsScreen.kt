@@ -175,11 +175,17 @@ fun CoinsScreen(
                             Text(
                                 stringResource(R.string.output_number, index + 1), color = MaterialTheme.colorScheme.primary,
                             )
-                            Text(
-                                Formats.getDisplayAmount(coin.amount),
-                                color = MaterialTheme.colorScheme.primary,
-                                fontWeight = FontWeight.SemiBold
-                            )
+                            Box(
+                                modifier = Modifier.weight(1f)
+                            ) {
+                                Text(
+                                    Formats.getDisplayAmount(coin.amount),
+                                    color = MaterialTheme.colorScheme.primary,
+                                    fontWeight = FontWeight.SemiBold,
+                                    modifier = Modifier.fillMaxWidth(),
+                                    textAlign = TextAlign.Center
+                                )
+                            }
                         }
                     },
                     supportingContent = {
