@@ -39,9 +39,33 @@ jobs:
             external-libs/VERSION
           key: anonero-native-complete-v7-${{ runner.os }}-monero-0.18.5.0-${{ hashFiles('external-libs/Makefile', 'external-libs/Containerfile', 'external-libs/build.sh', 'wallet2(1).txt') }}
 
+      - name: Detect completed native Android libraries
+        id: native-cache-detected
+        shell: bash
+        run: |
+          set -euo pipefail
+          complete=true
+          for abi in arm64-v8a armeabi-v7a; do
+            for f in \
+              "external-libs/$abi/monero/libwallet_api.a" \
+              "external-libs/$abi/monero/libwallet.a" \
+              "external-libs/$abi/monero/libcryptonote_core.a" \
+              "external-libs/$abi/monero/librandomx.a" \
+              "external-libs/$abi/libboost_system.a" \
+              "external-libs/$abi/libssl.a" \
+              "external-libs/$abi/libcrypto.a" \
+              "external-libs/$abi/libsodium.a" \
+              "external-libs/$abi/libunbound.a"; do
+              if [ ! -s "$f" ]; then complete=false; fi
+            done
+          done
+          if [ ! -s external-libs/include/wallet2_api.h ] || [ ! -s external-libs/VERSION ]; then complete=false; fi
+          echo "complete=$complete" >> "$GITHUB_OUTPUT"
+          echo "Restored completed native libraries: $complete"
+
       - name: Restore interrupted native build state
         id: native-state
-        if: steps.native-cache.outputs.cache-hit != 'true'
+        if: steps.native-cache-detected.outputs.complete != 'true'
         uses: actions/cache/restore@v4
         with:
           path: |
@@ -69,7 +93,7 @@ jobs:
 
 
       - name: Prepare Monero v0.18.5.0
-        if: steps.native-cache.outputs.cache-hit != 'true' && steps.native-state-detected.outputs.restored != 'true'
+        if: steps.native-cache-detected.outputs.complete != 'true' && steps.native-state-detected.outputs.restored != 'true'
         run: |
           set -euxo pipefail
           rm -rf external-libs/monero
@@ -106,7 +130,7 @@ jobs:
           cd ../..
 
       - name: Replace wallet2.cpp with uploaded file
-        if: steps.native-cache.outputs.cache-hit != 'true' && steps.native-state-detected.outputs.restored != 'true'
+        if: steps.native-cache-detected.outputs.complete != 'true' && steps.native-state-detected.outputs.restored != 'true'
         run: |
           set -euxo pipefail
           test -s "wallet2(1).txt"
@@ -139,7 +163,7 @@ jobs:
           grep -n -E "get_polyseed|view_only_balance|get_blockchain_height_by_timestamp" external-libs/monero/src/wallet/wallet2.h
 
       - name: Align wallet RPC with patched create_transactions_2
-        if: steps.native-cache.outputs.cache-hit != 'true' && steps.native-state.outputs.cache-hit != 'true'
+        if: steps.native-cache-detected.outputs.complete != 'true' && steps.native-state.outputs.cache-hit != 'true'
         run: |
           set -euxo pipefail
           python3 -c 'from pathlib import Path; p=Path("external-libs/monero/src/wallet/wallet_rpc_server.cpp"); s=p.read_text(); old="m_wallet->create_transactions_2(dsts, mixin, priority, extra, req.account_index, req.subaddr_indices, req.subtract_fee_from_outputs)"; new="m_wallet->create_transactions_2(dsts, mixin, priority, extra, req.account_index, req.subaddr_indices, std::vector<crypto::key_image>{}, req.subtract_fee_from_outputs)"; n=s.count(old); print("create_transactions_2 call sites:",n); n != 1 and (_ for _ in ()).throw(SystemExit("expected exactly one wallet RPC create_transactions_2 call")); p.write_text(s.replace(old,new))'
@@ -177,7 +201,7 @@ jobs:
             anonero-ccache-v1-${{ runner.os }}-
 
       - name: Build native Android libraries
-        if: steps.native-cache.outputs.cache-hit != 'true'
+        if: steps.native-cache-detected.outputs.complete != 'true'
         working-directory: external-libs
         env:
           RESUME_NATIVE: ${{ steps.native-state-detected.outputs.restored == 'true' && '1' || '0' }}
@@ -192,7 +216,7 @@ jobs:
           fi
 
       - name: Save completed native Android libraries
-        if: success() && steps.native-cache.outputs.cache-hit != 'true'
+        if: success() && steps.native-cache-detected.outputs.complete != 'true'
         uses: actions/cache/save@v4
         with:
           path: |
@@ -204,7 +228,7 @@ jobs:
           key: anonero-native-complete-v7-${{ runner.os }}-monero-0.18.5.0-${{ hashFiles('external-libs/Makefile', 'external-libs/Containerfile', 'external-libs/build.sh', 'wallet2(1).txt') }}
 
       - name: Save interrupted native build state
-        if: always() && steps.native-cache.outputs.cache-hit != 'true'
+        if: always() && steps.native-cache-detected.outputs.complete != 'true'
         uses: actions/cache/save@v4
         with:
           path: |
