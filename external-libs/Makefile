@@ -49,7 +49,7 @@ resume-image:
 	  CMD='./build.sh collect'; \
 	else \
 	  echo "==> saved CMake build is incomplete; resume compile"; \
-	  CMD='./build.sh monero && ./build.sh collect'; \
+	  CMD='./build.sh resume && ./build.sh collect'; \
 	fi; \
 	$(CONTAINER) run --name anonero-$(TARGET)-out --user 0:0 -v $(CURDIR)/monero:/src -v $(CURDIR)/.ccache:/ccache -e TARGET=$(TARGET) -e NPROC=$(NPROC) -e CCACHE_DIR=/ccache -e CCACHE_MAXSIZE=5G -w /external-libs anonero-$(TARGET) bash -lc "$CMD" >/dev/null; \
 	$(CONTAINER) cp anonero-$(TARGET)-out:/opt/out/. $(ABI)/; \
