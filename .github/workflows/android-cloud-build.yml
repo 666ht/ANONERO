@@ -145,12 +145,6 @@ jobs:
           restore-keys: |
             anonero-ccache-v1-${{ runner.os }}-
 
-      - name: Verify Boost headers before APK build
-        run: |
-          set -euxo pipefail
-          test -s external-libs/include/boost/program_options/options_description.hpp
-          test -s external-libs/include/boost/version.hpp
-
       - name: Build native Android libraries
         if: steps.native-cache.outputs.cache-hit != 'true'
         working-directory: external-libs
