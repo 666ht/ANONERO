@@ -50,7 +50,7 @@ class Subaddress(
         val DEFAULT_LABEL_FORMATTER: Pattern =
             Pattern.compile("^[0-9]{4}-[0-9]{2}-[0-9]{2}-[0-9]{2}:[0-9]{2}:[0-9]{2}$")
         val DEFAULT_SUBADDRESS_LABEL_FORMATTER: Pattern =
-            Pattern.compile("^Subaddress #?([0-9]+)$")
+            Pattern.compile("^Subaddress\\s*#?\\s*([0-9]+)$")
         val DEFAULT_PRIMARY_LABEL_FORMATTER: Pattern =
             Pattern.compile("^Primary address(?: #?0)?$")
     }
