@@ -36,15 +36,23 @@ class Subaddress(
         get() = address.substring(0, 8) + "…" + address.substring(address.length - 8)
 
     val displayLabel: String
-        get() = (if (label.isEmpty() || DEFAULT_LABEL_FORMATTER.matcher(label).matches()) {
-            if (addressIndex == 0) "主地址 0" else "子地址 $addressIndex"
-        } else {
-            label
+        get() = (when {
+            label.isEmpty() || DEFAULT_LABEL_FORMATTER.matcher(label).matches() ->
+                if (addressIndex == 0) "主地址 0" else "子地址 $addressIndex"
+            DEFAULT_SUBADDRESS_LABEL_FORMATTER.matcher(label).matches() ->
+                "子地址 ${DEFAULT_SUBADDRESS_LABEL_FORMATTER.matcher(label).replaceFirst("")}"
+            DEFAULT_PRIMARY_LABEL_FORMATTER.matcher(label).matches() ->
+                "主地址 0"
+            else -> label
         }).replace("#", "")
 
     companion object {
         val DEFAULT_LABEL_FORMATTER: Pattern =
             Pattern.compile("^[0-9]{4}-[0-9]{2}-[0-9]{2}-[0-9]{2}:[0-9]{2}:[0-9]{2}$")
+        val DEFAULT_SUBADDRESS_LABEL_FORMATTER: Pattern =
+            Pattern.compile("^Subaddress #?([0-9]+)$")
+        val DEFAULT_PRIMARY_LABEL_FORMATTER: Pattern =
+            Pattern.compile("^Primary address #?0$")
     }
 
     val totalAmount: Long
