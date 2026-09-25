@@ -77,7 +77,7 @@ class AnonApplication : Application(), Thread.UncaughtExceptionHandler {
     private fun initNotificationChannels() {
         val foregroundChannel = NotificationChannel(
             FOREGROUND_CHANNEL,
-            "AnonNero Service",
+            "AnonNero 服务",
             NotificationManager.IMPORTANCE_LOW,
         )
         val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
@@ -85,7 +85,7 @@ class AnonApplication : Application(), Thread.UncaughtExceptionHandler {
         notificationManager.createNotificationChannel(
             NotificationChannel(
                 TX_CHANNEL,
-                "Incoming Transactions",
+                "收到的交易",
                 NotificationManager.IMPORTANCE_HIGH,
             )
         )
