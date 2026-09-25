@@ -701,6 +701,10 @@ fun TransactionScreen(
                             Text(
                                 if (hideAmounts) Formats.maskAmount(balance ?: 0)
                                 else Formats.getDisplayAmount(balance ?: 0),
+                                modifier = Modifier.fillMaxWidth(),
+                                textAlign = TextAlign.End,
+                                maxLines = 1,
+                                softWrap = false,
                                 style = MaterialTheme.typography.displaySmall
                             )
                         }
