@@ -762,9 +762,11 @@ fun TransactionItem(tx: TransactionInfo, hideAmounts: Boolean = false, modifier:
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Row(
+            modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
+            horizontalArrangement = Arrangement.End
         ) {
+
             Box(modifier = Modifier.padding(top = 2.dp)) {
                 if (confirmations >= 10)
                     Icon(
