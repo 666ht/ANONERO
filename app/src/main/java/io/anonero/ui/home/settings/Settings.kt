@@ -76,6 +76,8 @@ fun SettingsPage(
 
     val prefs = koinInject<SharedPreferences>(named(WALLET_PREFERENCES))
     val toastState = rememberToasterState()
+    val pinChangedSuccessfully = stringResource(R.string.pin_changed_successfully)
+    val pinChangeError = stringResource(R.string.pin_change_error)
     var showLockScreen by remember { mutableStateOf(false) }
     var newPinDialog by remember { mutableStateOf(false) }
 
@@ -116,7 +118,7 @@ fun SettingsPage(
                 onNext = {
                    try {
                        WalletManager.instance?.wallet?.setPassword(it)
-                       toastState.show(stringResource(R.string.pin_changed_successfully),
+                       toastState.show(pinChangedSuccessfully,
                            type = ToastType.Success,
                        )
                        prefs.edit(commit = true) {
@@ -132,7 +134,7 @@ fun SettingsPage(
                            )
                        }
                    }catch (e: Exception) {
-                       toastState.show(stringResource(R.string.pin_change_error),
+                       toastState.show(pinChangeError,
                            type = ToastType.Error
                        )
                        Timber.tag(TAG).e(e)
