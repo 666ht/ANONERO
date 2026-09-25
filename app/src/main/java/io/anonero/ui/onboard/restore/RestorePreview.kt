@@ -88,8 +88,12 @@ fun RestorePreview(
     navigateTo: (route: Any) -> Unit = {}
 ) {
 
+    val loadingBackup = stringResource(R.string.loading_backup)
+    val extractingBackup = stringResource(R.string.extracting_backup)
+    val restoreWalletLoading = stringResource(R.string.restore_wallet_loading)
+
     var passPhrase by remember { mutableStateOf<String>("") }
-    var loadingMessage by remember { mutableStateOf<String>("Loading...") }
+    var loadingMessage by remember { mutableStateOf(loadingBackup) }
     var errorMessage by remember { mutableStateOf<String>("") }
     var backupPayload by remember { mutableStateOf<BackupPayload?>(null) }
     var passphraseDialog by remember { mutableStateOf(true) }
@@ -104,7 +108,7 @@ fun RestorePreview(
             try {
                 loading = true
                 passphraseDialog = false
-                loadingMessage = "Extracting backup..."
+                loadingMessage = extractingBackup
                 backupPayload = BackupHelper.extractBackUp(backUpPath, passPhrase)
                 loading = false
             } catch (e: NetworkMismatchException) {
@@ -461,7 +465,7 @@ fun RestorePreview(
                                 scope.launch(Dispatchers.IO) {
                                     try {
                                         loading = true
-                                        loadingMessage = "Restoring wallet..."
+                                        loadingMessage = restoreWalletLoading
                                         val success =
                                             BackupHelper.restoreBackUp(backupPayload!!, passPhrase)
                                         if (success) {
