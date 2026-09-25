@@ -218,27 +218,27 @@ fun SecureWipe(
             val hashedPass =
                 KeyStoreHelper.getCrazyPass(AnonConfig.context, passPhrase)
             if (hash == hashedPass) {
-                val seed = getWalletSeed(passPhrase)?.split(" ")
-                if (seed != null) {
-                    passPhraseDialog = false
-                    HapticFeedbackConstants.CONTEXT_CLICK
-                    activity?.let { activity ->
-                        secureWipeViewModel.wipe(passPhrase, activity)
-                            .invokeOnCompletion {
-                                if (it == null) {
-                                    view.performHapticFeedback(
-                                        HapticFeedbackConstants.CONTEXT_CLICK
-                                    )
-                                    scope.launch(Dispatchers.Main) {
-                                        goToHome()
-                                    }
-                                } else {
-                                    Timber.tag(TAG).e(it)
-                                    error = it.message
-                                    requestClearScreen(false)
+                // The password hash is sufficient authorization for a wipe.
+                // Do not require seed extraction: a damaged/unopened wallet must
+                // still be deletable.
+                passPhraseDialog = false
+                HapticFeedbackConstants.CONTEXT_CLICK
+                activity?.let { activity ->
+                    secureWipeViewModel.wipe(passPhrase, activity)
+                        .invokeOnCompletion {
+                            if (it == null) {
+                                view.performHapticFeedback(
+                                    HapticFeedbackConstants.CONTEXT_CLICK
+                                )
+                                scope.launch(Dispatchers.Main) {
+                                    goToHome()
                                 }
+                            } else {
+                                Timber.tag(TAG).e(it)
+                                error = it.message
+                                requestClearScreen(false)
                             }
-                    }
+                        }
                 }
             } else {
                 errorShake.shake(
