@@ -758,18 +758,6 @@ fun TransactionItem(tx: TransactionInfo, hideAmounts: Boolean = false, modifier:
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        Row(
-            modifier = Modifier.weight(1f),
-            horizontalArrangement = Arrangement.End,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                if (hideAmounts) Formats.maskAmount(amount)
-                else Formats.getDisplayAmount(amount),
-                textAlign = TextAlign.End,
-                style = MaterialTheme.typography.titleLarge
-            )
-        }
         Box(modifier = Modifier.padding(top = 2.dp)) {
             if (confirmations >= 10)
                 Icon(
@@ -799,6 +787,16 @@ fun TransactionItem(tx: TransactionInfo, hideAmounts: Boolean = false, modifier:
                     )
                 }
         }
+        Text(
+            if (hideAmounts) Formats.maskAmount(amount)
+            else Formats.getDisplayAmount(amount),
+            textAlign = TextAlign.Center,
+            style = MaterialTheme.typography.titleLarge
+        )
+        Text(
+            Formats.formatTransactionTime(tx.timestamp),
+            style = MaterialTheme.typography.labelSmall
+        )
     }
 }
 
