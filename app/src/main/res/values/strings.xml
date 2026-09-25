@@ -1,4 +1,5 @@
 <resources>
+    <!-- Default resources required by all build variants. -->
     <!-- Do not translate the app name. The app_name will be modified by the Gradle build system based on the build variants (Nero/Anon). -->
     <string name="app_name">anonnero</string>
     <!---->
