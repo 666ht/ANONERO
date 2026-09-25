@@ -672,7 +672,8 @@ fun TransactionScreen(
                     Box(
                         modifier = Modifier
                             .padding(
-                                vertical = 32.dp
+                                vertical = 32.dp,
+                                horizontal = 24.dp
                             )
                             .combinedClickable(
                                 onClick = { walletState.toggleHideAmounts() },
@@ -687,8 +688,8 @@ fun TransactionScreen(
                             else Formats.getDisplayAmount(balance ?: 0),
                             style = MaterialTheme.typography
                                 .displaySmall,
-                            modifier = Modifier.fillParentMaxWidth(),
-                            textAlign = TextAlign.Center
+                            modifier = Modifier.fillMaxWidth(),
+                            textAlign = TextAlign.End
                         )
                     }
                 }
