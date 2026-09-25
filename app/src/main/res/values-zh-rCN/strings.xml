@@ -13,7 +13,7 @@
     <string name="create_wallet">创建钱包</string>
     <string name="restore_wallet">恢复钱包</string>
     <string name="proxy">代理设置</string>
-    <string name="initializing_tor">洋葱连接中...</string>
+    <string name="initializing_tor">连接洋葱中...</string>
     <string name="copied_to_clipboard">已复制到剪贴板</string>
     <string name="transactions">交易记录</string>
     <string name="receive">接收</string>
