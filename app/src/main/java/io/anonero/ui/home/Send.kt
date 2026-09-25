@@ -290,6 +290,12 @@ fun SendScreen(
     val walletState: WalletState by inject(WalletState::class.java)
 
     val showIndefiniteLoading by walletState.isLoading.asLiveData().observeAsState(false)
+\n    LaunchedEffect(txComposeError) {
+        txComposeError?.let { error ->
+            snackbarHostState.showSnackbar(error)
+        }
+    }
+
 
 
     val unLockedAmount = Formats.getDisplayAmount(
