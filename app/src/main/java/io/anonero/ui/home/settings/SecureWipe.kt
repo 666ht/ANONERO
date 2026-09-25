@@ -103,28 +103,59 @@ class SecureWipeViewModel(
             (activity as MainActivity).stopNotificationService()
             _wipeProgress.postValue(.3f)
             _wipeProgressMessage.postValue("正在删除钱包")
-            anonWalletHandler.wipe(passPhrase)
+            val walletDeleted = try {
+                anonWalletHandler.wipe(passPhrase)
+            } catch (e: Exception) {
+                Timber.tag(TAG).e(e, "wallet wipe failed; continuing cleanup")
+                false
+            }
+
             delay(1000)
             _wipeProgress.postValue(.5f)
-            _wipeProgressMessage.postValue("钱包已清除")
+            _wipeProgressMessage.postValue(if (walletDeleted) "钱包已清除" else "钱包删除失败，继续清理")
             delay(1200)
+
             _wipeProgress.postValue(.6f)
             _wipeProgressMessage.postValue("正在清除设置")
-            sharedPreferences.edit { clear() }
+            try {
+                sharedPreferences.edit { clear() }
+            } catch (e: Exception) {
+                Timber.tag(TAG).e(e, "clear preferences failed")
+            }
             delay(800)
+
             _wipeProgress.postValue(.7f)
             _wipeProgressMessage.postValue("正在清除节点")
-            nodesRepository.clearAll()
+            try {
+                nodesRepository.clearAll()
+            } catch (e: Exception) {
+                Timber.tag(TAG).e(e, "clear nodes failed")
+            }
             delay(1200)
+
             _wipeProgressMessage.postValue("正在清除日志")
             delay(1000)
-            logRepository.clear()
-            AnonConfig.disposeState()
+            try {
+                logRepository.clear()
+            } catch (e: Exception) {
+                Timber.tag(TAG).e(e, "clear logs failed")
+            }
+
+            try {
+                AnonConfig.disposeState()
+            } catch (e: Exception) {
+                Timber.tag(TAG).e(e, "dispose state failed")
+            }
+
             _wipeProgress.postValue(.8f)
             _wipeProgressMessage.postValue("日志已清除")
             delay(1200)
             _wipeProgress.postValue(1f)
-            _wipeProgressMessage.postValue(activity.getString(R.string.wallet_wiped_successfully))
+            if (walletDeleted) {
+                _wipeProgressMessage.postValue(activity.getString(R.string.wallet_wiped_successfully))
+            } else {
+                _wipeProgressMessage.postValue("钱包文件删除失败，请手动检查钱包目录")
+            }
         }
     }
 
