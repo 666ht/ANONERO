@@ -10,8 +10,8 @@ permissions:
   contents: read
 
 concurrency:
-  group: android-cloud-build-${{ github.ref }}
-  cancel-in-progress: true
+  group: android-cloud-build-${{ github.run_id }}
+  cancel-in-progress: false
 
 jobs:
   build:
