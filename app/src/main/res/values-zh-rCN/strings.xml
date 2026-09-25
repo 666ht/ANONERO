@@ -19,7 +19,7 @@
     <string name="receive">接收</string>
     <string name="send">发送</string>
     <string name="settings">设置</string>
-    <string name="set_subaddress_label">设置子地址标签</string>
+    <string name="set_subaddress_label">添加标签</string>
     <string name="node_connection">节点连接</string>
     <string name="node">节点</string>
     <string name="onion_address_example">http://onion地址:端口</string>
