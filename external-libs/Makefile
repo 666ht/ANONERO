@@ -45,6 +45,7 @@ image:
 	    -e TARGET=$(TARGET) -e NPROC=$(NPROC) -e CCACHE_DIR=/ccache -e CCACHE_MAXSIZE=5G \
 	    -w /external-libs anonero-$(TARGET) bash -lc './build.sh monero && ./build.sh collect' >/dev/null; \
 	$(CONTAINER) cp anonero-$(TARGET)-out:/opt/out/. $(ABI)/; \
+\tif [ -d "$(ABI)/include/boost" ]; then mkdir -p include/boost; cp -a "$(ABI)/include/boost/." include/boost/; fi; \
 	$(CONTAINER) rm -f anonero-$(TARGET)-out >/dev/null 2>&1 || true; \
 	chown -R $${SUDO_UID:-$$(id -u)}:$${SUDO_GID:-$$(id -g)} .ccache >/dev/null 2>&1 || true
 	@# docker runs as root; hand the artifacts back to the invoking user
