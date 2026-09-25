@@ -141,21 +141,19 @@ class SecureWipeViewModel(
                 Timber.tag(TAG).e(e, "clear logs failed")
             }
 
+            _wipeProgress.postValue(.8f)
+            _wipeProgressMessage.postValue("正在删除应用全部数据")
             try {
-                AnonConfig.disposeState()
+                AnonConfig.clearAllAppData(activity)
             } catch (e: Exception) {
-                Timber.tag(TAG).e(e, "dispose state failed")
+                Timber.tag(TAG).e(e, "clear all app data failed")
             }
 
-            _wipeProgress.postValue(.8f)
-            _wipeProgressMessage.postValue("日志已清除")
-            delay(1200)
+            AnonConfig.disposeState()
+
+            delay(800)
             _wipeProgress.postValue(1f)
-            if (walletDeleted) {
-                _wipeProgressMessage.postValue(activity.getString(R.string.wallet_wiped_successfully))
-            } else {
-                _wipeProgressMessage.postValue("钱包文件删除失败，请手动检查钱包目录")
-            }
+            _wipeProgressMessage.postValue("应用全部数据已清除")
         }
     }
 
