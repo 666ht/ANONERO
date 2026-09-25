@@ -19,6 +19,10 @@
 #include <mutex>
 #include "anonero.h"
 #include "wallet2_api.h"
+#define private public
+#include "wallet/api/wallet.h"
+#undef private
+#include "epee/string_tools.h"
 
 //TODO explicit casting jlong, jint, jboolean to avoid warnings
 
@@ -771,6 +775,20 @@ Java_io_anonero_model_WalletManager_closeJ(JNIEnv *env, jobject instance,
 /************ Wallet **************/
 /**********************************/
 
+
+static tools::wallet2 *getWallet2ForFreeze(Monero::Wallet *wallet) {
+    auto *impl = dynamic_cast<Monero::WalletImpl *>(wallet);
+    return impl != nullptr && impl->m_wallet != nullptr ? impl->m_wallet.get() : nullptr;
+}
+
+static bool parseKeyImage(JNIEnv *env, jstring keyImage, crypto::key_image &ki) {
+    if (keyImage == nullptr) return false;
+    const char *value = env->GetStringUTFChars(keyImage, nullptr);
+    const bool ok = epee::string_tools::hex_to_pod(value, ki);
+    env->ReleaseStringUTFChars(keyImage, value);
+    return ok;
+}
+
 // For backwards compatibility reasons, getSeed will continue silently fallback to legacy mnemonic
 // seed.
 // Since the changes aren't upstremead yet, and we don't know how polyseed will evolve / if there
@@ -939,6 +957,54 @@ Java_io_anonero_model_Wallet_store(JNIEnv *env, jobject instance,
     }
     env->ReleaseStringUTFChars(path, _path);
     return static_cast<jboolean>(success);
+}
+
+
+JNIEXPORT jboolean JNICALL
+Java_io_anonero_model_Wallet_freezeOutput(JNIEnv *env, jobject instance, jstring keyImage) {
+    Monero::Wallet *wallet = getHandle<Monero::Wallet>(env, instance);
+    crypto::key_image ki;
+    if (!parseKeyImage(env, keyImage, ki)) return JNI_FALSE;
+    tools::wallet2 *wallet2 = getWallet2ForFreeze(wallet);
+    if (wallet2 == nullptr) return JNI_FALSE;
+    try {
+        wallet2->freeze(ki);
+        return wallet->store("") ? JNI_TRUE : JNI_FALSE;
+    } catch (const std::exception &e) {
+        LOGE("freezeOutput(): %s", e.what());
+        return JNI_FALSE;
+    }
+}
+
+JNIEXPORT jboolean JNICALL
+Java_io_anonero_model_Wallet_thawOutput(JNIEnv *env, jobject instance, jstring keyImage) {
+    Monero::Wallet *wallet = getHandle<Monero::Wallet>(env, instance);
+    crypto::key_image ki;
+    if (!parseKeyImage(env, keyImage, ki)) return JNI_FALSE;
+    tools::wallet2 *wallet2 = getWallet2ForFreeze(wallet);
+    if (wallet2 == nullptr) return JNI_FALSE;
+    try {
+        wallet2->thaw(ki);
+        return wallet->store("") ? JNI_TRUE : JNI_FALSE;
+    } catch (const std::exception &e) {
+        LOGE("thawOutput(): %s", e.what());
+        return JNI_FALSE;
+    }
+}
+
+JNIEXPORT jboolean JNICALL
+Java_io_anonero_model_Wallet_isOutputFrozen(JNIEnv *env, jobject instance, jstring keyImage) {
+    Monero::Wallet *wallet = getHandle<Monero::Wallet>(env, instance);
+    crypto::key_image ki;
+    if (!parseKeyImage(env, keyImage, ki)) return JNI_FALSE;
+    tools::wallet2 *wallet2 = getWallet2ForFreeze(wallet);
+    if (wallet2 == nullptr) return JNI_FALSE;
+    try {
+        return wallet2->frozen(ki) ? JNI_TRUE : JNI_FALSE;
+    } catch (const std::exception &e) {
+        LOGE("isOutputFrozen(): %s", e.what());
+        return JNI_FALSE;
+    }
 }
 
 JNIEXPORT jstring JNICALL
