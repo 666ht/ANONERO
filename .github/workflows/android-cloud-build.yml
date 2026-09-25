@@ -56,7 +56,7 @@ jobs:
 
 
       - name: Prepare Monero v0.18.5.0
-        if: steps.native-cache.outputs.cache-hit != 'true' && steps.native-state.outputs.cache-hit != 'true'
+        if: steps.native-cache.outputs.cache-hit != 'true' && steps.native-state.outputs.cache-matched-key == ''
         run: |
           set -euxo pipefail
           rm -rf external-libs/monero
@@ -167,7 +167,7 @@ jobs:
         if: steps.native-cache.outputs.cache-hit != 'true'
         working-directory: external-libs
         env:
-          RESUME_NATIVE: ${{ steps.native-state.outputs.cache-hit == 'true' && '1' || '0' }}
+          RESUME_NATIVE: ${{ steps.native-state.outputs.cache-matched-key != '' && '1' || '0' }}
         run: |
           set -euxo pipefail
           if [ "$RESUME_NATIVE" = "1" ]; then
