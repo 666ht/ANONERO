@@ -22,9 +22,11 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.asLiveData
+import io.anonero.R
 import io.anonero.model.Wallet
 import io.anonero.services.WalletState
 import io.anonero.util.Formats
@@ -93,12 +95,13 @@ fun WalletProgressIndicator(modifier: Modifier = Modifier, refreshIndicatorProgr
                 )
                 if (progress.left > 50) {
                     Text(
-                        "${
+                        stringResource(
+                            R.string.blocks_left,
                             Formats.convertNumber(
                                 progress.left,
                                 Locale.getDefault()
                             )
-                        } blocks left",
+                        ),
                         modifier = Modifier.padding(top = 8.dp),
                         style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.primary
