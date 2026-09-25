@@ -164,6 +164,12 @@
     <string name="share_encrypted_backup_file">分享加密备份文件</string>
     <string name="clear_logs">清除日志</string>
     <string name="wallet_wiped_successfully">钱包已成功删除</string>
+    <string name="wiping_wallet">正在删除钱包</string>
+    <string name="wallet_cleared">钱包已清除</string>
+    <string name="clearing_preferences">正在清除设置</string>
+    <string name="clearing_nodes">正在清除节点</string>
+    <string name="clearing_logs">正在清除日志</string>
+    <string name="logs_cleared">日志已清除</string>
     <string name="success">成功</string>
     <string name="view_logs">查看日志</string>
     <string name="loading_backup">正在加载...</string>
