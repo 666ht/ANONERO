@@ -103,7 +103,7 @@ class AnonNeroService : Service() {
         scope.launch {
             walletState.syncProgress.collect {
                 val torSate = if (torService.socks != null) {
-                    " | Tor Daemon: ${torService.socks?.port.toString()}"
+                    " | Tor 节点：${torService.socks?.port.toString()}"
                 } else {
                     ""
                 }
@@ -130,15 +130,15 @@ class AnonNeroService : Service() {
             val isSyncing = walletState.isSyncing
             if (!isSyncing) {
                 val notificationMessage = if (walletState.backgroundSync) {
-                    "Wallet Locked: Synced: ${wallet.getBlockChainHeight()} "
+                    "钱包已锁定：已同步 ${wallet.getBlockChainHeight()} "
                 } else if (!wallet.isInitialized) {
-                    "Loading wallet..."
+                    "正在加载钱包..."
                 } else if (!isNetworkAvailable()) {
                     // Network is offline — skip the blocking RPC call and mark
                     // disconnected immediately so the bar shows without waiting
                     // for a 30-second timeout
                     walletState.setConnectionStatus(Wallet.ConnectionStatus.ConnectionStatus_Disconnected)
-                    "Disconnected"
+                    "连接断开"
                 } else {
                     // Network is available — probe the daemon with a live RPC call
                     val daemonHeight = withContext(Dispatchers.IO) {
@@ -151,18 +151,18 @@ class AnonNeroService : Service() {
                     walletState.setConnectionStatus(liveStatus)
                     when (liveStatus) {
                         Wallet.ConnectionStatus.ConnectionStatus_Disconnected -> {
-                            "Daemon Disconnected"
+                            "节点已断开"
                         }
 
                         Wallet.ConnectionStatus.ConnectionStatus_WrongVersion -> {
-                            "Wrong Version"
+                            "版本不匹配"
                         }
 
                         Wallet.ConnectionStatus.ConnectionStatus_Connected -> {
                             if (wallet.getBlockChainHeight() > 1) {
-                                "Synced: ${wallet.getBlockChainHeight()}"
+                                "已同步：${wallet.getBlockChainHeight()}"
                             } else {
-                                "Syncing..."
+                                "正在同步..."
                             }
                         }
                     }
@@ -182,12 +182,12 @@ class AnonNeroService : Service() {
 
     private fun showProgress(it: SyncProgress, torSate: String) {
         val notification = foregroundNotification(
-            content = if (it.left != 0L) "Syncing: ${
+            content = if (it.left != 0L) "正在同步：还剩 ${
                 Formats.convertNumber(
                     it.left,
                     Locale.getDefault()
                 )
-            } blocks left $torSate" else "Syncing blocks completed $torSate",
+            } 个区块 $torSate" else "同步完成 $torSate",
             progress = it
         )
         val mNotificationManager =
@@ -219,8 +219,9 @@ class AnonNeroService : Service() {
             .setContentTitle(title)
             .setContentText(content)
             .apply {
-                if (progress != null && progress.progress < 1) {
-                    this.setProgress(100, (progress.progress * 100).toInt(), false)
+                if (progress != null) {
+                    val percent = (progress.progress * 100f).coerceIn(0f, 100f).toInt()
+                    this.setProgress(100, percent, false)
                 }
             }
             .setGroup("BackgroundService")
@@ -243,7 +244,7 @@ class AnonNeroService : Service() {
         val notification = NotificationCompat.Builder(applicationContext, TX_CHANNEL)
             .setSmallIcon(R.drawable.anon_notification)
             .setContentTitle("[ΛИ0ИΞR0]")
-            .setContentText("Transaction received")
+            .setContentText("收到新交易")
             .setAutoCancel(true)
             .setContentIntent(pendingIntent)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
