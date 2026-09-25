@@ -53,6 +53,7 @@ class Subaddress(
 
     val displayLabelWithIndex: String
         get() {
+            if (addressIndex == 0) return "主地址 0"
             val normalizedLabel = label.trim()
             val isCustomLabel = normalizedLabel.isNotEmpty() &&
                 !DEFAULT_LABEL_FORMATTER.matcher(normalizedLabel).matches() &&
