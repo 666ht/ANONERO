@@ -22,6 +22,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -693,6 +694,7 @@ fun TransactionScreen(
                         ) {
                             Text(
                                 "XMR",
+                                modifier = Modifier.offset(y = (-4).dp),
                                 style = MaterialTheme.typography.displaySmall.copy(
                                     fontFamily = XmrFontFamily,
                                     fontSize = 55.sp
