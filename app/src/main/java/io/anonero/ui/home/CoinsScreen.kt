@@ -203,6 +203,7 @@ fun CoinsScreen(
                     trailingContent = {
                         Checkbox(
                             checked = selectedCoins.contains(coin.pub_key),
+                            enabled = !coin.frozen,
                             onCheckedChange = { checked ->
                                 selectCoin(coin)
                             }
