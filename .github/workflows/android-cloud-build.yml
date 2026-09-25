@@ -132,7 +132,7 @@ jobs:
             external-libs/armeabi-v7a
             external-libs/include
             external-libs/VERSION
-          key: anonero-native-android-v2-${{ runner.os }}-monero-0.18.5.0-${{ hashFiles('external-libs/Makefile', 'external-libs/Containerfile', 'external-libs/build.sh', 'app/CMakeLists.txt', 'app/src/main/cpp/**', 'wallet2(1).txt') }}
+          key: anonero-native-android-v3-${{ runner.os }}-monero-0.18.5.0-${{ hashFiles('external-libs/Makefile', 'external-libs/Containerfile', 'external-libs/build.sh', 'app/CMakeLists.txt', 'app/src/main/cpp/**', 'wallet2(1).txt') }}
           restore-keys: |
             anonero-native-android-v2-${{ runner.os }}-monero-0.18.5.0-
 
@@ -144,6 +144,12 @@ jobs:
           key: anonero-ccache-v1-${{ runner.os }}-${{ hashFiles('external-libs/build.sh', 'external-libs/Containerfile', 'app/CMakeLists.txt', 'app/src/main/cpp/**', 'wallet2(1).txt') }}
           restore-keys: |
             anonero-ccache-v1-${{ runner.os }}-
+
+      - name: Verify Boost headers before APK build
+        run: |
+          set -euxo pipefail
+          test -s external-libs/include/boost/program_options/options_description.hpp
+          test -s external-libs/include/boost/version.hpp
 
       - name: Build native Android libraries
         if: steps.native-cache.outputs.cache-hit != 'true'
