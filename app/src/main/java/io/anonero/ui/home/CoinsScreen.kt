@@ -42,6 +42,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -175,14 +176,14 @@ fun CoinsScreen(
                             modifier = Modifier.fillMaxWidth()
                         ) {
                             Text(
-                                stringResource(R.string.output_number, index + 1), color = MaterialTheme.colorScheme.primary,
+                                stringResource(R.string.output_number, index + 1), color = if (coin.frozen) MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f) else MaterialTheme.colorScheme.primary,
                             )
                             Box(
                                 modifier = Modifier.weight(1f)
                             ) {
                                 Text(
                                     Formats.getDisplayAmount(coin.amount),
-                                    color = MaterialTheme.colorScheme.primary,
+                                    color = if (coin.frozen) MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f) else MaterialTheme.colorScheme.primary,
                                     fontWeight = FontWeight.SemiBold,
                                     modifier = Modifier.fillMaxWidth(),
                                     textAlign = TextAlign.Center
@@ -196,6 +197,7 @@ fun CoinsScreen(
                                 coin.pub_key,
                                 fontWeight = FontWeight.SemiBold,
                                 fontSize = 14.sp,
+                                color = if (coin.frozen) MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f) else MaterialTheme.colorScheme.onSurface,
                                 textAlign = TextAlign.Justify
                             )
                         }
