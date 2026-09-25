@@ -689,7 +689,7 @@ fun TransactionScreen(
                     ) {
                         Column(
                             modifier = Modifier.fillMaxWidth(),
-                            horizontalAlignment = Alignment.End
+                            horizontalAlignment = Alignment.Start
                         ) {
                             Text(
                                 "XMR",
@@ -701,7 +701,7 @@ fun TransactionScreen(
                                 if (hideAmounts) Formats.maskAmount(balance ?: 0)
                                 else Formats.getDisplayAmount(balance ?: 0),
                                 style = MaterialTheme.typography.displaySmall,
-                                textAlign = TextAlign.End
+                                textAlign = TextAlign.Start
                             )
                         }
                     }
