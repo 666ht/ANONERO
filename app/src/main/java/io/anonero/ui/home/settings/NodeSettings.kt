@@ -321,6 +321,7 @@ fun NodeSettings(onBackPress: () -> Unit = {}) {
                         }
                     )
                     NodeForm(
+                        initialNode = editingNode,
                         onBackPress = {
                             scope.launch {
                                 showNodeDetails = false
@@ -599,9 +600,9 @@ fun NodeForm(
     nodeSettingsVM: NodeSettingsViewModel
 ) {
     val connectionError by nodeSettingsVM.connectionError.observeAsState(null)
-    var rpcHost by remember { mutableStateOf(initialNode?.let { "http://${it.host}:${it.rpcPort}" } ?: "") }
-    var rpcUsername by remember { mutableStateOf(initialNode?.username ?: "") }
-    var rpcPassPhrase by remember { mutableStateOf(initialNode?.password ?: "") }
+    var rpcHost by remember(initialNode) { mutableStateOf(initialNode?.let { "http://${it.host}:${it.rpcPort}" } ?: "") }
+    var rpcUsername by remember(initialNode) { mutableStateOf(initialNode?.username ?: "") }
+    var rpcPassPhrase by remember(initialNode) { mutableStateOf(initialNode?.password ?: "") }
     val labelColor = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.3f)
     Column(
         modifier = Modifier
