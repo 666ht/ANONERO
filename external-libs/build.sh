@@ -259,7 +259,11 @@ step_collect() {
   mkdir -p "$OUT/include/boost"
   cp -a "$PREFIX/include/boost/." "$OUT/include/boost/"
   find "$PREFIX/lib" -maxdepth 1 -name '*.a' -exec cp -a {} "$OUT"/ \; 2>/dev/null || true
-  COLLECT_BUILD_DIR="${BUILD_DIR:-$MONERO/build/release}"
+  if android; then
+    COLLECT_BUILD_DIR="$MONERO/build/$ABI"
+  else
+    COLLECT_BUILD_DIR="$MONERO/build/release"
+  fi
   cp -a "$COLLECT_BUILD_DIR"/lib/. "$OUT"/monero/
   local missing=0 l
   for l in libwallet_api.a libwallet.a libcryptonote_core.a libcryptonote_basic.a libringct.a libcncrypto.a libcommon.a libepee.a libdevice.a libmnemonics.a libpolyseed_wrapper.a libeasylogging.a liblmdb.a libblocks.a libcheckpoints.a libmultisig.a libversion.a libnet.a librandomx.a libhardforks.a librpc_base.a libblockchain_db.a libringct_basic.a libcryptonote_format_utils_basic.a; do
