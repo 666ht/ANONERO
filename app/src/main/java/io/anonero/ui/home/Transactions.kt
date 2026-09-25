@@ -163,7 +163,12 @@ fun TransactionScreen(
     val scope = rememberCoroutineScope()
     val toastState = rememberToasterState()
     val keyImagesImportedMessage = stringResource(R.string.key_images_imported)
-    val activity = LocalActivity.current;
+    val keyImagesText = stringResource(R.string.key_images)
+    val scanUnsignedTxText = stringResource(R.string.scan_unsigned_tx)
+    val outputsText = stringResource(R.string.outputs)
+    val scanKeyImagesText = stringResource(R.string.scan_key_images)
+    val activity = LocalActivity.current
+    val context = LocalContext.current;
 
     if (broadcastSignedTxPath != null) {
         AlertDialog(
@@ -359,8 +364,8 @@ fun TransactionScreen(
                         showScanner = false
                         qrScannerParam = SpendQRExchangeParam(
                             exportType = ExportType.IMAGE,
-                            title = stringResource(R.string.key_images),
-                            ctaText = stringResource(R.string.scan_unsigned_tx),
+                            title = keyImagesText,
+                            ctaText = scanUnsignedTxText,
                         )
                     }
 
@@ -594,8 +599,8 @@ fun TransactionScreen(
                                         qrScannerParam =
                                             SpendQRExchangeParam(
                                                 exportType = ExportType.OUTPUT,
-                                                title = context.getString(R.string.outputs),
-                                                ctaText = context.getString(R.string.scan_key_images),
+                                                title = outputsText,
+                                                ctaText = scanKeyImagesText,
                                             )
                                     }
                                 )
@@ -607,7 +612,7 @@ fun TransactionScreen(
                                         qrScannerParam =
                                             SpendQRExchangeParam(
                                                 exportType = ExportType.IMAGE,
-                                                title = context.getString(R.string.key_images),
+                                                title = keyImagesText,
                                                 ctaText = "",
                                             )
                                     }
