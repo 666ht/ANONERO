@@ -136,6 +136,7 @@ fun CoinDetailScreen(
             )
 
             ListItem(
+                headlineContent = {},
                 supportingContent = {
                     Column {
                         Text("公钥")
