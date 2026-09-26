@@ -115,30 +115,29 @@ fun SubAddressesScreen(
                                 navigateToDetails(address)
                             },
                         headlineContent = {
-                            Text(
-                                text = if (address.addressIndex == 0) "主地址 0" else address.displayLabelWithIndex,
-                                color = MaterialTheme.colorScheme.primary,
-                            )
-                        },
-                        supportingContent = {
                             Row(
                                 horizontalArrangement = Arrangement.SpaceBetween,
                                 modifier = Modifier.fillMaxWidth()
                             ) {
-                                SelectionContainer {
-                                    Text(
-                                        address.squashedAddress,
-                                        fontWeight = FontWeight.SemiBold,
-                                        fontSize = 14.sp,
-                                        textAlign = TextAlign.Justify,
-                                        modifier = Modifier.weight(1f)
-                                    )
-                                }
+                                Text(
+                                    text = if (address.addressIndex == 0) "主地址 0" else address.displayLabelWithIndex,
+                                    color = MaterialTheme.colorScheme.primary,
+                                )
                                 Text(
                                     Formats.getDisplayAmount(address.totalAmount),
                                     color = MaterialTheme.colorScheme.primary,
                                     fontWeight = FontWeight.SemiBold,
                                     modifier = Modifier.padding(start = 8.dp)
+                                )
+                            }
+                        },
+                        supportingContent = {
+                            SelectionContainer {
+                                Text(
+                                    address.squashedAddress,
+                                    fontWeight = FontWeight.SemiBold,
+                                    fontSize = 14.sp,
+                                    textAlign = TextAlign.Justify,
                                 )
                             }
                         },
