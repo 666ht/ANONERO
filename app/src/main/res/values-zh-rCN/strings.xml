@@ -108,10 +108,10 @@
     <string name="back">返回</string>
     <string name="connect">连接</string>
     <string name="proxy_updated">代理已更新</string>
-    <string name="securely_wipe_title">安全删除</string>
-    <string name="securely_wipe_warning">此操作将使用安全删除方法永久抹除所有钱包数据和加密密钥。此过程无法撤销。</string>
+    <string name="securely_wipe_title">安全擦除</string>
+    <string name="securely_wipe_warning">此操作将使用安全擦除方法永久抹除所有钱包数据和加密密钥。此过程无法撤销。</string>
     <string name="securely_wipe_passphrase_prompt">请输入钱包密码短语以继续</string>
-    <string name="wipe">删除</string>
+    <string name="wipe">擦除</string>
     <string name="nero_keys">[ИΞR0] 密钥</string>
     <string name="view">查看</string>
     <string name="legacy_seed">传统助记词 (Legacy Seed)</string>
@@ -126,7 +126,7 @@
     <string name="settings_seed">助记词</string>
     <string name="settings_change_pin">修改PIN</string>
     <string name="settings_export_backup">导出备份</string>
-    <string name="settings_secure_wipe">安全删除</string>
+    <string name="settings_secure_wipe">安全擦除</string>
     <string name="settings_logs">日志</string>
     <string name="settings_app_version">%1$s %2$s</string>
     <string name="total">总计</string>
@@ -140,4 +140,11 @@
     <string name="importing_key_images">正在导入密钥映像</string>
     <string name="importing_signed_transaction">正在导入已签名的交易</string>
     <string name="importing_unsigned_transaction">正在导入未签名的交易</string>
+    <string name="wipe_progress_wiping_wallet">正在擦除钱包</string>
+    <string name="wipe_progress_wallet_cleared">钱包已擦除</string>
+    <string name="wipe_progress_clearing_preferences">正在清除偏好设置</string>
+    <string name="wipe_progress_clearing_nodes">正在清除节点</string>
+    <string name="wipe_progress_clearing_logs">正在清除日志</string>
+    <string name="wipe_progress_logs_cleared">日志已清除</string>
+    <string name="wipe_progress_wallet_wiped">钱包已安全擦除</string>
 </resources>
