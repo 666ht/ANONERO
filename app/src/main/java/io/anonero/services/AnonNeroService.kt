@@ -160,7 +160,7 @@ class AnonNeroService : Service() {
 
                         Wallet.ConnectionStatus.ConnectionStatus_Connected -> {
                             if (wallet.getBlockChainHeight() > 1) {
-                                "已同步：${wallet.getBlockChainHeight()}"
+                                "区块高度：${wallet.getBlockChainHeight()}"
                             } else {
                                 "正在同步..."
                             }
