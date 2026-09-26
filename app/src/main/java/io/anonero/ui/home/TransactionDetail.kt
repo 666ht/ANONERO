@@ -268,6 +268,16 @@ fun TransactionDetailScreen(
                 }
                 item {
                     DetailItem(
+                        title = stringResource(R.string.amount),
+                        subtitle = if (transactionInfo?.amount != null) {
+                            Formats.getDisplayAmount(transactionInfo!!.amount)
+                        } else {
+                            "____"
+                        }
+                    )
+                }
+                item {
+                    DetailItem(
                         title = stringResource(R.string.destination),
                         subtitle = destinations,
                         copyable = true
