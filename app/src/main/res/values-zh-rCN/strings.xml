@@ -155,6 +155,7 @@
     <string name="invalid_url">无效的URL</string>
     <string name="url_cannot_be_empty">URL不能为空</string>
     <string name="add_node">添加节点</string>
+    <string name="add">添加</string>
     <string name="resync_initiated">已启动重新同步，这可能需要一些时间。</string>
     <string name="available_nodes">可用节点</string>
     <string name="daemon_height">区块高度：%1$s</string>
