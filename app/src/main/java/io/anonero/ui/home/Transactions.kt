@@ -801,7 +801,7 @@ fun TransactionItem(tx: TransactionInfo, hideAmounts: Boolean = false, modifier:
             Text(
                 if (hideAmounts) Formats.maskAmount(amount)
                 else Formats.getDisplayAmount(amount),
-                style = MaterialTheme.typography.titleLarge
+                style = MaterialTheme.typography.titleLarge.copy(fontSize = 24.sp)
             )
         }
     }
