@@ -78,7 +78,7 @@ class WalletManager {
 //                wallet.setRestoreHeight(restoreHeight)
 //            }
 //            Log.d("WalletManager.kt", "Changed Restore Height from $oldHeight to ${wallet.getRestoreHeight()}")
-            wallet.setPassword(password) // this rewrites the keys file (which contains the restore height)
+            // createWalletJ() already creates the Polyseed wallet with the requested password.\n            // Do not rewrite the native keys file here; Polyseed creation can crash on this second native call.
         }
         return wallet
     }
