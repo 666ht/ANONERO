@@ -759,8 +759,10 @@ fun TransactionItem(tx: TransactionInfo, hideAmounts: Boolean = false, modifier:
                 shape = MaterialTheme.shapes.medium
             )
             .padding(
-                horizontal = 12.dp,
-                vertical = 12.dp
+                start = 12.dp,
+                top = 12.dp,
+                end = 0.dp,
+                bottom = 12.dp
             ),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.End
