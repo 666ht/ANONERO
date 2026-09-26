@@ -18,7 +18,6 @@
 #include <cstring>
 #include <mutex>
 #include "anonero.h"
-#include "wallet2_api.h"
 
 // Freeze/thaw JNI needs access to the concrete WalletImpl and wallet2.
 // wallet.h is normally encapsulated by the public API, so expose its private
