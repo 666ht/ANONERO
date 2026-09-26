@@ -774,7 +774,7 @@ fun TransactionItem(tx: TransactionInfo, hideAmounts: Boolean = false, modifier:
                 if (confirmations >= 10)
                     Icon(
                         if (isIncoming) AnonIcons.ArrowDownLeft else AnonIcons.ArrowUpRight,
-                        modifier = Modifier.size(26.dp),
+                        modifier = Modifier.size(22.dp),
                         tint = if (isIncoming) MaterialTheme.colorScheme.primary else LocalContentColor.current,
                         contentDescription = ""
                     )
