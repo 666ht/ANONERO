@@ -14,6 +14,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -87,44 +88,31 @@ fun CoinDetailScreen(
                 return@Column
             }
 
-            Text(
-                "金额",
-                style = MaterialTheme.typography.labelMedium
-            )
-            Text(
-                Formats.getDisplayAmount(coin.amount),
-                style = MaterialTheme.typography.headlineSmall,
-                fontWeight = FontWeight.SemiBold
-            )
-            Spacer(Modifier.height(24.dp))
-
-            Text(
-                "状态",
-                style = MaterialTheme.typography.labelMedium
-            )
-            Text(
-                if (coin.frozen) "已冻结" else "未冻结",
-                style = MaterialTheme.typography.bodyLarge
-            )
-            Spacer(Modifier.height(24.dp))
-
-            Text(
-                "公钥",
-                style = MaterialTheme.typography.labelMedium
-            )
-            Text(
-                coin.pub_key,
-                style = MaterialTheme.typography.bodyMedium
-            )
-            Spacer(Modifier.height(24.dp))
-
-            Text(
-                "Key Image",
-                style = MaterialTheme.typography.labelMedium
-            )
-            Text(
-                coin.key,
-                style = MaterialTheme.typography.bodyMedium
+            ListItem(
+                headlineContent = {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text("金额", style = MaterialTheme.typography.labelMedium)
+                        Text(
+                            Formats.getDisplayAmount(coin.amount),
+                            style = MaterialTheme.typography.headlineSmall,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                    }
+                },
+                supportingContent = {
+                    Column {
+                        Text("状态：" + if (coin.frozen) "已冻结" else "未冻结")
+                        Spacer(Modifier.height(12.dp))
+                        Text("公钥")
+                        Text(coin.pub_key, style = MaterialTheme.typography.bodyMedium)
+                        Spacer(Modifier.height(12.dp))
+                        Text("Key Image")
+                        Text(coin.key, style = MaterialTheme.typography.bodyMedium)
+                    }
+                }
             )
 
             if (actionFailed) {
