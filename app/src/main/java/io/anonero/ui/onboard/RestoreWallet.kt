@@ -94,49 +94,17 @@ fun RestoreWallet(
         )
     }
     var seedList by remember { mutableStateOf(emptyList<String>()) }
-    var wordsList by remember { mutableStateOf(emptyList<String>()) }
-    val scope = rememberCoroutineScope()
-    val resources = LocalContext.current.resources
     var invalidSeed by remember { mutableStateOf(false) }
     val focusManager = LocalFocusManager.current
 
-    LaunchedEffect(true) {
-        scope.launch {
-            val inputStream = resources.openRawResource(R.raw.words)
-            val reader = inputStream.bufferedReader()
-            val lines = reader.readText().split("\n")
-            wordsList = lines
-        }
-    }
-
     fun validateSeed() {
-        if (seed.isBlank()) {
-            invalidSeed = false
-            seedList = emptyList()
-            return
-        }
+        val normalized = seed.trim().split(Regex("\\s+"))
+            .filter { it.isNotBlank() }
 
-        invalidSeed = false
-        scope.launch {
-            seedList = seed.split(" ")
-                .map { it.trim() }
-                .filter { it.isNotEmpty() }
-
-            if (seedList.size != 16 && seedList.size != 25) {
-                invalidSeed = true
-            } else {
-                seedList
-                    .forEach {
-                        if (!wordsList.contains(it.trim())) {
-                            invalidSeed = true
-                            return@forEach
-                        }
-                    }
-            }
-            if (invalidSeed) {
-                seedList = listOf()
-            }
-        }
+        seedList = normalized
+        invalidSeed = normalized.isNotEmpty() &&
+            normalized.size != 16 &&
+            normalized.size != 25
     }
 
     Scaffold { paddingValues ->
