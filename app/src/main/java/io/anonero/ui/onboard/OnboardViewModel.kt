@@ -56,12 +56,19 @@ class OnboardViewModel(private val prefs: SharedPreferences) : ViewModel() {
                 "English",
                 1,
             )
-            anonWallet?.store()
-            delay(100)
-            if (anonWallet?.status?.isOk != true) {
+            if (anonWallet == null || !anonWallet.status.isOk) {
+                walletFile.delete()
+                val error = anonWallet?.status?.errorString
+                throw CancellationException(
+                    error?.takeIf { it.isNotBlank() }
+                        ?: context.getString(R.string.unable_to_create_wallet)
+                )
+            }
+            if (!anonWallet.store()) {
                 walletFile.delete()
                 throw CancellationException(context.getString(R.string.unable_to_create_wallet))
             }
+            delay(100)
             val crazyPass: String = KeyStoreHelper.getCrazyPass(AnonConfig.context, passPhrase)
             prefs.edit {
                 putString(PREFS_PASSPHRASE_HASH, crazyPass)
@@ -101,13 +108,20 @@ class OnboardViewModel(private val prefs: SharedPreferences) : ViewModel() {
                 addressString = neroKeyPayload!!.primaryAddress,
                 spendKeyString = ""
             )
-            anonWallet?.setRestoreHeight(3460000);
-            anonWallet?.store()
-            delay(100)
-            if (anonWallet?.status?.isOk != true) {
+            if (anonWallet == null || !anonWallet.status.isOk) {
+                walletFile.delete()
+                val error = anonWallet?.status?.errorString
+                throw CancellationException(
+                    error?.takeIf { it.isNotBlank() }
+                        ?: context.getString(R.string.unable_to_create_wallet)
+                )
+            }
+            anonWallet.setRestoreHeight(3460000)
+            if (!anonWallet.store()) {
                 walletFile.delete()
                 throw CancellationException(context.getString(R.string.unable_to_create_wallet))
             }
+            delay(100)
             val crazyPass: String = KeyStoreHelper.getCrazyPass(AnonConfig.context, passPhrase)
             prefs.edit {
                 putString("passPhraseHash", crazyPass)
