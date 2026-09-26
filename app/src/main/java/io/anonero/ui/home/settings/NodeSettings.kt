@@ -429,6 +429,11 @@ fun NodeSettings(onBackPress: () -> Unit = {}) {
                         nodeSettingsVM = nodeSettingsVM,
                         onDisconnect = {
                             nodeSettingsVM.disconnect()
+                        },
+                        onRemove = { nodeSettingsVM.removeItem(activeNode!!.toNodeString()) },
+                        onEdit = {
+                            editingNode = activeNode
+                            showNodeDetails = true
                         })
                 }
             if (availableNodes.isNotEmpty())
@@ -567,24 +572,22 @@ fun NodeListItem(
                             menu = false
                         },
                     )
-                    if (!active) {
-                        HorizontalDivider()
-                        DropdownMenuItem(
-                            text = { Text(stringResource(R.string.edit)) },
-                            onClick = {
-                                onEdit(node)
-                                menu = false
-                            },
-                        )
-                        HorizontalDivider()
-                        DropdownMenuItem(
-                            text = { Text(stringResource(R.string.remove)) },
-                            onClick = {
-                                onRemove(node)
-                                menu = false
-                            },
-                        )
-                    }
+                    HorizontalDivider()
+                    DropdownMenuItem(
+                        text = { Text(stringResource(R.string.edit)) },
+                        onClick = {
+                            onEdit(node)
+                            menu = false
+                        },
+                    )
+                    HorizontalDivider()
+                    DropdownMenuItem(
+                        text = { Text(stringResource(R.string.remove)) },
+                        onClick = {
+                            onRemove(node)
+                            menu = false
+                        },
+                    )
                 }
             }
         }
