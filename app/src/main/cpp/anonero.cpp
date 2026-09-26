@@ -25,7 +25,6 @@
 #define private public
 #include "wallet/api/wallet.h"
 #undef private
-#include "epee/string_tools.h"
 
 //TODO explicit casting jlong, jint, jboolean to avoid warnings
 
