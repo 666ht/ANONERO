@@ -60,7 +60,7 @@ class WalletManager {
         height: Long
     ): Wallet {
         val walletHandle =
-            createWalletJ(aFile.absolutePath, password, language, networkType.value)
+            createWalletJ(aFile.absolutePath, password, passphrase, language, networkType.value)
         if (walletHandle == 0L) {
             throw IllegalStateException("Native wallet creation failed")
         }
@@ -87,6 +87,7 @@ class WalletManager {
     private external fun createWalletJ(
         path: String,
         password: String,
+        passphrase: String,
         language: String,
         networkType: Int
     ): Long
