@@ -104,7 +104,7 @@ android {
 
     }
     buildToolsVersion = "36.0.0"
-    ndkVersion = "27.2.12479018"
+    ndkVersion = "29.0.14206865"
 
     sourceSets["main"].res.srcDir("$buildDir/generated/xmrFontRes")
 }
