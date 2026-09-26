@@ -114,12 +114,18 @@ fun CoinDetailScreen(
                         horizontalArrangement = Arrangement.SpaceBetween,
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        Text("金额")
+                        val amountColor = if (coin.frozen) {
+                            MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
+                        } else {
+                            MaterialTheme.colorScheme.primary
+                        }
+                        Text("金额", color = amountColor)
                         Box(
                             modifier = Modifier.weight(1f)
                         ) {
                             Text(
                                 Formats.getDisplayAmount(coin.amount),
+                                color = amountColor,
                                 fontWeight = FontWeight.SemiBold,
                                 modifier = Modifier.fillMaxWidth(),
                                 textAlign = androidx.compose.ui.text.style.TextAlign.Center
