@@ -1,0 +1,19 @@
+version: 2.1
+
+jobs:
+  verify:
+    docker:
+      - image: cimg/android:2026.08-ndk
+    resource_class: medium
+    steps:
+      - checkout
+      - run:
+          name: Verify Gradle configuration
+          command: |
+            chmod +x ./gradlew
+            ./gradlew help --no-daemon
+
+workflows:
+  verify:
+    jobs:
+      - verify
