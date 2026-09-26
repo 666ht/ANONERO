@@ -125,17 +125,12 @@ fun CoinDetailScreen(
             }
 
             ListItem(
-                headlineContent = {
-                    Text("输出详情", style = MaterialTheme.typography.titleMedium)
-                },
                 supportingContent = {
                     Column {
-                        Text("状态：" + if (coin.frozen) "已冻结" else "未冻结")
-                        Spacer(Modifier.height(12.dp))
                         Text("公钥")
                         Text(coin.pub_key, style = MaterialTheme.typography.bodyMedium)
                         Spacer(Modifier.height(12.dp))
-                        Text("Key Image")
+                        Text("密钥图像")
                         Text(coin.key, style = MaterialTheme.typography.bodyMedium)
                     }
                 }
