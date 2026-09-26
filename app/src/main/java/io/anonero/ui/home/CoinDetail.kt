@@ -1,6 +1,7 @@
 package io.anonero.ui.home
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.border
@@ -107,22 +108,26 @@ fun CoinDetailScreen(
                 return@Column
             }
 
-            Row(
-                horizontalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text("金额")
-                Box(
-                    modifier = Modifier.weight(1f)
-                ) {
-                    Text(
-                        Formats.getDisplayAmount(coin.amount),
-                        fontWeight = FontWeight.SemiBold,
-                        modifier = Modifier.fillMaxWidth(),
-                        textAlign = androidx.compose.ui.text.style.TextAlign.Center
-                    )
+            ListItem(
+                headlineContent = {
+                    Row(
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text("金额")
+                        Box(
+                            modifier = Modifier.weight(1f)
+                        ) {
+                            Text(
+                                Formats.getDisplayAmount(coin.amount),
+                                fontWeight = FontWeight.SemiBold,
+                                modifier = Modifier.fillMaxWidth(),
+                                textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                            )
+                        }
+                    }
                 }
-            }
+            )
 
             ListItem(
                 supportingContent = {
