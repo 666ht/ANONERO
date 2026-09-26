@@ -746,7 +746,8 @@ fun TransactionItem(tx: TransactionInfo, hideAmounts: Boolean = false, modifier:
         modifier = modifier
             .fillMaxWidth()
             .padding(
-                horizontal = 12.dp,
+                start = 12.dp,
+                end = 4.dp,
                 vertical = 20.dp
             )
             .border(
@@ -796,6 +797,7 @@ fun TransactionItem(tx: TransactionInfo, hideAmounts: Boolean = false, modifier:
                         )
                     }
             }
+            androidx.compose.foundation.layout.Spacer(Modifier.size(4.dp))
             Text(
                 if (hideAmounts) Formats.maskAmount(amount)
                 else Formats.getDisplayAmount(amount),
