@@ -110,6 +110,12 @@ fun RestoreWallet(
     }
 
     fun validateSeed() {
+        if (seed.isBlank()) {
+            invalidSeed = false
+            seedList = emptyList()
+            return
+        }
+
         invalidSeed = false
         scope.launch {
             seedList = seed.split(" ")
