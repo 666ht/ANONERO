@@ -108,10 +108,10 @@
     <string name="back">Back</string>
     <string name="connect">Connect</string>
     <string name="proxy_updated">Proxy updated</string>
-    <string name="securely_wipe_title">安全删除</string>
-    <string name="securely_wipe_warning">此操作将使用安全删除方法永久抹除所有钱包数据和加密密钥。此过程无法撤销。</string>
-    <string name="securely_wipe_passphrase_prompt">请输入钱包密码短语以继续</string>
-    <string name="wipe">删除</string>
+    <string name="securely_wipe_title">Secure Wipe</string>
+    <string name="securely_wipe_warning">This will permanently wipe all wallet data and encryption keys using a secure wipe method. This process cannot be undone.</string>
+    <string name="securely_wipe_passphrase_prompt">Enter wallet passphrase to continue</string>
+    <string name="wipe">Wipe</string>
     <string name="nero_keys">[ИΞR0] keys</string>
     <string name="view">View</string>
     <string name="legacy_seed">Legacy Seed</string>
@@ -126,7 +126,7 @@
     <string name="settings_seed">Seed</string>
     <string name="settings_change_pin">Change PIN</string>
     <string name="settings_export_backup">Export Backup</string>
-    <string name="settings_secure_wipe">安全删除</string>
+    <string name="settings_secure_wipe">Secure Wipe</string>
     <string name="settings_logs">Logs</string>
     <string name="settings_app_version">%1$s %2$s</string>
     <string name="total">Total</string>
@@ -140,4 +140,11 @@
     <string name="importing_key_images">Importing key images</string>
     <string name="importing_signed_transaction">Importing signed transaction</string>
     <string name="importing_unsigned_transaction">Importing unsigned transaction</string>
+    <string name="wipe_progress_wiping_wallet">Wiping Wallet</string>
+    <string name="wipe_progress_wallet_cleared">Wallet Wiped</string>
+    <string name="wipe_progress_clearing_preferences">Clearing Preferences</string>
+    <string name="wipe_progress_clearing_nodes">Clearing Nodes</string>
+    <string name="wipe_progress_clearing_logs">Clearing Logs</string>
+    <string name="wipe_progress_logs_cleared">Logs Cleared</string>
+    <string name="wipe_progress_wallet_wiped">Wallet wiped successfully</string>
 </resources>
