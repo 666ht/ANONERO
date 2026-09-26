@@ -767,8 +767,8 @@ fun TransactionItem(tx: TransactionInfo, hideAmounts: Boolean = false, modifier:
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.End
     ) {
-        androidx.compose.foundation.layout.Spacer(Modifier.weight(1f))
         Row(
+            modifier = Modifier.offset(x = 16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Box(modifier = Modifier.padding(top = 2.dp)) {
