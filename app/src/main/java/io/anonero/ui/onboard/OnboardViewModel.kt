@@ -64,10 +64,7 @@ class OnboardViewModel(private val prefs: SharedPreferences) : ViewModel() {
                         ?: context.getString(R.string.unable_to_create_wallet)
                 )
             }
-            if (!anonWallet.store()) {
-                walletFile.delete()
-                throw CancellationException(context.getString(R.string.unable_to_create_wallet))
-            }
+            // createWalletFromPolyseed() already creates and stores the keys file natively.
             delay(100)
             val crazyPass: String = KeyStoreHelper.getCrazyPass(AnonConfig.context, passPhrase)
             prefs.edit {
