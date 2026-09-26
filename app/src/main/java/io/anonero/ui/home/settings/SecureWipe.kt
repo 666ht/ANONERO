@@ -92,8 +92,8 @@ class SecureWipeViewModel(
     private val logRepository: LogRepository
 ) : ViewModel() {
 
-    private val _wipeProgressMessage = MutableLiveData<String?>()
-    val wipeProgressMessage: LiveData<String?> = _wipeProgressMessage
+    private val _wipeProgressMessage = MutableLiveData<Int?>()
+    val wipeProgressMessage: LiveData<Int?> = _wipeProgressMessage
 
     private val _wipeProgress = MutableLiveData(0.1f)
     val wipeProgress: LiveData<Float> = _wipeProgress
@@ -102,29 +102,29 @@ class SecureWipeViewModel(
         return viewModelScope.launch(Dispatchers.IO) {
             (activity as MainActivity).stopNotificationService()
             _wipeProgress.postValue(.3f)
-            _wipeProgressMessage.postValue("Wiping Wallet")
+            _wipeProgressMessage.postValue(R.string.wiping_wallet)
             anonWalletHandler.wipe(passPhrase)
             delay(1000)
             _wipeProgress.postValue(.5f)
-            _wipeProgressMessage.postValue("Wallet Cleared")
+            _wipeProgressMessage.postValue(R.string.wallet_cleared)
             delay(1200)
             _wipeProgress.postValue(.6f)
-            _wipeProgressMessage.postValue("Clearing Preferences")
+            _wipeProgressMessage.postValue(R.string.clearing_preferences)
             sharedPreferences.edit { clear() }
             delay(800)
             _wipeProgress.postValue(.7f)
-            _wipeProgressMessage.postValue("Clearing Nodes")
+            _wipeProgressMessage.postValue(R.string.clearing_nodes)
             nodesRepository.clearAll()
             delay(1200)
-            _wipeProgressMessage.postValue("Clearing Logs")
+            _wipeProgressMessage.postValue(R.string.clearing_logs)
             delay(1000)
             logRepository.clear()
             AnonConfig.disposeState()
             _wipeProgress.postValue(.8f)
-            _wipeProgressMessage.postValue("Logs Cleared")
+            _wipeProgressMessage.postValue(R.string.logs_cleared)
             delay(1200)
             _wipeProgress.postValue(1f)
-            _wipeProgressMessage.postValue("Wallet wiped successfully")
+            _wipeProgressMessage.postValue(R.string.wallet_wiped_successfully)
         }
     }
 
@@ -366,7 +366,7 @@ fun SecureWipe(
                         modifier = Modifier.size(320.dp)
                     )
                     Text(
-                        progressMessage ?: "",
+                        stringResource(progressMessage ?: R.string.wiping_wallet),
                         style = MaterialTheme.typography.labelSmall,
                         modifier = Modifier.align(
                             Alignment.Center
