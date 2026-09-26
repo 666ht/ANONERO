@@ -112,6 +112,7 @@
     <string name="export_to_file">Export to File</string>
     <string name="back">Back</string>
     <string name="connect">Connect</string>
+    <string name="add">Add</string>
     <string name="proxy_updated">Proxy updated</string>
     <string name="securely_wipe_title">Securely Wipe</string>
     <string name="securely_wipe_warning">This action will permanently erase all wallet data and encryption keys using secure deletion methods. This process cannot be undone.</string>
