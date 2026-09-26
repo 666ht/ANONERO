@@ -694,7 +694,7 @@ fun TransactionScreen(
                         ) {
                             Text(
                                 "XMR",
-                                modifier = Modifier.offset(y = (-4).dp),
+                                modifier = Modifier.offset(y = (-8).dp),
                                 style = MaterialTheme.typography.displaySmall.copy(
                                     fontFamily = XmrFontFamily,
                                     fontSize = 55.sp
