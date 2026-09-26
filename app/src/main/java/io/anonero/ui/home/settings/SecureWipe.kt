@@ -82,7 +82,6 @@ import timber.log.Timber
 import androidx.core.content.edit
 import io.anonero.R
 
-
 private const val TAG = "SecureWipe"
 
 class SecureWipeViewModel(
@@ -156,12 +155,11 @@ fun SecureWipe(
         progressMessage != null
     }
 
-
     val animatedProgress by animateFloatAsState(
         targetValue = wipeProgress,
         animationSpec = tween(
-            durationMillis = 300,//animation duration
-            delayMillis = 50,//delay before animation start
+            durationMillis = 300,
+            delayMillis = 50,
             easing = LinearOutSlowInEasing
         ), label = "animatedProgress"
     )
@@ -184,32 +182,32 @@ fun SecureWipe(
 
     fun clearWallet() {
         scope.launch(Dispatchers.IO) {
-            requestClearScreen(true)
             val hash = prefs.getString(PREFS_PASSPHRASE_HASH, "")
             val hashedPass =
                 KeyStoreHelper.getCrazyPass(AnonConfig.context, passPhrase)
             if (hash == hashedPass) {
-                val seed = getWalletSeed(passPhrase)?.split(" ")
-                if (seed != null) {
-                    passPhraseDialog = false
-                    HapticFeedbackConstants.CONTEXT_CLICK
-                    activity?.let { activity ->
-                        secureWipeViewModel.wipe(passPhrase, activity)
-                            .invokeOnCompletion {
-                                if (it == null) {
-                                    view.performHapticFeedback(
-                                        HapticFeedbackConstants.CONTEXT_CLICK
-                                    )
-                                    scope.launch(Dispatchers.Main) {
-                                        goToHome()
-                                    }
-                                } else {
-                                    Timber.tag(TAG).e(it)
-                                    error = it.message
-                                    requestClearScreen(false)
+                passPhraseDialog = false
+                requestClearScreen(true)
+                view.performHapticFeedback(HapticFeedbackConstants.CONTEXT_CLICK)
+                activity?.let { currentActivity ->
+                    secureWipeViewModel.wipe(passPhrase, currentActivity)
+                        .invokeOnCompletion {
+                            if (it == null) {
+                                view.performHapticFeedback(
+                                    HapticFeedbackConstants.CONTEXT_CLICK
+                                )
+                                scope.launch(Dispatchers.Main) {
+                                    goToHome()
                                 }
+                            } else {
+                                Timber.tag(TAG).e(it)
+                                error = it.message ?: "安全删除失败"
+                                requestClearScreen(false)
                             }
-                    }
+                        }
+                } ?: run {
+                    error = "无法获取当前页面"
+                    requestClearScreen(false)
                 }
             } else {
                 errorShake.shake(
@@ -225,7 +223,6 @@ fun SecureWipe(
                 }
                 delay(100)
             }
-
         }
     }
 
@@ -291,8 +288,7 @@ fun SecureWipe(
                     onValueChange = {
                         passPhrase = it
                     },
-
-                    )
+                )
             },
             onDismissRequest = {
                 passPhraseDialog = false
@@ -307,8 +303,7 @@ fun SecureWipe(
                     colors = ButtonDefaults.buttonColors(
                         contentColor = MaterialTheme.colorScheme.onBackground,
                         containerColor = MaterialTheme.colorScheme.errorContainer,
-
-                        ),
+                    ),
                     onClick = {
                         clearWallet()
                     }) { Text(stringResource(id = R.string.wipe)) }
@@ -342,7 +337,6 @@ fun SecureWipe(
                 }
             }
         )
-
 
     Scaffold(
         Modifier.blur(
