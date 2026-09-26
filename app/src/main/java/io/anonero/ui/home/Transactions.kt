@@ -804,6 +804,10 @@ fun TransactionItem(tx: TransactionInfo, hideAmounts: Boolean = false, modifier:
             Text(
                 if (hideAmounts) Formats.maskAmount(amount)
                 else Formats.getDisplayAmount(amount),
+                modifier = Modifier.weight(1f),
+                textAlign = TextAlign.End,
+                maxLines = 1,
+                softWrap = false,
                 style = MaterialTheme.typography.titleLarge
             )
         }
