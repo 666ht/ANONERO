@@ -182,32 +182,32 @@ fun SecureWipe(
 
     fun clearWallet() {
         scope.launch(Dispatchers.IO) {
+            requestClearScreen(true)
             val hash = prefs.getString(PREFS_PASSPHRASE_HASH, "")
             val hashedPass =
                 KeyStoreHelper.getCrazyPass(AnonConfig.context, passPhrase)
             if (hash == hashedPass) {
-                passPhraseDialog = false
-                requestClearScreen(true)
-                view.performHapticFeedback(HapticFeedbackConstants.CONTEXT_CLICK)
-                activity?.let { currentActivity ->
-                    secureWipeViewModel.wipe(passPhrase, currentActivity)
-                        .invokeOnCompletion {
-                            if (it == null) {
-                                view.performHapticFeedback(
-                                    HapticFeedbackConstants.CONTEXT_CLICK
-                                )
-                                scope.launch(Dispatchers.Main) {
-                                    goToHome()
+                val seed = getWalletSeed(passPhrase)?.split(" ")
+                if (seed != null) {
+                    passPhraseDialog = false
+                    HapticFeedbackConstants.CONTEXT_CLICK
+                    activity?.let { activity ->
+                        secureWipeViewModel.wipe(passPhrase, activity)
+                            .invokeOnCompletion {
+                                if (it == null) {
+                                    view.performHapticFeedback(
+                                        HapticFeedbackConstants.CONTEXT_CLICK
+                                    )
+                                    scope.launch(Dispatchers.Main) {
+                                        goToHome()
+                                    }
+                                } else {
+                                    Timber.tag(TAG).e(it)
+                                    error = it.message
+                                    requestClearScreen(false)
                                 }
-                            } else {
-                                Timber.tag(TAG).e(it)
-                                error = it.message ?: "安全删除失败"
-                                requestClearScreen(false)
                             }
-                        }
-                } ?: run {
-                    error = "无法获取当前页面"
-                    requestClearScreen(false)
+                    }
                 }
             } else {
                 errorShake.shake(
