@@ -172,7 +172,7 @@ fun RestoreWallet(
                             shape = MaterialTheme.shapes.medium,
                             onValueChange = {
                                 seed = it
-                                validateSeed()
+                                invalidSeed = false
                             },
                             isError = invalidSeed,
                             supportingText = {
