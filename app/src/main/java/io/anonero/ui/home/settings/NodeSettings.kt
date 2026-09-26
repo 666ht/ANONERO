@@ -332,10 +332,6 @@ fun NodeSettings(onBackPress: () -> Unit = {}) {
                                 nodeSettingsVM.removeItem(oldNode.toNodeString())
                             }
                             nodeSettingsVM.addItem(it)
-                            nodeSettingsVM.viewModelScope
-                                .launch {
-                                    nodeSettingsVM.connect(it)
-                                }
                             editingNode = null
                         }, nodeSettingsVM = nodeSettingsVM
                     )
@@ -751,7 +747,7 @@ fun NodeForm(
                     }
                 },
             ) {
-                Text(submitLabel ?: stringResource(R.string.connect))
+                Text(submitLabel ?: stringResource(R.string.add))
             }
         }
     }
