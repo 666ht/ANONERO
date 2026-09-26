@@ -155,6 +155,7 @@
     <string name="exit">Exit</string>
     <string name="invalid_url">Invalid URL</string>
     <string name="url_cannot_be_empty">URL cannot be empty</string>
+    <string name="add">Add</string>
     <string name="add_node">Add Node</string>
     <string name="resync_initiated">Resync initiated, this may take a while.</string>
     <string name="available_nodes">Available Nodes</string>
