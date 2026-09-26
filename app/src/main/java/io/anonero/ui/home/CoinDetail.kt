@@ -61,21 +61,18 @@ fun CoinDetailScreen(
                         .fillMaxWidth()
                         .navigationBarsPadding()
                         .padding(12.dp),
-                    horizontalArrangement = Arrangement.Center
+                                        horizontalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
                     Button(
-                        modifier = Modifier.fillMaxWidth(),
-                        onClick = {
-                            val success = if (current.frozen) {
-                                walletState.thawCoin(current)
-                            } else {
-                                walletState.freezeCoin(current)
-                            }
-                            actionFailed = !success
-                        }
-                    ) {
-                        Text(if (current.frozen) "解冻" else "冻结")
-                    }
+                        modifier = Modifier.weight(1f),
+                        enabled = !current.frozen,
+                        onClick = { actionFailed = !walletState.freezeCoin(current) }
+                    ) { Text("冻结") }
+                    Button(
+                        modifier = Modifier.weight(1f),
+                        enabled = current.frozen,
+                        onClick = { actionFailed = !walletState.thawCoin(current) }
+                    ) { Text("解冻") }
                 }
             }
         }
