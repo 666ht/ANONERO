@@ -3,14 +3,18 @@ package io.anonero.ui.home
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -26,6 +30,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import io.anonero.model.CoinsInfo
@@ -61,18 +66,32 @@ fun CoinDetailScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .navigationBarsPadding()
-                        .padding(12.dp),
-                                        horizontalArrangement = Arrangement.spacedBy(12.dp)
+                        .padding(horizontal = 12.dp, vertical = 8.dp),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    Button(
+                    OutlinedButton(
                         modifier = Modifier.weight(1f),
                         enabled = !current.frozen,
-                        onClick = { actionFailed = !walletState.freezeCoin(current) }
+                        onClick = { actionFailed = !walletState.freezeCoin(current) },
+                        colors = ButtonDefaults.outlinedButtonColors(
+                            containerColor = MaterialTheme.colorScheme.background,
+                            contentColor = MaterialTheme.colorScheme.onBackground
+                        ),
+                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
+                        shape = MaterialTheme.shapes.medium,
+                        contentPadding = PaddingValues(12.dp)
                     ) { Text("冻结") }
-                    Button(
+                    OutlinedButton(
                         modifier = Modifier.weight(1f),
                         enabled = current.frozen,
-                        onClick = { actionFailed = !walletState.thawCoin(current) }
+                        onClick = { actionFailed = !walletState.thawCoin(current) },
+                        colors = ButtonDefaults.outlinedButtonColors(
+                            containerColor = MaterialTheme.colorScheme.background,
+                            contentColor = MaterialTheme.colorScheme.onBackground
+                        ),
+                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
+                        shape = MaterialTheme.shapes.medium,
+                        contentPadding = PaddingValues(12.dp)
                     ) { Text("解冻") }
                 }
             }
@@ -88,19 +107,45 @@ fun CoinDetailScreen(
                 return@Column
             }
 
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(
+                        start = 24.dp,
+                        top = 20.dp,
+                        end = 24.dp,
+                        bottom = 20.dp
+                    )
+                    .border(
+                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
+                        shape = MaterialTheme.shapes.medium
+                    )
+                    .padding(
+                        start = 12.dp,
+                        top = 12.dp,
+                        end = 0.dp,
+                        bottom = 12.dp
+                    ),
+                verticalAlignment = androidx.compose.ui.Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.End
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = androidx.compose.ui.Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text("金额", style = MaterialTheme.typography.labelMedium)
+                    Text(
+                        Formats.getDisplayAmount(coin.amount),
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                }
+            }
+
             ListItem(
                 headlineContent = {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Text("金额", style = MaterialTheme.typography.labelMedium)
-                        Text(
-                            Formats.getDisplayAmount(coin.amount),
-                            style = MaterialTheme.typography.headlineSmall,
-                            fontWeight = FontWeight.SemiBold
-                        )
-                    }
+                    Text("输出详情", style = MaterialTheme.typography.titleMedium)
                 },
                 supportingContent = {
                     Column {
