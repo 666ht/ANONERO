@@ -34,7 +34,7 @@ object Formats {
         return d.toPlainString()
     }
 
-    fun formatTransactionTime(timestamp: Long, pattern: String = "HH:mm\nMM月dd日"): String {
+    fun formatTransactionTime(timestamp: Long, pattern: String = "HH:mm\nMM/dd"): String {
         val instant =
             Instant.ofEpochSecond(timestamp)
         val dateTime = LocalDateTime.ofInstant(instant, ZoneId.systemDefault())
