@@ -767,16 +767,15 @@ fun TransactionItem(tx: TransactionInfo, hideAmounts: Boolean = false, modifier:
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.End
     ) {
+        androidx.compose.foundation.layout.Spacer(Modifier.weight(1f))
         Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.End
+            verticalAlignment = Alignment.CenterVertically
         ) {
             Box(modifier = Modifier.padding(top = 2.dp)) {
                 if (confirmations >= 10)
                     Icon(
                         if (isIncoming) AnonIcons.ArrowDownLeft else AnonIcons.ArrowUpRight,
-                        modifier = Modifier.size(22.dp),
+                        modifier = Modifier.size(32.dp),
                         tint = if (isIncoming) MaterialTheme.colorScheme.primary else LocalContentColor.current,
                         contentDescription = ""
                     )
@@ -804,8 +803,6 @@ fun TransactionItem(tx: TransactionInfo, hideAmounts: Boolean = false, modifier:
             Text(
                 if (hideAmounts) Formats.maskAmount(amount)
                 else Formats.getDisplayAmount(amount),
-                modifier = Modifier.weight(1f),
-                textAlign = TextAlign.End,
                 maxLines = 1,
                 softWrap = false,
                 style = MaterialTheme.typography.titleLarge
