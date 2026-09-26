@@ -108,37 +108,18 @@ fun CoinDetailScreen(
             }
 
             Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(
-                        start = 24.dp,
-                        top = 20.dp,
-                        end = 24.dp,
-                        bottom = 20.dp
-                    )
-                    .border(
-                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
-                        shape = MaterialTheme.shapes.medium
-                    )
-                    .padding(
-                        start = 12.dp,
-                        top = 12.dp,
-                        end = 0.dp,
-                        bottom = 12.dp
-                    ),
-                verticalAlignment = androidx.compose.ui.Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.End
+                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier.fillMaxWidth()
             ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = androidx.compose.ui.Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
+                Text("金额")
+                Box(
+                    modifier = Modifier.weight(1f)
                 ) {
-                    Text("金额", style = MaterialTheme.typography.labelMedium)
                     Text(
                         Formats.getDisplayAmount(coin.amount),
-                        style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.SemiBold
+                        fontWeight = FontWeight.SemiBold,
+                        modifier = Modifier.fillMaxWidth(),
+                        textAlign = androidx.compose.ui.text.style.TextAlign.Center
                     )
                 }
             }
