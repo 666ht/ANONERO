@@ -322,6 +322,7 @@ fun NodeSettings(onBackPress: () -> Unit = {}) {
                     )
                     NodeForm(
                         initialNode = editingNode,
+                        submitLabel = if (editingNode == null) stringResource(R.string.add) else stringResource(R.string.connect),
                         onBackPress = {
                             scope.launch {
                                 showNodeDetails = false
@@ -747,7 +748,7 @@ fun NodeForm(
                     }
                 },
             ) {
-                Text(submitLabel ?: stringResource(R.string.add))
+                Text(submitLabel ?: stringResource(R.string.connect))
             }
         }
     }
